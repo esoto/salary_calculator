@@ -16,4 +16,39 @@ RSpec.describe SalaryEntry, type: :model do
 
     it { should validate_uniqueness_of(:month).scoped_to(:year) }
   end
+
+  describe 'calculations' do
+    let(:entry) { build(:salary_entry, hours_worked: 160, hourly_rate: 50.0) }
+
+    describe '#monthly_salary' do
+      it 'calculates hours_worked * hourly_rate' do
+        expect(entry.monthly_salary).to eq(8000.0)
+      end
+    end
+
+    describe '#aguinaldo_savings' do
+      it 'calculates monthly_salary / 12' do
+        expect(entry.aguinaldo_savings).to be_within(0.01).of(666.67)
+      end
+    end
+
+    describe '#vacation_savings' do
+      it 'calculates 12 hours * hourly_rate (18 days * 8 hours / 12 months)' do
+        expect(entry.vacation_savings).to eq(600.0)
+      end
+    end
+
+    describe '#holiday_savings' do
+      it 'calculates 6.67 hours * hourly_rate (10 days * 8 hours / 12 months)' do
+        expect(entry.holiday_savings).to be_within(0.01).of(333.33)
+      end
+    end
+
+    describe '#total_savings' do
+      it 'sums all savings' do
+        expected = entry.aguinaldo_savings + entry.vacation_savings + entry.holiday_savings
+        expect(entry.total_savings).to be_within(0.01).of(expected)
+      end
+    end
+  end
 end
