@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
+  resources :registrations, only: [:new, :create]
+
   resources :salary_entries do
     collection do
       get :summary
