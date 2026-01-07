@@ -32,4 +32,8 @@ module SalaryCalculations
   def total_savings
     aguinaldo_savings + vacation_savings + holiday_savings
   end
+
+  def net_pay
+    monthly_salary - total_savings
+  end
 end

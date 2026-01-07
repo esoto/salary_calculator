@@ -20,6 +20,11 @@ class DashboardController < ApplicationController
     @vacation_days_earned = @months_logged * SalaryCalculations::VACATION_DAYS_PER_MONTH
     @holiday_days_earned = @months_logged * SalaryCalculations::HOLIDAY_DAYS_PER_MONTH
 
+    # Total savings and net pay (YTD)
+    ytd_aguinaldo = ytd_entries.sum("hours_worked * hourly_rate / 12.0")
+    @total_savings = ytd_aguinaldo + @vacation_savings + @holiday_savings
+    @net_pay = @total_earnings - @total_savings
+
     # Recent entries
     @recent_entries = current_user.salary_entries.order(year: :desc, month: :desc).limit(5)
 

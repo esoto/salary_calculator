@@ -10,7 +10,7 @@
   </div>
 
   <!-- Summary Cards Row -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
     <!-- Aguinaldo Card -->
     <div class="bg-white rounded-lg shadow p-6">
       <h3 class="text-sm font-medium text-gray-500 uppercase">Aguinaldo <%= @current_year %></h3>
@@ -22,6 +22,13 @@
     <div class="bg-white rounded-lg shadow p-6">
       <h3 class="text-sm font-medium text-gray-500 uppercase">Total Earnings</h3>
       <p class="text-2xl font-bold text-gray-900 mt-2"><%= format_currency(@total_earnings) %></p>
+      <p class="text-sm text-gray-500 mt-1">YTD <%= @current_year %></p>
+    </div>
+
+    <!-- Net Pay Card -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-sm font-medium text-gray-500 uppercase">Net Pay</h3>
+      <p class="text-2xl font-bold text-blue-600 mt-2"><%= format_currency(@net_pay) %></p>
       <p class="text-sm text-gray-500 mt-1">YTD <%= @current_year %></p>
     </div>
 
@@ -78,6 +85,7 @@
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Hours</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Rate</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Salary</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Net Pay</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
@@ -90,6 +98,7 @@
               <td class="px-6 py-4 text-right"><%= format_hours(entry.hours_worked) %></td>
               <td class="px-6 py-4 text-right"><%= format_currency(entry.hourly_rate) %></td>
               <td class="px-6 py-4 text-right font-medium"><%= format_currency(entry.monthly_salary) %></td>
+              <td class="px-6 py-4 text-right font-bold text-blue-600"><%= format_currency(entry.net_pay) %></td>
             </tr>
           <% end %>
         </tbody>
