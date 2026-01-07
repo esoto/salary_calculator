@@ -1,10 +1,11 @@
+# app/controllers/salary_entries_controller.rb
 class SalaryEntriesController < ApplicationController
   before_action :set_salary_entry, only: [:show, :edit, :update, :destroy]
 
   def index
     @year = params[:year]&.to_i || Date.current.year
-    @salary_entries = SalaryEntry.for_year(@year).ordered
-    @available_years = SalaryEntry.distinct.pluck(:year).sort.reverse
+    @salary_entries = current_user.salary_entries.for_year(@year).ordered
+    @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
     @available_years = [@year] if @available_years.empty?
   end
 
@@ -12,11 +13,15 @@ class SalaryEntriesController < ApplicationController
   end
 
   def new
-    @salary_entry = SalaryEntry.new(year: Date.current.year, month: Date.current.month)
+    @salary_entry = current_user.salary_entries.new(
+      year: Date.current.year,
+      month: Date.current.month,
+      hourly_rate: current_user.default_hourly_rate
+    )
   end
 
   def create
-    @salary_entry = SalaryEntry.new(salary_entry_params)
+    @salary_entry = current_user.salary_entries.new(salary_entry_params)
 
     if @salary_entry.save
       redirect_to @salary_entry, notice: "Salary entry was successfully created."
@@ -43,15 +48,15 @@ class SalaryEntriesController < ApplicationController
 
   def summary
     @year = params[:year]&.to_i || Date.current.year
-    @summary = SalaryEntry.yearly_summary(@year)
-    @available_years = SalaryEntry.distinct.pluck(:year).sort.reverse
+    @summary = current_user.salary_entries.yearly_summary(@year)
+    @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
     @available_years = [@year] if @available_years.empty?
   end
 
   private
 
   def set_salary_entry
-    @salary_entry = SalaryEntry.find(params[:id])
+    @salary_entry = current_user.salary_entries.find(params[:id])
   end
 
   def salary_entry_params

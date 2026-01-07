@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe SalaryEntry, type: :model do
+  describe 'associations' do
+    it { should belong_to(:user) }
+  end
+
   describe 'validations' do
     subject { build(:salary_entry) }
 
@@ -14,7 +18,7 @@ RSpec.describe SalaryEntry, type: :model do
     it { should validate_numericality_of(:hours_worked).is_greater_than(0) }
     it { should validate_numericality_of(:hourly_rate).is_greater_than(0) }
 
-    it { should validate_uniqueness_of(:month).scoped_to(:year) }
+    it { should validate_uniqueness_of(:month).scoped_to(:year, :user_id) }
   end
 
   describe 'calculations' do
