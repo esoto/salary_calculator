@@ -1,0 +1,6 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+  <p>Welcome back, <%= current_user.name %></p>
+  <p>Total: <%= number_to_currency(@total_earnings) %></p>
+  <p><%= @months_logged %> of 12 months</p>
+</div>
