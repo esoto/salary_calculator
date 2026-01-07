@@ -11,7 +11,6 @@ RSpec.describe User, type: :model do
   end
 
   describe 'associations' do
-    # NOTE: Foreign key migration for user_id on salary_entries happens in Task 3
-    it { pending 'waiting for user_id foreign key in Task 3'; should have_many(:salary_entries).dependent(:destroy) }
+    it { should have_many(:salary_entries).dependent(:destroy) }
   end
 end

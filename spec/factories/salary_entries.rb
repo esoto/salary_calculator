@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :salary_entry do
+    user
     month { 1 }
     year { 2025 }
     hours_worked { 160.0 }

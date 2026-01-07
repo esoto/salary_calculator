@@ -1,6 +1,8 @@
 class SalaryEntry < ApplicationRecord
   include SalaryCalculations
 
+  belongs_to :user
+
   scope :for_year, ->(year) { where(year: year) }
   scope :ordered, -> { order(:year, :month) }
 
@@ -12,7 +14,7 @@ class SalaryEntry < ApplicationRecord
                            numericality: { greater_than: 0 }
   validates :hourly_rate, presence: true,
                           numericality: { greater_than: 0 }
-  validates :month, uniqueness: { scope: :year }
+  validates :month, uniqueness: { scope: [ :year, :user_id ] }
 
   def self.yearly_summary(year)
     entries = for_year(year)
