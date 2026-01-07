@@ -22,12 +22,17 @@ class SalaryEntry < ApplicationRecord
   def self.yearly_summary(year)
     entries = for_year(year)
 
+    total_earnings = entries.sum("hours_worked * hourly_rate")
+    total_aguinaldo = entries.sum("hours_worked * hourly_rate / 12.0")
+    total_vacation = entries.sum("#{VACATION_HOURS_PER_MONTH} * hourly_rate")
+    total_holidays = entries.sum("#{HOLIDAY_HOURS_PER_MONTH} * hourly_rate")
+
     {
-      total_earnings: entries.sum(&:monthly_salary),
-      total_aguinaldo: entries.sum(&:aguinaldo_savings),
-      total_vacation: entries.sum(&:vacation_savings),
-      total_holidays: entries.sum(&:holiday_savings),
-      total_savings: entries.sum(&:total_savings),
+      total_earnings: total_earnings,
+      total_aguinaldo: total_aguinaldo,
+      total_vacation: total_vacation,
+      total_holidays: total_holidays,
+      total_savings: total_aguinaldo + total_vacation + total_holidays,
       entries_count: entries.count
     }
   end

@@ -9,12 +9,12 @@ class DashboardController < ApplicationController
     # Aguinaldo period entries
     aguinaldo_entries = current_user.salary_entries.for_aguinaldo_period(current_year)
 
-    # Summary stats
+    # Summary stats (using SQL aggregation for performance)
     @months_logged = ytd_entries.count
-    @total_earnings = ytd_entries.sum(&:monthly_salary)
-    @vacation_savings = ytd_entries.sum(&:vacation_savings)
-    @holiday_savings = ytd_entries.sum(&:holiday_savings)
-    @aguinaldo_savings = aguinaldo_entries.sum(&:aguinaldo_savings)
+    @total_earnings = ytd_entries.sum("hours_worked * hourly_rate")
+    @vacation_savings = ytd_entries.sum("#{SalaryCalculations::VACATION_HOURS_PER_MONTH} * hourly_rate")
+    @holiday_savings = ytd_entries.sum("#{SalaryCalculations::HOLIDAY_HOURS_PER_MONTH} * hourly_rate")
+    @aguinaldo_savings = aguinaldo_entries.sum("hours_worked * hourly_rate / 12.0")
 
     # Days earned (based on months logged)
     @vacation_days_earned = @months_logged * 1.5
