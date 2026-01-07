@@ -5,6 +5,9 @@ class SalaryEntry < ApplicationRecord
 
   scope :for_year, ->(year) { where(year: year) }
   scope :ordered, -> { order(:year, :month) }
+  scope :for_aguinaldo_period, ->(year) {
+    where("(year = ? AND month = 12) OR (year = ? AND month <= 11)", year - 1, year)
+  }
 
   validates :month, presence: true,
                     numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }
