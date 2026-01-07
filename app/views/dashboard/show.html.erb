@@ -15,7 +15,7 @@
     <div class="bg-white rounded-lg shadow p-6">
       <h3 class="text-sm font-medium text-gray-500 uppercase">Aguinaldo <%= @current_year %></h3>
       <p class="text-2xl font-bold text-gray-900 mt-2"><%= format_currency(@aguinaldo_savings) %></p>
-      <p class="text-sm text-gray-500 mt-1">Dec '<%= @current_year - 1 - 2000 %> - Nov '<%= @current_year - 2000 %></p>
+      <p class="text-sm text-gray-500 mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
     </div>
 
     <!-- Total Earnings Card -->
