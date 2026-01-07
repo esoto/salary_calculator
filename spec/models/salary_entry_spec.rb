@@ -76,6 +76,31 @@ RSpec.describe SalaryEntry, type: :model do
         expect(SalaryEntry.ordered).to eq([ entry_2024_dec, entry_2025_jan, entry_2025_mar ])
       end
     end
+
+    describe '.for_aguinaldo_period' do
+      let(:user) { create(:user) }
+
+      it 'includes December of previous year' do
+        entry = create(:salary_entry, user: user, month: 12, year: 2025)
+        expect(user.salary_entries.for_aguinaldo_period(2026)).to include(entry)
+      end
+
+      it 'includes January through November of current year' do
+        jan = create(:salary_entry, user: user, month: 1, year: 2026)
+        nov = create(:salary_entry, user: user, month: 11, year: 2026)
+        expect(user.salary_entries.for_aguinaldo_period(2026)).to include(jan, nov)
+      end
+
+      it 'excludes December of current year' do
+        entry = create(:salary_entry, user: user, month: 12, year: 2026)
+        expect(user.salary_entries.for_aguinaldo_period(2026)).not_to include(entry)
+      end
+
+      it 'excludes entries from other years' do
+        entry = create(:salary_entry, user: user, month: 6, year: 2024)
+        expect(user.salary_entries.for_aguinaldo_period(2026)).not_to include(entry)
+      end
+    end
   end
 
   describe '.yearly_summary' do
