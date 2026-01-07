@@ -17,8 +17,8 @@ class DashboardController < ApplicationController
     @aguinaldo_savings = aguinaldo_entries.sum("hours_worked * hourly_rate / 12.0")
 
     # Days earned (based on months logged)
-    @vacation_days_earned = @months_logged * 1.5
-    @holiday_days_earned = @months_logged * (10.0 / 12)
+    @vacation_days_earned = @months_logged * SalaryCalculations::VACATION_DAYS_PER_MONTH
+    @holiday_days_earned = @months_logged * SalaryCalculations::HOLIDAY_DAYS_PER_MONTH
 
     # Recent entries
     @recent_entries = current_user.salary_entries.order(year: :desc, month: :desc).limit(5)
