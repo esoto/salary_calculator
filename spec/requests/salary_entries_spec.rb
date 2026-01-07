@@ -8,14 +8,14 @@ RSpec.describe "SalaryEntries", type: :request do
     end
 
     it "filters by year" do
-      create(:salary_entry, month: 1, year: 2024)
-      create(:salary_entry, month: 1, year: 2025)
+      create(:salary_entry, month: 6, year: 2024, hours_worked: 100)
+      create(:salary_entry, month: 1, year: 2025, hours_worked: 160)
 
       get salary_entries_path(year: 2025)
 
       expect(response).to have_http_status(:success)
-      expect(response.body).to include("2025")
-      expect(response.body).not_to include("2024")
+      expect(response.body).to include("January")
+      expect(response.body).not_to include("June")
     end
   end
 

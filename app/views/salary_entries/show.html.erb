@@ -1,0 +1,57 @@
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to "← Back to entries", salary_entries_path(year: @salary_entry.year), class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <h1 class="text-3xl font-bold text-gray-900 mb-6">
+      <%= month_name(@salary_entry.month) %> <%= @salary_entry.year %>
+    </h1>
+
+    <div class="grid grid-cols-2 gap-6 mb-8">
+      <div>
+        <p class="text-sm text-gray-500">Hours Worked</p>
+        <p class="text-2xl font-semibold"><%= format_hours(@salary_entry.hours_worked) %></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Hourly Rate</p>
+        <p class="text-2xl font-semibold"><%= format_currency(@salary_entry.hourly_rate) %></p>
+      </div>
+    </div>
+
+    <div class="border-t pt-6 mb-8">
+      <p class="text-sm text-gray-500 mb-2">Monthly Salary</p>
+      <p class="text-4xl font-bold text-gray-900"><%= format_currency(@salary_entry.monthly_salary) %></p>
+    </div>
+
+    <div class="border-t pt-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Savings Breakdown</h2>
+      <div class="space-y-4">
+        <div class="flex justify-between">
+          <span class="text-gray-600">Aguinaldo (13th month)</span>
+          <span class="font-medium text-green-600"><%= format_currency(@salary_entry.aguinaldo_savings) %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Vacation (18 days)</span>
+          <span class="font-medium text-green-600"><%= format_currency(@salary_entry.vacation_savings) %></span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-gray-600">Holidays (10 days)</span>
+          <span class="font-medium text-green-600"><%= format_currency(@salary_entry.holiday_savings) %></span>
+        </div>
+        <div class="flex justify-between border-t pt-4">
+          <span class="font-semibold text-gray-900">Total Savings</span>
+          <span class="font-bold text-green-700 text-xl"><%= format_currency(@salary_entry.total_savings) %></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 flex gap-4">
+      <%= link_to "Edit", edit_salary_entry_path(@salary_entry),
+          class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" %>
+      <%= link_to "Delete", @salary_entry, method: :delete,
+          data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },
+          class: "bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg" %>
+    </div>
+  </div>
+</div>

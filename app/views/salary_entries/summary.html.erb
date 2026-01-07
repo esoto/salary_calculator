@@ -1,0 +1,50 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <div class="mb-6">
+    <%= link_to "← Back to entries", salary_entries_path(year: @year), class: "text-blue-600 hover:text-blue-800" %>
+  </div>
+
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">Yearly Summary</h1>
+
+  <div class="mb-6">
+    <%= form_tag summary_salary_entries_path, method: :get, class: "flex items-center gap-4" do %>
+      <label for="year" class="font-medium text-gray-700">Year:</label>
+      <%= select_tag :year, options_for_select(@available_years, @year),
+          class: "border border-gray-300 rounded-lg px-3 py-2",
+          onchange: "this.form.submit()" %>
+    <% end %>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="grid grid-cols-2 gap-6 mb-8">
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-sm text-gray-500">Entries Recorded</p>
+        <p class="text-3xl font-bold text-gray-900"><%= @summary[:entries_count] %> / 12</p>
+      </div>
+      <div class="bg-blue-50 rounded-lg p-4">
+        <p class="text-sm text-blue-600">Total Earnings</p>
+        <p class="text-3xl font-bold text-blue-900"><%= format_currency(@summary[:total_earnings]) %></p>
+      </div>
+    </div>
+
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Total Savings for <%= @year %></h2>
+
+    <div class="space-y-4">
+      <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+        <span class="text-gray-700">Aguinaldo (13th month)</span>
+        <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_aguinaldo]) %></span>
+      </div>
+      <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+        <span class="text-gray-700">Vacation (18 days)</span>
+        <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_vacation]) %></span>
+      </div>
+      <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
+        <span class="text-gray-700">Holidays (10 days)</span>
+        <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_holidays]) %></span>
+      </div>
+      <div class="flex justify-between items-center p-6 bg-green-100 rounded-lg border-2 border-green-200">
+        <span class="text-lg font-semibold text-gray-900">Total Savings</span>
+        <span class="text-3xl font-bold text-green-800"><%= format_currency(@summary[:total_savings]) %></span>
+      </div>
+    </div>
+  </div>
+</div>
