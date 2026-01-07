@@ -1,6 +1,13 @@
+# spec/requests/salary_entries_spec.rb
 require 'rails_helper'
 
 RSpec.describe "SalaryEntries", type: :request do
+  let(:user) { create(:user) }
+
+  before do
+    post session_path, params: { email_address: user.email_address, password: "password123" }
+  end
+
   describe "GET /salary_entries" do
     it "returns success" do
       get salary_entries_path
@@ -8,8 +15,8 @@ RSpec.describe "SalaryEntries", type: :request do
     end
 
     it "filters by year" do
-      create(:salary_entry, month: 6, year: 2024, hours_worked: 100)
-      create(:salary_entry, month: 1, year: 2025, hours_worked: 160)
+      create(:salary_entry, user: user, month: 6, year: 2024, hours_worked: 100)
+      create(:salary_entry, user: user, month: 1, year: 2025, hours_worked: 160)
 
       get salary_entries_path(year: 2025)
 
@@ -17,13 +24,31 @@ RSpec.describe "SalaryEntries", type: :request do
       expect(response.body).to include("January")
       expect(response.body).not_to include("June")
     end
+
+    it "only shows current user entries" do
+      other_user = create(:user)
+      create(:salary_entry, user: other_user, month: 3, year: 2025)
+      create(:salary_entry, user: user, month: 1, year: 2025)
+
+      get salary_entries_path(year: 2025)
+
+      expect(response.body).to include("January")
+      expect(response.body).not_to include("March")
+    end
   end
 
   describe "GET /salary_entries/:id" do
-    it "returns success" do
-      entry = create(:salary_entry)
+    it "returns success for own entry" do
+      entry = create(:salary_entry, user: user)
       get salary_entry_path(entry)
       expect(response).to have_http_status(:success)
+    end
+
+    it "returns not found for other user entry" do
+      other_user = create(:user)
+      entry = create(:salary_entry, user: other_user)
+      get salary_entry_path(entry)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -32,6 +57,12 @@ RSpec.describe "SalaryEntries", type: :request do
       get new_salary_entry_path
       expect(response).to have_http_status(:success)
     end
+
+    it "pre-fills hourly rate from user default" do
+      user.update!(default_hourly_rate: 75.0)
+      get new_salary_entry_path
+      expect(response.body).to include("75.0")
+    end
   end
 
   describe "POST /salary_entries" do
@@ -39,10 +70,10 @@ RSpec.describe "SalaryEntries", type: :request do
       { salary_entry: { month: 1, year: 2025, hours_worked: 160, hourly_rate: 50 } }
     end
 
-    it "creates a new entry" do
+    it "creates a new entry for current user" do
       expect {
         post salary_entries_path, params: valid_params
-      }.to change(SalaryEntry, :count).by(1)
+      }.to change(user.salary_entries, :count).by(1)
     end
 
     it "redirects to show page" do
@@ -52,15 +83,22 @@ RSpec.describe "SalaryEntries", type: :request do
   end
 
   describe "GET /salary_entries/:id/edit" do
-    it "returns success" do
-      entry = create(:salary_entry)
+    it "returns success for own entry" do
+      entry = create(:salary_entry, user: user)
       get edit_salary_entry_path(entry)
       expect(response).to have_http_status(:success)
+    end
+
+    it "returns not found for other user entry" do
+      other_user = create(:user)
+      entry = create(:salary_entry, user: other_user)
+      get edit_salary_entry_path(entry)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
   describe "PATCH /salary_entries/:id" do
-    let(:entry) { create(:salary_entry, hours_worked: 160) }
+    let(:entry) { create(:salary_entry, user: user, hours_worked: 160) }
 
     it "updates the entry" do
       patch salary_entry_path(entry), params: { salary_entry: { hours_worked: 180 } }
@@ -71,20 +109,35 @@ RSpec.describe "SalaryEntries", type: :request do
       patch salary_entry_path(entry), params: { salary_entry: { hours_worked: 180 } }
       expect(response).to redirect_to(salary_entry_path(entry))
     end
+
+    it "cannot update other user entry" do
+      other_user = create(:user)
+      entry = create(:salary_entry, user: other_user, hours_worked: 160)
+      patch salary_entry_path(entry), params: { salary_entry: { hours_worked: 180 } }
+      expect(response).to have_http_status(:not_found)
+      expect(entry.reload.hours_worked).to eq(160)
+    end
   end
 
   describe "DELETE /salary_entries/:id" do
     it "deletes the entry" do
-      entry = create(:salary_entry)
+      entry = create(:salary_entry, user: user)
       expect {
         delete salary_entry_path(entry)
       }.to change(SalaryEntry, :count).by(-1)
     end
 
     it "redirects to index" do
-      entry = create(:salary_entry)
+      entry = create(:salary_entry, user: user)
       delete salary_entry_path(entry)
       expect(response).to redirect_to(salary_entries_path)
+    end
+
+    it "cannot delete other user entry" do
+      other_user = create(:user)
+      entry = create(:salary_entry, user: other_user)
+      delete salary_entry_path(entry)
+      expect(response).to have_http_status(:not_found)
     end
   end
 
@@ -92,6 +145,15 @@ RSpec.describe "SalaryEntries", type: :request do
     it "returns success" do
       get summary_salary_entries_path(year: 2025)
       expect(response).to have_http_status(:success)
+    end
+  end
+
+  context "when not logged in" do
+    before { delete session_path }
+
+    it "redirects to login" do
+      get salary_entries_path
+      expect(response).to redirect_to(new_session_path)
     end
   end
 end
