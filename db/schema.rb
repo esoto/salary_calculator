@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_07_015744) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_07_020449) do
   create_table "salary_entries", force: :cascade do |t|
     t.integer "month", null: false
     t.integer "year", null: false
@@ -35,6 +35,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_07_015744) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name", null: false
+    t.decimal "default_hourly_rate", precision: 10, scale: 2
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
