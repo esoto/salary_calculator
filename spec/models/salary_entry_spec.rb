@@ -73,7 +73,7 @@ RSpec.describe SalaryEntry, type: :model do
       let!(:entry_2025_jan) { create(:salary_entry, month: 1, year: 2025) }
 
       it 'returns entries ordered by year and month' do
-        expect(SalaryEntry.ordered).to eq([entry_2024_dec, entry_2025_jan, entry_2025_mar])
+        expect(SalaryEntry.ordered).to eq([ entry_2024_dec, entry_2025_jan, entry_2025_mar ])
       end
     end
   end

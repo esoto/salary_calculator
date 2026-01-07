@@ -1,12 +1,12 @@
 # app/controllers/salary_entries_controller.rb
 class SalaryEntriesController < ApplicationController
-  before_action :set_salary_entry, only: [:show, :edit, :update, :destroy]
+  before_action :set_salary_entry, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @year = params[:year]&.to_i || Date.current.year
     @salary_entries = current_user.salary_entries.for_year(@year).ordered
     @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
-    @available_years = [@year] if @available_years.empty?
+    @available_years = [ @year ] if @available_years.empty?
   end
 
   def show
@@ -50,7 +50,7 @@ class SalaryEntriesController < ApplicationController
     @year = params[:year]&.to_i || Date.current.year
     @summary = current_user.salary_entries.yearly_summary(@year)
     @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
-    @available_years = [@year] if @available_years.empty?
+    @available_years = [ @year ] if @available_years.empty?
   end
 
   private

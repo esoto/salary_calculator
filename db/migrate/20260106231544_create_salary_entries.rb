@@ -9,6 +9,6 @@ class CreateSalaryEntries < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :salary_entries, [:month, :year], unique: true
+    add_index :salary_entries, [ :month, :year ], unique: true
   end
 end
