@@ -51,4 +51,51 @@ RSpec.describe SalaryEntry, type: :model do
       end
     end
   end
+
+  describe 'scopes' do
+    describe '.for_year' do
+      let!(:entry_2024) { create(:salary_entry, month: 1, year: 2024) }
+      let!(:entry_2025_jan) { create(:salary_entry, month: 1, year: 2025) }
+      let!(:entry_2025_feb) { create(:salary_entry, month: 2, year: 2025) }
+
+      it 'returns entries for the given year' do
+        expect(SalaryEntry.for_year(2025)).to contain_exactly(entry_2025_jan, entry_2025_feb)
+      end
+    end
+
+    describe '.ordered' do
+      let!(:entry_2025_mar) { create(:salary_entry, month: 3, year: 2025) }
+      let!(:entry_2024_dec) { create(:salary_entry, month: 12, year: 2024) }
+      let!(:entry_2025_jan) { create(:salary_entry, month: 1, year: 2025) }
+
+      it 'returns entries ordered by year and month' do
+        expect(SalaryEntry.ordered).to eq([entry_2024_dec, entry_2025_jan, entry_2025_mar])
+      end
+    end
+  end
+
+  describe '.yearly_summary' do
+    before do
+      create(:salary_entry, month: 1, year: 2025, hours_worked: 160, hourly_rate: 50.0)
+      create(:salary_entry, month: 2, year: 2025, hours_worked: 140, hourly_rate: 50.0)
+    end
+
+    it 'returns aggregated totals for the year' do
+      summary = SalaryEntry.yearly_summary(2025)
+
+      expect(summary[:total_earnings]).to eq(15000.0)
+      expect(summary[:total_aguinaldo]).to be_within(0.01).of(1250.0)
+      expect(summary[:total_vacation]).to eq(1200.0)
+      expect(summary[:total_holidays]).to be_within(0.01).of(666.67)
+      expect(summary[:total_savings]).to be_within(0.01).of(3116.67)
+      expect(summary[:entries_count]).to eq(2)
+    end
+
+    it 'returns zeros for year with no entries' do
+      summary = SalaryEntry.yearly_summary(2020)
+
+      expect(summary[:total_earnings]).to eq(0)
+      expect(summary[:entries_count]).to eq(0)
+    end
+  end
 end
