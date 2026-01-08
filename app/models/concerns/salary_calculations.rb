@@ -36,4 +36,20 @@ module SalaryCalculations
   def net_pay
     monthly_salary - total_savings
   end
+
+  def vacation_spent
+    (vacation_days_taken || 0) * HOURS_PER_DAY * hourly_rate
+  end
+
+  def holiday_spent
+    (holiday_days_taken || 0) * HOURS_PER_DAY * hourly_rate
+  end
+
+  def vacation_balance
+    vacation_savings - vacation_spent
+  end
+
+  def holiday_balance
+    holiday_savings - holiday_spent
+  end
 end

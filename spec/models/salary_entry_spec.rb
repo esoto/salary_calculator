@@ -57,6 +57,43 @@ RSpec.describe SalaryEntry, type: :model do
         expect(entry.total_savings).to be_within(0.01).of(expected)
       end
     end
+
+    describe '#vacation_spent' do
+      it 'calculates cost of vacation days taken' do
+        entry = build(:salary_entry, hourly_rate: 50, vacation_days_taken: 2)
+        expect(entry.vacation_spent).to eq(800) # 2 days * 8 hours * $50
+      end
+
+      it 'returns 0 when no days taken' do
+        entry = build(:salary_entry, hourly_rate: 50, vacation_days_taken: 0)
+        expect(entry.vacation_spent).to eq(0)
+      end
+    end
+
+    describe '#holiday_spent' do
+      it 'calculates cost of holiday days taken' do
+        entry = build(:salary_entry, hourly_rate: 50, holiday_days_taken: 1.5)
+        expect(entry.holiday_spent).to eq(600) # 1.5 days * 8 hours * $50
+      end
+    end
+
+    describe '#vacation_balance' do
+      it 'returns savings minus spent' do
+        entry = build(:salary_entry, hourly_rate: 50, vacation_days_taken: 1)
+        # vacation_savings = 12 hours * $50 = $600
+        # vacation_spent = 1 day * 8 hours * $50 = $400
+        expect(entry.vacation_balance).to eq(200)
+      end
+    end
+
+    describe '#holiday_balance' do
+      it 'returns savings minus spent' do
+        entry = build(:salary_entry, hourly_rate: 60, holiday_days_taken: 0.5)
+        # holiday_savings = 6.67 hours * $60 = $400
+        # holiday_spent = 0.5 days * 8 hours * $60 = $240
+        expect(entry.holiday_balance).to be_within(1).of(160)
+      end
+    end
   end
 
   describe 'scopes' do
