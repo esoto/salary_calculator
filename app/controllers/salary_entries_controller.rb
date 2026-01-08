@@ -60,6 +60,7 @@ class SalaryEntriesController < ApplicationController
   end
 
   def salary_entry_params
-    params.require(:salary_entry).permit(:month, :year, :hours_worked, :hourly_rate)
+    params.require(:salary_entry).permit(:month, :year, :hours_worked, :hourly_rate,
+                                          :vacation_days_taken, :holiday_days_taken)
   end
 end
