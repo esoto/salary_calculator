@@ -10,35 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_07_021303) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_08_152134) do
   create_table "salary_entries", force: :cascade do |t|
-    t.integer "month", null: false
-    t.integer "year", null: false
-    t.decimal "hours_worked", precision: 10, scale: 2, null: false
-    t.decimal "hourly_rate", precision: 10, scale: 2, null: false
     t.datetime "created_at", null: false
+    t.decimal "holiday_days_taken", precision: 4, scale: 2, default: "0.0", null: false
+    t.decimal "hourly_rate", precision: 10, scale: 2, null: false
+    t.decimal "hours_worked", precision: 10, scale: 2, null: false
+    t.integer "month", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.decimal "vacation_days_taken", precision: 4, scale: 2, default: "0.0", null: false
+    t.integer "year", null: false
     t.index ["month", "year", "user_id"], name: "index_salary_entries_on_month_and_year_and_user_id", unique: true
     t.index ["user_id"], name: "index_salary_entries_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.string "ip_address"
-    t.string "user_agent"
     t.datetime "created_at", null: false
+    t.string "ip_address"
     t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "email_address", null: false
-    t.string "password_digest", null: false
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "name", null: false
     t.decimal "default_hourly_rate", precision: 10, scale: 2
+    t.string "email_address", null: false
+    t.string "name", null: false
+    t.string "password_digest", null: false
+    t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 

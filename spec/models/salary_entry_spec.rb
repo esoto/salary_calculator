@@ -19,6 +19,9 @@ RSpec.describe SalaryEntry, type: :model do
     it { should validate_numericality_of(:hourly_rate).is_greater_than(0) }
 
     it { should validate_uniqueness_of(:month).scoped_to(:year, :user_id) }
+
+    it { should validate_numericality_of(:vacation_days_taken).is_greater_than_or_equal_to(0) }
+    it { should validate_numericality_of(:holiday_days_taken).is_greater_than_or_equal_to(0) }
   end
 
   describe 'calculations' do
@@ -52,6 +55,62 @@ RSpec.describe SalaryEntry, type: :model do
       it 'sums all savings' do
         expected = entry.aguinaldo_savings + entry.vacation_savings + entry.holiday_savings
         expect(entry.total_savings).to be_within(0.01).of(expected)
+      end
+
+      it 'reflects time off taken' do
+        entry = build(:salary_entry, hours_worked: 160, hourly_rate: 50, vacation_days_taken: 1, holiday_days_taken: 0.5)
+
+        # Without time off:
+        # aguinaldo = 8000/12 = 666.67
+        # vacation = 12 * 50 = 600
+        # holiday = 6.67 * 50 = 333.33
+        # total = 1600
+
+        # With time off:
+        # vacation_spent = 1 * 8 * 50 = 400
+        # holiday_spent = 0.5 * 8 * 50 = 200
+        # vacation_balance = 600 - 400 = 200
+        # holiday_balance = 333.33 - 200 = 133.33
+        # total = 666.67 + 200 + 133.33 = 1000
+
+        expect(entry.total_savings).to be_within(1).of(1000)
+      end
+    end
+
+    describe '#vacation_spent' do
+      it 'calculates cost of vacation days taken' do
+        entry = build(:salary_entry, hourly_rate: 50, vacation_days_taken: 2)
+        expect(entry.vacation_spent).to eq(800) # 2 days * 8 hours * $50
+      end
+
+      it 'returns 0 when no days taken' do
+        entry = build(:salary_entry, hourly_rate: 50, vacation_days_taken: 0)
+        expect(entry.vacation_spent).to eq(0)
+      end
+    end
+
+    describe '#holiday_spent' do
+      it 'calculates cost of holiday days taken' do
+        entry = build(:salary_entry, hourly_rate: 50, holiday_days_taken: 1.5)
+        expect(entry.holiday_spent).to eq(600) # 1.5 days * 8 hours * $50
+      end
+    end
+
+    describe '#vacation_balance' do
+      it 'returns savings minus spent' do
+        entry = build(:salary_entry, hourly_rate: 50, vacation_days_taken: 1)
+        # vacation_savings = 12 hours * $50 = $600
+        # vacation_spent = 1 day * 8 hours * $50 = $400
+        expect(entry.vacation_balance).to eq(200)
+      end
+    end
+
+    describe '#holiday_balance' do
+      it 'returns savings minus spent' do
+        entry = build(:salary_entry, hourly_rate: 60, holiday_days_taken: 0.5)
+        # holiday_savings = 6.67 hours * $60 = $400
+        # holiday_spent = 0.5 days * 8 hours * $60 = $240
+        expect(entry.holiday_balance).to be_within(1).of(160)
       end
     end
   end

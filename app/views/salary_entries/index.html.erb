@@ -27,10 +27,8 @@
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Hours</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Rate</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Salary</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aguinaldo</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Vacation</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Holidays</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Savings</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Savings</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Net Pay</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
@@ -43,10 +41,8 @@
               <td class="px-6 py-4 whitespace-nowrap text-right"><%= format_hours(entry.hours_worked) %></td>
               <td class="px-6 py-4 whitespace-nowrap text-right"><%= format_currency(entry.hourly_rate) %></td>
               <td class="px-6 py-4 whitespace-nowrap text-right font-medium"><%= format_currency(entry.monthly_salary) %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-green-600"><%= format_currency(entry.aguinaldo_savings) %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-green-600"><%= format_currency(entry.vacation_savings) %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-green-600"><%= format_currency(entry.holiday_savings) %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right font-bold text-green-700"><%= format_currency(entry.total_savings) %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-right text-green-600"><%= format_currency(entry.total_savings) %></td>
+              <td class="px-6 py-4 whitespace-nowrap text-right font-bold text-blue-600"><%= format_currency(entry.net_pay) %></td>
               <td class="px-6 py-4 whitespace-nowrap text-right">
                 <%= link_to "Edit", edit_salary_entry_path(entry), class: "text-gray-600 hover:text-gray-800 mr-3" %>
                 <%= link_to "Delete", entry, method: :delete, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" },

@@ -4,7 +4,8 @@
       "Bash(bundle exec rspec:*)",
       "Bash(git -C /Users/esoto/development/salary_calculator status)",
       "Bash(git -C /Users/esoto/development/salary_calculator diff)",
-      "Bash(git -C /Users/esoto/development/salary_calculator log --oneline -5)"
+      "Bash(git -C /Users/esoto/development/salary_calculator log --oneline -5)",
+      "Bash(bundle exec rubocop:*)"
     ]
   }
 }

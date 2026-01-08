@@ -65,4 +65,22 @@ RSpec.describe "Dashboard", type: :request do
       expect(response.body).not_to include("20,000") # other user's entry
     end
   end
+
+  context "with time off taken" do
+    before do
+      create(:salary_entry, user: user, month: 1, year: 2026, hours_worked: 160, hourly_rate: 50,
+             vacation_days_taken: 2, holiday_days_taken: 1)
+    end
+
+    it "displays available vacation days" do
+      get dashboard_path
+      # 1 month logged = 1.5 days earned, 2 taken = -0.5 available (or 0 if clamped)
+      expect(response.body).to include("available")
+    end
+
+    it "displays days taken" do
+      get dashboard_path
+      expect(response.body).to include("taken")
+    end
+  end
 end

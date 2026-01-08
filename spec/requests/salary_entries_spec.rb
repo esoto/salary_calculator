@@ -82,6 +82,20 @@ RSpec.describe "SalaryEntries", type: :request do
     end
   end
 
+  describe "POST /salary_entries with time off" do
+    let(:params_with_time_off) do
+      { salary_entry: { month: 3, year: 2026, hours_worked: 160, hourly_rate: 50,
+                        vacation_days_taken: 2, holiday_days_taken: 1 } }
+    end
+
+    it "saves time off fields" do
+      post salary_entries_path, params: params_with_time_off
+      entry = SalaryEntry.last
+      expect(entry.vacation_days_taken).to eq(2)
+      expect(entry.holiday_days_taken).to eq(1)
+    end
+  end
+
   describe "GET /salary_entries/:id/edit" do
     it "returns success for own entry" do
       entry = create(:salary_entry, user: user)
