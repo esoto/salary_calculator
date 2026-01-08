@@ -13,4 +13,20 @@ RSpec.describe User, type: :model do
   describe 'associations' do
     it { should have_many(:salary_entries).dependent(:destroy) }
   end
+
+  describe '#password_reset_token' do
+    let(:user) { create(:user) }
+
+    it 'generates a valid token' do
+      token = user.password_reset_token
+      expect(token).to be_present
+      expect(token).to be_a(String)
+    end
+
+    it 'can find user by valid token' do
+      token = user.password_reset_token
+      found_user = User.find_by_password_reset_token!(token)
+      expect(found_user).to eq(user)
+    end
+  end
 end
