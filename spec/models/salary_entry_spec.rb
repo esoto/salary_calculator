@@ -19,6 +19,9 @@ RSpec.describe SalaryEntry, type: :model do
     it { should validate_numericality_of(:hourly_rate).is_greater_than(0) }
 
     it { should validate_uniqueness_of(:month).scoped_to(:year, :user_id) }
+
+    it { should validate_numericality_of(:vacation_days_taken).is_greater_than_or_equal_to(0) }
+    it { should validate_numericality_of(:holiday_days_taken).is_greater_than_or_equal_to(0) }
   end
 
   describe 'calculations' do

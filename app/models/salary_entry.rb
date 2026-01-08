@@ -18,6 +18,8 @@ class SalaryEntry < ApplicationRecord
   validates :hourly_rate, presence: true,
                           numericality: { greater_than: 0 }
   validates :month, uniqueness: { scope: [ :year, :user_id ] }
+  validates :vacation_days_taken, numericality: { greater_than_or_equal_to: 0 }
+  validates :holiday_days_taken, numericality: { greater_than_or_equal_to: 0 }
 
   def self.yearly_summary(year)
     entries = for_year(year)
