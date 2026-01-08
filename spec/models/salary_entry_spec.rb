@@ -56,6 +56,25 @@ RSpec.describe SalaryEntry, type: :model do
         expected = entry.aguinaldo_savings + entry.vacation_savings + entry.holiday_savings
         expect(entry.total_savings).to be_within(0.01).of(expected)
       end
+
+      it 'reflects time off taken' do
+        entry = build(:salary_entry, hours_worked: 160, hourly_rate: 50, vacation_days_taken: 1, holiday_days_taken: 0.5)
+
+        # Without time off:
+        # aguinaldo = 8000/12 = 666.67
+        # vacation = 12 * 50 = 600
+        # holiday = 6.67 * 50 = 333.33
+        # total = 1600
+
+        # With time off:
+        # vacation_spent = 1 * 8 * 50 = 400
+        # holiday_spent = 0.5 * 8 * 50 = 200
+        # vacation_balance = 600 - 400 = 200
+        # holiday_balance = 333.33 - 200 = 133.33
+        # total = 666.67 + 200 + 133.33 = 1000
+
+        expect(entry.total_savings).to be_within(1).of(1000)
+      end
     end
 
     describe '#vacation_spent' do
