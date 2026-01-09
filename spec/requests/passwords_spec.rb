@@ -94,4 +94,74 @@ RSpec.describe "Passwords", type: :request do
       end
     end
   end
+
+  describe "PUT /passwords/:token" do
+    let(:token) { user.password_reset_token }
+
+    context "with matching passwords" do
+      let(:new_password) { 'newpassword456' }
+
+      it "updates the password" do
+        put password_path(token), params: {
+          password: new_password,
+          password_confirmation: new_password
+        }
+
+        user.reload
+        expect(user.authenticate(new_password)).to eq(user)
+      end
+
+      it "redirects to login with success message" do
+        put password_path(token), params: {
+          password: new_password,
+          password_confirmation: new_password
+        }
+
+        expect(response).to redirect_to(new_session_path)
+        follow_redirect!
+        expect(response.body).to include("Password has been reset")
+      end
+    end
+
+    context "with mismatched passwords" do
+      it "does not update password" do
+        original_digest = user.password_digest
+
+        put password_path(token), params: {
+          password: 'newpassword456',
+          password_confirmation: 'different123'
+        }
+
+        user.reload
+        expect(user.password_digest).to eq(original_digest)
+      end
+
+      it "redirects back with error" do
+        put password_path(token), params: {
+          password: 'newpassword456',
+          password_confirmation: 'different123'
+        }
+
+        expect(response).to redirect_to(edit_password_path(token))
+        follow_redirect!
+        expect(response.body).to include("did not match")
+      end
+    end
+
+    context "with used token" do
+      it "cannot reuse token after password change" do
+        # First use - should succeed
+        put password_path(token), params: {
+          password: 'newpassword456',
+          password_confirmation: 'newpassword456'
+        }
+
+        # Try to use same token again - should fail
+        get edit_password_path(token)
+        expect(response).to redirect_to(new_password_path)
+        follow_redirect!
+        expect(response.body).to include("invalid or has expired")
+      end
+    end
+  end
 end
