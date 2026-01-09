@@ -19,7 +19,7 @@ RSpec.describe PasswordsMailer, type: :mailer do
 
     it 'includes reset link with token' do
       expect(mail.body.encoded).to include('password reset page')
-      expect(mail.body.encoded).to include(edit_password_url(token))
+      expect(mail.body.encoded).to include(edit_password_url(user.password_reset_token))
     end
 
     it 'mentions 15 minute expiration' do
