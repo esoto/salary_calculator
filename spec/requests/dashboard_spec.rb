@@ -30,6 +30,36 @@ RSpec.describe "Dashboard", type: :request do
         expect(response.body).to include("YTD #{Date.current.year}")
       end
     end
+
+    context 'when year parameter provided' do
+      before do
+        # Create entries for 2024
+        create(:salary_entry, user: user, year: 2024, month: 1,
+               hours_worked: 160, hourly_rate: 50)
+        create(:salary_entry, user: user, year: 2024, month: 2,
+               hours_worked: 160, hourly_rate: 50)
+
+        # Create entries for 2025
+        create(:salary_entry, user: user, year: 2025, month: 1,
+               hours_worked: 160, hourly_rate: 60)
+      end
+
+      it 'filters data by selected year' do
+        get dashboard_path(year: 2024)
+
+        expect(assigns(:selected_year)).to eq(2024)
+        expect(assigns(:months_logged)).to eq(2)
+        expect(assigns(:total_earnings)).to eq(160 * 50 * 2) # 2024 entries only
+      end
+
+      it 'shows different data for different years' do
+        get dashboard_path(year: 2025)
+
+        expect(assigns(:selected_year)).to eq(2025)
+        expect(assigns(:months_logged)).to eq(1)
+        expect(assigns(:total_earnings)).to eq(160 * 60) # 2025 entry only
+      end
+    end
   end
 
   describe "GET / (root)" do
