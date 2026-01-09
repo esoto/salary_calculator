@@ -10,7 +10,7 @@ RSpec.describe PasswordsMailer, type: :mailer do
     end
 
     it 'sends to correct email address' do
-      expect(mail.to).to eq([user.email_address])
+      expect(mail.to).to eq([ user.email_address ])
     end
 
     it 'has correct subject' do

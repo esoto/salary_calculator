@@ -27,7 +27,7 @@ RSpec.describe "Passwords", type: :request do
 
         expect(ActionMailer::Base.deliveries.count).to eq(1)
         email = ActionMailer::Base.deliveries.last
-        expect(email.to).to eq([user.email_address])
+        expect(email.to).to eq([ user.email_address ])
         expect(email.subject).to eq("Reset your password")
       end
 
