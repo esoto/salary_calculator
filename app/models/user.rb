@@ -3,6 +3,10 @@ class User < ApplicationRecord
   generates_token_for :password_reset, expires_in: 15.minutes do
     password_digest
   end
+
+  def password_reset_token
+    generate_token_for(:password_reset)
+  end
   has_many :sessions, dependent: :destroy
   has_many :salary_entries, dependent: :destroy
 
