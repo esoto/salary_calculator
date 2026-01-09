@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "Passwords", type: :request do
@@ -36,7 +38,7 @@ RSpec.describe "Passwords", type: :request do
 
         expect(response).to redirect_to(new_session_path)
         follow_redirect!
-        expect(response.body).to include("Password reset instructions sent")
+        expect(response.body).to include("Password reset instructions sent (if user with that email address exists).")
       end
     end
 
@@ -52,14 +54,14 @@ RSpec.describe "Passwords", type: :request do
 
         expect(response).to redirect_to(new_session_path)
         follow_redirect!
-        expect(response.body).to include("Password reset instructions sent")
+        expect(response.body).to include("Password reset instructions sent (if user with that email address exists).")
       end
     end
   end
 
   describe "GET /passwords/:token/edit" do
     context "with valid token" do
-      let(:token) { user.generate_token_for(:password_reset) }
+      let(:token) { user.password_reset_token }
 
       it "displays password update form" do
         get edit_password_path(token)
@@ -70,7 +72,7 @@ RSpec.describe "Passwords", type: :request do
     end
 
     context "with expired token" do
-      let(:token) { user.generate_token_for(:password_reset) }
+      let(:token) { user.password_reset_token }
 
       it "redirects with error message" do
         token # Force token generation before time travel

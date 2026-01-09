@@ -1,12 +1,17 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe PasswordsMailer, type: :mailer do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe '#reset' do
     let(:user) { create(:user, email_address: 'user@example.com') }
-    let(:token) { user.generate_token_for(:password_reset) }
-    let(:mail) do
-      allow(user).to receive(:password_reset_token).and_return(token)
-      PasswordsMailer.reset(user)
+    let(:token) { user.password_reset_token }
+    let(:mail) { PasswordsMailer.reset(user) }
+
+    around do |example|
+      freeze_time { example.run }
     end
 
     it 'sends to correct email address' do
@@ -19,7 +24,7 @@ RSpec.describe PasswordsMailer, type: :mailer do
 
     it 'includes reset link with token' do
       expect(mail.body.encoded).to include('password reset page')
-      expect(mail.body.encoded).to include(edit_password_url(user.password_reset_token))
+      expect(mail.body.encoded).to include(edit_password_url(token))
     end
 
     it 'mentions 15 minute expiration' do
