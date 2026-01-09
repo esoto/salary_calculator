@@ -1,13 +1,16 @@
 # app/controllers/dashboard_controller.rb
 class DashboardController < ApplicationController
   def show
-    current_year = Date.current.year
+    # Year selection with validation
+    selected_year = params[:year].to_i
+    selected_year = Date.current.year unless (2020..2100).cover?(selected_year)
+    @selected_year = selected_year
 
-    # YTD entries
-    ytd_entries = current_user.salary_entries.for_year(current_year)
+    # YTD entries (use selected_year instead of current_year)
+    ytd_entries = current_user.salary_entries.for_year(@selected_year)
 
     # Aguinaldo period entries
-    aguinaldo_entries = current_user.salary_entries.for_aguinaldo_period(current_year)
+    aguinaldo_entries = current_user.salary_entries.for_aguinaldo_period(@selected_year)
 
     # Summary stats (using SQL aggregation for performance)
     @months_logged = ytd_entries.count
@@ -41,6 +44,6 @@ class DashboardController < ApplicationController
     # Recent entries
     @recent_entries = current_user.salary_entries.order(year: :desc, month: :desc).limit(5)
 
-    @current_year = current_year
+    @current_year = @selected_year
   end
 end

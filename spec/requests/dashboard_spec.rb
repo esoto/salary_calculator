@@ -18,6 +18,18 @@ RSpec.describe "Dashboard", type: :request do
       get dashboard_path
       expect(response.body).to include("Test User")
     end
+
+    context 'when no year parameter provided' do
+      it 'defaults to current year' do
+        get dashboard_path
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+
+      it 'shows current year in header cards' do
+        get dashboard_path
+        expect(response.body).to include("YTD #{Date.current.year}")
+      end
+    end
   end
 
   describe "GET / (root)" do
