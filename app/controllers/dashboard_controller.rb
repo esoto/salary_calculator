@@ -6,6 +6,9 @@ class DashboardController < ApplicationController
     selected_year = Date.current.year unless (2020..2100).cover?(selected_year)
     @selected_year = selected_year
 
+    # Available years for dropdown
+    @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
+
     # YTD entries (use selected_year instead of current_year)
     ytd_entries = current_user.salary_entries.for_year(@selected_year)
 

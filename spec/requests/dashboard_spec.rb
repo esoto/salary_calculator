@@ -77,6 +77,31 @@ RSpec.describe "Dashboard", type: :request do
         expect(assigns(:selected_year)).to eq(Date.current.year)
       end
     end
+
+    describe 'available years' do
+      it 'returns empty array when user has no entries' do
+        get dashboard_path
+        expect(assigns(:available_years)).to eq([])
+      end
+
+      it 'returns years with entries in descending order' do
+        create(:salary_entry, user: user, year: 2023, month: 1)
+        create(:salary_entry, user: user, year: 2025, month: 1)
+        create(:salary_entry, user: user, year: 2024, month: 1)
+
+        get dashboard_path
+        expect(assigns(:available_years)).to eq([2025, 2024, 2023])
+      end
+
+      it 'does not include other users years' do
+        other_user = create(:user)
+        create(:salary_entry, user: user, year: 2024, month: 1)
+        create(:salary_entry, user: other_user, year: 2023, month: 1)
+
+        get dashboard_path
+        expect(assigns(:available_years)).to eq([2024])
+      end
+    end
   end
 
   describe "GET / (root)" do
