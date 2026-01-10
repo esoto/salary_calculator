@@ -60,6 +60,23 @@ RSpec.describe "Dashboard", type: :request do
         expect(assigns(:total_earnings)).to eq(160 * 60) # 2025 entry only
       end
     end
+
+    context 'when invalid year parameter provided' do
+      it 'defaults to current year for non-numeric year' do
+        get dashboard_path(year: 'invalid')
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+
+      it 'defaults to current year for year below range' do
+        get dashboard_path(year: 2019)
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+
+      it 'defaults to current year for year above range' do
+        get dashboard_path(year: 2101)
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+    end
   end
 
   describe "GET / (root)" do
