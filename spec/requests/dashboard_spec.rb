@@ -90,7 +90,7 @@ RSpec.describe "Dashboard", type: :request do
         create(:salary_entry, user: user, year: 2024, month: 1)
 
         get dashboard_path
-        expect(assigns(:available_years)).to eq([2025, 2024, 2023])
+        expect(assigns(:available_years)).to eq([ 2025, 2024, 2023 ])
       end
 
       it 'does not include other users years' do
@@ -99,7 +99,7 @@ RSpec.describe "Dashboard", type: :request do
         create(:salary_entry, user: other_user, year: 2023, month: 1)
 
         get dashboard_path
-        expect(assigns(:available_years)).to eq([2024])
+        expect(assigns(:available_years)).to eq([ 2024 ])
       end
     end
   end

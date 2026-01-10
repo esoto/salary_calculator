@@ -44,7 +44,7 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
 
   context 'when user has entries' do
     before do
-      assign(:available_years, [2025, 2024, 2023])
+      assign(:available_years, [ 2025, 2024, 2023 ])
     end
 
     it 'shows year selector dropdown' do
