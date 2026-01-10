@@ -1,13 +1,13 @@
 require 'rails_helper'
+require 'capybara/rspec'
 
 RSpec.describe 'dashboard/show.html.erb', type: :view do
   let(:user) { create(:user) }
 
   before do
-    def view.current_user
-      @current_user
+    without_partial_double_verification do
+      allow(view).to receive(:current_user).and_return(user)
     end
-    view.instance_variable_set(:@current_user, user)
 
     assign(:months_logged, 2)
     assign(:total_earnings, 16000)
@@ -50,21 +50,19 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
     it 'shows year selector dropdown' do
       render
       expect(rendered).to match(/Year:/)
-      expect(rendered).to include('select')
-      expect(rendered).to include('name="year"')
+      expect(Capybara.string(rendered)).to have_selector('select[name="year"]')
     end
 
     it 'includes all available years in dropdown' do
       render
-      expect(rendered).to include('value="2025"')
-      expect(rendered).to include('value="2024"')
-      expect(rendered).to include('value="2023"')
+      expect(Capybara.string(rendered)).to have_selector('option[value="2025"]', text: '2025')
+      expect(Capybara.string(rendered)).to have_selector('option[value="2024"]', text: '2024')
+      expect(Capybara.string(rendered)).to have_selector('option[value="2023"]', text: '2023')
     end
 
     it 'marks selected year as selected' do
       render
-      expect(rendered).to include('selected="selected"')
-      expect(rendered).to include('value="2025"')
+      expect(Capybara.string(rendered)).to have_selector('option[value="2025"][selected]')
     end
   end
 end
