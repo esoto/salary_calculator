@@ -167,4 +167,47 @@ RSpec.describe "Dashboard", type: :request do
       expect(response.body).to include("taken")
     end
   end
+
+  describe 'year selection integration' do
+    before do
+      # Create multi-year data
+      create(:salary_entry, user: user, year: 2023, month: 1,
+             hours_worked: 100, hourly_rate: 40)
+      create(:salary_entry, user: user, year: 2024, month: 1,
+             hours_worked: 150, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2024, month: 2,
+             hours_worked: 160, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 170, hourly_rate: 60)
+    end
+
+    it 'displays correct data when switching years via parameter' do
+      # View 2024 data
+      get dashboard_path(year: 2024)
+      expect(response).to have_http_status(:success)
+      expect(assigns(:months_logged)).to eq(2)
+      expect(assigns(:total_earnings)).to eq((150 * 50) + (160 * 50))
+
+      # Switch to 2023 data
+      get dashboard_path(year: 2023)
+      expect(response).to have_http_status(:success)
+      expect(assigns(:months_logged)).to eq(1)
+      expect(assigns(:total_earnings)).to eq(100 * 40)
+
+      # Switch to 2025 data
+      get dashboard_path(year: 2025)
+      expect(response).to have_http_status(:success)
+      expect(assigns(:months_logged)).to eq(1)
+      expect(assigns(:total_earnings)).to eq(170 * 60)
+    end
+
+    it 'includes year selector with all years in response' do
+      get dashboard_path(year: 2024)
+
+      expect(response.body).to include('Year:')
+      expect(response.body).to include('value="2025"')
+      expect(response.body).to include('value="2024"')
+      expect(response.body).to include('value="2023"')
+    end
+  end
 end
