@@ -1,12 +1,29 @@
 <%# app/views/dashboard/show.html.erb %>
 <div class="max-w-6xl mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-8">
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
     <div>
       <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
       <p class="text-gray-600">Welcome back, <%= current_user.name %></p>
     </div>
-    <%= link_to "New Entry", new_salary_entry_path,
-        class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" %>
+
+    <div class="flex flex-col md:flex-row gap-3">
+      <% if @available_years.any? %>
+        <%= form_with url: dashboard_path, method: :get, local: true,
+                      data: { turbo_frame: "_top" },
+                      class: "flex items-center gap-2" do |form| %>
+          <label for="year" class="text-sm font-medium text-gray-700">Year:</label>
+          <%= form.select :year,
+                          options_for_select(@available_years, @selected_year),
+                          {},
+                          id: "year",
+                          class: "border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                          onchange: "this.form.requestSubmit()" %>
+        <% end %>
+      <% end %>
+
+      <%= link_to "New Entry", new_salary_entry_path,
+          class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center" %>
+    </div>
   </div>
 
   <!-- Summary Cards Row -->

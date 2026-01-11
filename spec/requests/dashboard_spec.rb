@@ -18,6 +18,90 @@ RSpec.describe "Dashboard", type: :request do
       get dashboard_path
       expect(response.body).to include("Test User")
     end
+
+    context 'when no year parameter provided' do
+      it 'defaults to current year' do
+        get dashboard_path
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+
+      it 'shows current year in header cards' do
+        get dashboard_path
+        expect(response.body).to include("YTD #{Date.current.year}")
+      end
+    end
+
+    context 'when year parameter provided' do
+      before do
+        # Create entries for 2024
+        create(:salary_entry, user: user, year: 2024, month: 1,
+               hours_worked: 160, hourly_rate: 50)
+        create(:salary_entry, user: user, year: 2024, month: 2,
+               hours_worked: 160, hourly_rate: 50)
+
+        # Create entries for 2025
+        create(:salary_entry, user: user, year: 2025, month: 1,
+               hours_worked: 160, hourly_rate: 60)
+      end
+
+      it 'filters data by selected year' do
+        get dashboard_path(year: 2024)
+
+        expect(assigns(:selected_year)).to eq(2024)
+        expect(assigns(:months_logged)).to eq(2)
+        expect(assigns(:total_earnings)).to eq(160 * 50 * 2) # 2024 entries only
+      end
+
+      it 'shows different data for different years' do
+        get dashboard_path(year: 2025)
+
+        expect(assigns(:selected_year)).to eq(2025)
+        expect(assigns(:months_logged)).to eq(1)
+        expect(assigns(:total_earnings)).to eq(160 * 60) # 2025 entry only
+      end
+    end
+
+    context 'when invalid year parameter provided' do
+      it 'defaults to current year for non-numeric year' do
+        get dashboard_path(year: 'invalid')
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+
+      it 'defaults to current year for year below range' do
+        get dashboard_path(year: 2019)
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+
+      it 'defaults to current year for year above range' do
+        get dashboard_path(year: 2101)
+        expect(assigns(:selected_year)).to eq(Date.current.year)
+      end
+    end
+
+    describe 'available years' do
+      it 'returns empty array when user has no entries' do
+        get dashboard_path
+        expect(assigns(:available_years)).to eq([])
+      end
+
+      it 'returns years with entries in descending order' do
+        create(:salary_entry, user: user, year: 2023, month: 1)
+        create(:salary_entry, user: user, year: 2025, month: 1)
+        create(:salary_entry, user: user, year: 2024, month: 1)
+
+        get dashboard_path
+        expect(assigns(:available_years)).to eq([ 2025, 2024, 2023 ])
+      end
+
+      it 'does not include other users years' do
+        other_user = create(:user)
+        create(:salary_entry, user: user, year: 2024, month: 1)
+        create(:salary_entry, user: other_user, year: 2023, month: 1)
+
+        get dashboard_path
+        expect(assigns(:available_years)).to eq([ 2024 ])
+      end
+    end
   end
 
   describe "GET / (root)" do
@@ -81,6 +165,49 @@ RSpec.describe "Dashboard", type: :request do
     it "displays days taken" do
       get dashboard_path
       expect(response.body).to include("taken")
+    end
+  end
+
+  describe 'year selection integration' do
+    before do
+      # Create multi-year data
+      create(:salary_entry, user: user, year: 2023, month: 1,
+             hours_worked: 100, hourly_rate: 40)
+      create(:salary_entry, user: user, year: 2024, month: 1,
+             hours_worked: 150, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2024, month: 2,
+             hours_worked: 160, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 170, hourly_rate: 60)
+    end
+
+    it 'displays correct data when switching years via parameter' do
+      # View 2024 data
+      get dashboard_path(year: 2024)
+      expect(response).to have_http_status(:success)
+      expect(assigns(:months_logged)).to eq(2)
+      expect(assigns(:total_earnings)).to eq((150 * 50) + (160 * 50))
+
+      # Switch to 2023 data
+      get dashboard_path(year: 2023)
+      expect(response).to have_http_status(:success)
+      expect(assigns(:months_logged)).to eq(1)
+      expect(assigns(:total_earnings)).to eq(100 * 40)
+
+      # Switch to 2025 data
+      get dashboard_path(year: 2025)
+      expect(response).to have_http_status(:success)
+      expect(assigns(:months_logged)).to eq(1)
+      expect(assigns(:total_earnings)).to eq(170 * 60)
+    end
+
+    it 'includes year selector with all years in response' do
+      get dashboard_path(year: 2024)
+
+      expect(response.body).to include('Year:')
+      expect(response.body).to include('value="2025"')
+      expect(response.body).to include('value="2024"')
+      expect(response.body).to include('value="2023"')
     end
   end
 end
