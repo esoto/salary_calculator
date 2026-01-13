@@ -258,5 +258,18 @@ RSpec.describe "Dashboard", type: :request do
       expect(jan_aguinaldo[0]).to eq("Jan")
       expect(jan_aguinaldo[1]).to eq(0)
     end
+
+    it 'respects selected year parameter' do
+      create(:salary_entry, user: user, year: 2024, month: 1,
+             hours_worked: 100, hourly_rate: 40)
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path(year: 2024)
+
+      jan_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][0]
+      # Should use 2024 data: (100 * 40) / 12 = 333.33...
+      expect(jan_aguinaldo[1]).to be_within(0.01).of(333.33)
+    end
   end
 end
