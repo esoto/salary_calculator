@@ -231,5 +231,32 @@ RSpec.describe "Dashboard", type: :request do
       expect(assigns(:savings_chart_data)["Vacation"].length).to eq(12)
       expect(assigns(:savings_chart_data)["Holiday"].length).to eq(12)
     end
+
+    it 'includes correct calculations for months with entries' do
+      create(:salary_entry, user: user, year: 2025, month: 3,
+             hours_worked: 160, hourly_rate: 60)
+
+      get dashboard_path(year: 2025)
+
+      march_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][2] # 0-indexed
+      march_vacation = assigns(:savings_chart_data)["Vacation"][2]
+      march_holiday = assigns(:savings_chart_data)["Holiday"][2]
+
+      expect(march_aguinaldo[0]).to eq("Mar")
+      expect(march_aguinaldo[1]).to eq(800.0) # (160 * 60) / 12
+      expect(march_vacation[1]).to eq(720.0) # 12 * 60
+      expect(march_holiday[1]).to be_within(0.01).of(400.0) # (10 * 8 / 12) * 60
+    end
+
+    it 'shows zero for months without entries' do
+      create(:salary_entry, user: user, year: 2025, month: 6,
+             hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path(year: 2025)
+
+      jan_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][0]
+      expect(jan_aguinaldo[0]).to eq("Jan")
+      expect(jan_aguinaldo[1]).to eq(0)
+    end
   end
 end
