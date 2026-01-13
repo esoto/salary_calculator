@@ -48,5 +48,37 @@ class DashboardController < ApplicationController
     @recent_entries = current_user.salary_entries.order(year: :desc, month: :desc).limit(5)
 
     @current_year = @selected_year
+
+    # Prepare chart data
+    @savings_chart_data = prepare_savings_chart_data(ytd_entries)
+  end
+
+  private
+
+  def prepare_savings_chart_data(ytd_entries)
+    entries_by_month = ytd_entries.group_by(&:month)
+
+    data = {
+      "Aguinaldo" => [],
+      "Vacation" => [],
+      "Holiday" => []
+    }
+
+    (1..12).each do |month|
+      month_label = Date::MONTHNAMES[month][0..2] # Jan, Feb, Mar, etc.
+
+      if entries_by_month[month]&.first
+        entry = entries_by_month[month].first
+        data["Aguinaldo"] << [ month_label, entry.aguinaldo_savings ]
+        data["Vacation"] << [ month_label, entry.vacation_savings ]
+        data["Holiday"] << [ month_label, entry.holiday_savings ]
+      else
+        data["Aguinaldo"] << [ month_label, 0 ]
+        data["Vacation"] << [ month_label, 0 ]
+        data["Holiday"] << [ month_label, 0 ]
+      end
+    end
+
+    data
   end
 end

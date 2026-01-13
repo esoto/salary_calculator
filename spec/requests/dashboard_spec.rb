@@ -210,4 +210,26 @@ RSpec.describe "Dashboard", type: :request do
       expect(response.body).to include('value="2023"')
     end
   end
+
+  describe 'savings chart data' do
+    it 'prepares chart data with correct structure' do
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path(year: 2025)
+
+      expect(assigns(:savings_chart_data)).to be_a(Hash)
+      expect(assigns(:savings_chart_data).keys).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
+    end
+
+    it 'includes all 12 months in chart data' do
+      create(:salary_entry, user: user, year: 2025, month: 1)
+
+      get dashboard_path(year: 2025)
+
+      expect(assigns(:savings_chart_data)["Aguinaldo"].length).to eq(12)
+      expect(assigns(:savings_chart_data)["Vacation"].length).to eq(12)
+      expect(assigns(:savings_chart_data)["Holiday"].length).to eq(12)
+    end
+  end
 end
