@@ -94,5 +94,22 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
         expect(rendered).to include('ColumnChart')
       end
     end
+
+    context 'when user has no entries for selected year' do
+      before do
+        assign(:available_years, [2025])
+        assign(:savings_chart_data, {
+          "Aguinaldo" => [],
+          "Vacation" => [],
+          "Holiday" => []
+        })
+        assign(:ytd_entries, [])
+      end
+
+      it 'does not render the chart section' do
+        render
+        expect(rendered).not_to have_selector('h2', text: /Savings Breakdown/)
+      end
+    end
   end
 end
