@@ -293,7 +293,7 @@ RSpec.describe "Dashboard", type: :request do
 
       # Verify chart data structure
       chart_data = assigns(:savings_chart_data)
-      expect(chart_data.keys).to match_array(["Aguinaldo", "Vacation", "Holiday"])
+      expect(chart_data.keys).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
 
       # Verify has data for months with entries
       jan_data = chart_data["Aguinaldo"][0]

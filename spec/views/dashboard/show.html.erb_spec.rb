@@ -72,12 +72,12 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
       let(:ytd_entries) { double('entries', any?: true) }
 
       before do
-        assign(:available_years, [2025])
+        assign(:available_years, [ 2025 ])
         assign(:ytd_entries, ytd_entries)
         assign(:savings_chart_data, {
-          "Aguinaldo" => [["Jan", 666.67]],
-          "Vacation" => [["Jan", 600.00]],
-          "Holiday" => [["Jan", 333.33]]
+          "Aguinaldo" => [ [ "Jan", 666.67 ] ],
+          "Vacation" => [ [ "Jan", 600.00 ] ],
+          "Holiday" => [ [ "Jan", 333.33 ] ]
         })
       end
 
@@ -97,7 +97,7 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
 
     context 'when user has no entries for selected year' do
       before do
-        assign(:available_years, [2025])
+        assign(:available_years, [ 2025 ])
         assign(:savings_chart_data, {
           "Aguinaldo" => [],
           "Vacation" => [],
