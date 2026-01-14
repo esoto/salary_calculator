@@ -272,4 +272,36 @@ RSpec.describe "Dashboard", type: :request do
       expect(jan_aguinaldo[1]).to be_within(0.01).of(333.33)
     end
   end
+
+  describe 'savings chart integration' do
+    before do
+      # Create entries across multiple months
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 160, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2025, month: 3,
+             hours_worked: 160, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2025, month: 6,
+             hours_worked: 160, hourly_rate: 50)
+    end
+
+    it 'displays chart with correct data across all months' do
+      get dashboard_path(year: 2025)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('Savings Breakdown')
+      expect(response.body).to include('Chartkick')
+
+      # Verify chart data structure
+      chart_data = assigns(:savings_chart_data)
+      expect(chart_data.keys).to match_array(["Aguinaldo", "Vacation", "Holiday"])
+
+      # Verify has data for months with entries
+      jan_data = chart_data["Aguinaldo"][0]
+      expect(jan_data[1]).to be > 0 # January has data
+
+      # Verify zero for months without entries
+      feb_data = chart_data["Aguinaldo"][1]
+      expect(feb_data[1]).to eq(0) # February has no entry
+    end
+  end
 end
