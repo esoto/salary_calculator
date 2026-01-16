@@ -61,27 +61,20 @@ class DashboardController < ApplicationController
   def prepare_savings_chart_data(ytd_entries)
     entries_by_month = ytd_entries.group_by(&:month)
 
-    data = {
-      "Aguinaldo" => [],
-      "Vacation" => [],
-      "Holiday" => []
+    categories = {
+      "Aguinaldo" => :aguinaldo_savings,
+      "Vacation" => :vacation_savings,
+      "Holiday" => :holiday_savings
     }
 
-    (1..12).each do |month|
-      month_label = Date::MONTHNAMES[month][0..2] # Jan, Feb, Mar, etc.
-
-      if entries_by_month[month]&.first
-        entry = entries_by_month[month].first
-        data["Aguinaldo"] << [ month_label, entry.aguinaldo_savings ]
-        data["Vacation"] << [ month_label, entry.vacation_savings ]
-        data["Holiday"] << [ month_label, entry.holiday_savings ]
-      else
-        data["Aguinaldo"] << [ month_label, 0 ]
-        data["Vacation"] << [ month_label, 0 ]
-        data["Holiday"] << [ month_label, 0 ]
+    categories.map do |name, method|
+      series_data = (1..12).map do |month|
+        month_label = Date::MONTHNAMES[month][0..2]
+        entry = entries_by_month[month]&.first
+        value = entry ? entry.send(method).to_f : 0
+        [month_label, value]
       end
+      { name: name, data: series_data }
     end
-
-    data
   end
 end
