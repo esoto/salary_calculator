@@ -1,13 +1,16 @@
 # app/controllers/dashboard_controller.rb
 class DashboardController < ApplicationController
   def show
-    # Year selection with validation
-    selected_year = params[:year].to_i
-    selected_year = Date.current.year unless (2020..2100).cover?(selected_year)
-    @selected_year = selected_year
-
-    # Available years for dropdown
+    # Available years for dropdown (needed for default selection)
     @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
+
+    # Year selection: use param if valid, otherwise default to most recent year with entries
+    selected_year = params[:year].to_i
+    if (2020..2100).cover?(selected_year)
+      @selected_year = selected_year
+    else
+      @selected_year = @available_years.first || Date.current.year
+    end
 
     # YTD entries (use selected_year instead of current_year)
     @ytd_entries = current_user.salary_entries.for_year(@selected_year)
