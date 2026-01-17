@@ -72,7 +72,7 @@ class DashboardController < ApplicationController
         month_label = Date::MONTHNAMES[month][0..2]
         entry = entries_by_month[month]&.first
         value = entry ? entry.send(method).to_f : 0
-        [month_label, value]
+        [ month_label, value ]
       end
       { name: name, data: series_data }
     end
