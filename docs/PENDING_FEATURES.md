@@ -153,6 +153,7 @@ This document tracks features that have been identified but not yet implemented.
 
 These features have been implemented and merged:
 
+- ✅ **Charts/Graphs for Trends** (PR #12) - Savings breakdown stacked column chart on dashboard
 - ✅ **Year Selector on Dashboard** (PR #9) - View historical data from previous years with year dropdown selector
 - ✅ **Password Reset via Email** (PR #7) - Users can reset forgotten passwords via email
 - ✅ **Time Off Tracking** (PR #6) - Track vacation/holiday days taken and adjust savings
