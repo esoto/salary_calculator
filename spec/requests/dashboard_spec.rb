@@ -210,4 +210,98 @@ RSpec.describe "Dashboard", type: :request do
       expect(response.body).to include('value="2023"')
     end
   end
+
+  describe 'savings chart data' do
+    it 'prepares chart data with correct structure' do
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path(year: 2025)
+
+      expect(assigns(:savings_chart_data)).to be_a(Hash)
+      expect(assigns(:savings_chart_data).keys).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
+    end
+
+    it 'includes all 12 months in chart data' do
+      create(:salary_entry, user: user, year: 2025, month: 1)
+
+      get dashboard_path(year: 2025)
+
+      expect(assigns(:savings_chart_data)["Aguinaldo"].length).to eq(12)
+      expect(assigns(:savings_chart_data)["Vacation"].length).to eq(12)
+      expect(assigns(:savings_chart_data)["Holiday"].length).to eq(12)
+    end
+
+    it 'includes correct calculations for months with entries' do
+      create(:salary_entry, user: user, year: 2025, month: 3,
+             hours_worked: 160, hourly_rate: 60)
+
+      get dashboard_path(year: 2025)
+
+      march_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][2] # 0-indexed
+      march_vacation = assigns(:savings_chart_data)["Vacation"][2]
+      march_holiday = assigns(:savings_chart_data)["Holiday"][2]
+
+      expect(march_aguinaldo[0]).to eq("Mar")
+      expect(march_aguinaldo[1]).to eq(800.0) # (160 * 60) / 12
+      expect(march_vacation[1]).to eq(720.0) # 12 * 60
+      expect(march_holiday[1]).to be_within(0.01).of(400.0) # (10 * 8 / 12) * 60
+    end
+
+    it 'shows zero for months without entries' do
+      create(:salary_entry, user: user, year: 2025, month: 6,
+             hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path(year: 2025)
+
+      jan_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][0]
+      expect(jan_aguinaldo[0]).to eq("Jan")
+      expect(jan_aguinaldo[1]).to eq(0)
+    end
+
+    it 'respects selected year parameter' do
+      create(:salary_entry, user: user, year: 2024, month: 1,
+             hours_worked: 100, hourly_rate: 40)
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path(year: 2024)
+
+      jan_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][0]
+      # Should use 2024 data: (100 * 40) / 12 = 333.33...
+      expect(jan_aguinaldo[1]).to be_within(0.01).of(333.33)
+    end
+  end
+
+  describe 'savings chart integration' do
+    before do
+      # Create entries across multiple months
+      create(:salary_entry, user: user, year: 2025, month: 1,
+             hours_worked: 160, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2025, month: 3,
+             hours_worked: 160, hourly_rate: 50)
+      create(:salary_entry, user: user, year: 2025, month: 6,
+             hours_worked: 160, hourly_rate: 50)
+    end
+
+    it 'displays chart with correct data across all months' do
+      get dashboard_path(year: 2025)
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include('Savings Breakdown')
+      expect(response.body).to include('Chartkick')
+
+      # Verify chart data structure
+      chart_data = assigns(:savings_chart_data)
+      expect(chart_data.keys).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
+
+      # Verify has data for months with entries
+      jan_data = chart_data["Aguinaldo"][0]
+      expect(jan_data[1]).to be > 0 # January has data
+
+      # Verify zero for months without entries
+      feb_data = chart_data["Aguinaldo"][1]
+      expect(feb_data[1]).to eq(0) # February has no entry
+    end
+  end
 end

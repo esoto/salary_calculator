@@ -8,22 +8,6 @@ This document tracks features that have been identified but not yet implemented.
 
 ## Dashboard Enhancements
 
-### Year Selector on Dashboard
-**Priority:** Medium
-**Complexity:** Medium
-
-**Description:** Add ability to view previous years' data on the dashboard. Currently only shows current year YTD.
-
-**Requirements:**
-- Year dropdown selector in dashboard header
-- Filter all dashboard calculations by selected year
-- Default to current year
-- Show available years based on user's salary entries
-
-**Impact:** Better historical data analysis
-
----
-
 ### Charts/Graphs for Trends
 **Priority:** Low
 **Complexity:** High
@@ -169,6 +153,7 @@ This document tracks features that have been identified but not yet implemented.
 
 These features have been implemented and merged:
 
+- ✅ **Year Selector on Dashboard** (PR #9) - View historical data from previous years with year dropdown selector
 - ✅ **Password Reset via Email** (PR #7) - Users can reset forgotten passwords via email
 - ✅ **Time Off Tracking** (PR #6) - Track vacation/holiday days taken and adjust savings
 - ✅ **Dashboard with Earnings Summary** (PR #4) - Main dashboard showing YTD earnings and savings

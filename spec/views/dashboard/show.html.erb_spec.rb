@@ -29,6 +29,7 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
     assign(:recent_entries, [])
     assign(:selected_year, 2025)
     assign(:current_year, 2025)
+    assign(:ytd_entries, SalaryEntry.none)
   end
 
   context 'when user has no entries' do
@@ -63,6 +64,52 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
     it 'marks selected year as selected' do
       render
       expect(Capybara.string(rendered)).to have_selector('option[value="2025"][selected]')
+    end
+  end
+
+  describe 'savings breakdown chart' do
+    context 'when user has entries for selected year' do
+      let(:ytd_entries) { double('entries', any?: true) }
+
+      before do
+        assign(:available_years, [ 2025 ])
+        assign(:ytd_entries, ytd_entries)
+        assign(:savings_chart_data, {
+          "Aguinaldo" => [ [ "Jan", 666.67 ] ],
+          "Vacation" => [ [ "Jan", 600.00 ] ],
+          "Holiday" => [ [ "Jan", 333.33 ] ]
+        })
+      end
+
+      it 'renders the chart section' do
+        render
+        expect(rendered).to have_selector('.bg-white.rounded-lg.shadow')
+        expect(rendered).to match(/Savings Breakdown/)
+      end
+
+      it 'includes column_chart helper' do
+        render
+        # Chartkick renders a chart div and script
+        expect(rendered).to include('Chartkick')
+        expect(rendered).to include('ColumnChart')
+      end
+    end
+
+    context 'when user has no entries for selected year' do
+      before do
+        assign(:available_years, [ 2025 ])
+        assign(:savings_chart_data, {
+          "Aguinaldo" => [],
+          "Vacation" => [],
+          "Holiday" => []
+        })
+        assign(:ytd_entries, [])
+      end
+
+      it 'does not render the chart section' do
+        render
+        expect(rendered).not_to have_selector('h2', text: /Savings Breakdown/)
+      end
     end
   end
 end

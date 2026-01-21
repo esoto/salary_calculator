@@ -88,6 +88,26 @@
     </div>
   </div>
 
+  <!-- Savings Breakdown Chart -->
+  <% if @ytd_entries.any? %>
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+        Savings Breakdown <%= @selected_year %>
+      </h2>
+
+      <%= column_chart @savings_chart_data,
+                       stacked: true,
+                       colors: ["#3B82F6", "#10B981", "#F59E0B"],
+                       prefix: "$",
+                       thousands: ",",
+                       library: {
+                         plugins: {
+                           legend: { position: 'top' }
+                         }
+                       } %>
+    </div>
+  <% end %>
+
   <!-- Recent Entries -->
   <div class="bg-white rounded-lg shadow">
     <div class="px-6 py-4 border-b border-gray-200">
