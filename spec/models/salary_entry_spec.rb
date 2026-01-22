@@ -186,4 +186,66 @@ RSpec.describe SalaryEntry, type: :model do
       expect(summary[:entries_count]).to eq(0)
     end
   end
+
+  describe "user-specific savings calculations" do
+    let(:user) { User.create!(name: "Test", email_address: "calc@example.com", password: "password123") }
+    let(:entry) { user.salary_entries.create!(year: 2025, month: 1, hours_worked: 160, hourly_rate: 50) }
+
+    describe "#vacation_savings" do
+      it "uses user's vacation_days_per_year setting" do
+        user.update!(vacation_days_per_year: 24, hours_per_day: 8)
+        # 24 days * 8 hours / 12 months * $50/hr = $800
+        expect(entry.vacation_savings).to eq(800.0)
+      end
+
+      it "returns 0 when vacation is disabled" do
+        user.update!(vacation_enabled: false)
+        expect(entry.vacation_savings).to eq(0)
+      end
+    end
+
+    describe "#holiday_savings" do
+      it "uses user's holiday_days_per_year setting" do
+        user.update!(holiday_days_per_year: 12, hours_per_day: 8)
+        # 12 days * 8 hours / 12 months * $50/hr = $400
+        expect(entry.holiday_savings).to eq(400.0)
+      end
+
+      it "returns 0 when holiday is disabled" do
+        user.update!(holiday_enabled: false)
+        expect(entry.holiday_savings).to eq(0)
+      end
+    end
+
+    describe "#aguinaldo_savings" do
+      it "returns 0 when aguinaldo is disabled" do
+        user.update!(aguinaldo_enabled: false)
+        expect(entry.aguinaldo_savings).to eq(0)
+      end
+
+      it "calculates normally when aguinaldo is enabled" do
+        user.update!(aguinaldo_enabled: true)
+        # 160 hours * $50/hr / 12 = $666.67
+        expect(entry.aguinaldo_savings).to be_within(0.01).of(666.67)
+      end
+    end
+
+    describe "#vacation_spent" do
+      it "uses user's hours_per_day setting" do
+        user.update!(hours_per_day: 6)
+        entry.update!(vacation_days_taken: 2)
+        # 2 days * 6 hours * $50/hr = $600
+        expect(entry.vacation_spent).to eq(600.0)
+      end
+    end
+
+    describe "#holiday_spent" do
+      it "uses user's hours_per_day setting" do
+        user.update!(hours_per_day: 6)
+        entry.update!(holiday_days_taken: 1)
+        # 1 day * 6 hours * $50/hr = $300
+        expect(entry.holiday_spent).to eq(300.0)
+      end
+    end
+  end
 end
