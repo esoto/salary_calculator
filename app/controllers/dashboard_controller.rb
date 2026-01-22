@@ -1,6 +1,9 @@
 # app/controllers/dashboard_controller.rb
 class DashboardController < ApplicationController
   def show
+    # Expose user for view conditionals
+    @user = current_user
+
     # Available years for dropdown (needed for default selection)
     @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
 
@@ -61,19 +64,19 @@ class DashboardController < ApplicationController
   def prepare_savings_chart_data(ytd_entries)
     entries_by_month = ytd_entries.group_by(&:month)
 
-    categories = {
-      "Aguinaldo" => :aguinaldo_savings,
-      "Vacation" => :vacation_savings,
-      "Holiday" => :holiday_savings
-    }
+    categories = {}
+    categories["Aguinaldo"] = :aguinaldo_savings if current_user.aguinaldo_enabled
+    categories["Vacation"] = :vacation_savings if current_user.vacation_enabled
+    categories["Holiday"] = :holiday_savings if current_user.holiday_enabled
 
-    categories.each_with_object({}) do |(name, method), result|
-      result[name] = (1..12).map do |month|
+    categories.map do |name, method|
+      series_data = (1..12).map do |month|
         month_label = Date::MONTHNAMES[month][0..2]
         entry = entries_by_month[month]&.first
         value = entry ? entry.send(method).to_f : 0
         [ month_label, value ]
       end
+      { name: name, data: series_data }
     end
   end
 end
