@@ -28,12 +28,14 @@
 
   <!-- Summary Cards Row -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-    <!-- Aguinaldo Card -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Aguinaldo <%= @current_year %></h3>
-      <p class="text-2xl font-bold text-gray-900 mt-2"><%= format_currency(@aguinaldo_savings) %></p>
-      <p class="text-sm text-gray-500 mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
-    </div>
+    <% if @user.aguinaldo_enabled %>
+      <!-- Aguinaldo Card -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 uppercase">Aguinaldo <%= @current_year %></h3>
+        <p class="text-2xl font-bold text-gray-900 mt-2"><%= format_currency(@aguinaldo_savings) %></p>
+        <p class="text-sm text-gray-500 mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
+      </div>
+    <% end %>
 
     <!-- Total Earnings Card -->
     <div class="bg-white rounded-lg shadow p-6">
@@ -59,37 +61,41 @@
 
   <!-- Savings & Days Cards Row -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-    <!-- Vacation Savings -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation $</h3>
-      <p class="text-xl font-bold text-green-600 mt-2"><%= format_currency(@vacation_balance) %></p>
-      <p class="text-sm text-gray-500 mt-1">balance</p>
-    </div>
+    <% if @user.vacation_enabled %>
+      <!-- Vacation Savings -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation $</h3>
+        <p class="text-xl font-bold text-green-600 mt-2"><%= format_currency(@vacation_balance) %></p>
+        <p class="text-sm text-gray-500 mt-1">balance</p>
+      </div>
 
-    <!-- Vacation Days -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation Days</h3>
-      <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@vacation_days_available, precision: 1) %> available</p>
-      <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@vacation_days_earned, precision: 1) %> earned, <%= number_with_precision(@vacation_days_taken, precision: 1) %> taken</p>
-    </div>
+      <!-- Vacation Days -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation Days</h3>
+        <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@vacation_days_available, precision: 1) %> available</p>
+        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@vacation_days_earned, precision: 1) %> earned, <%= number_with_precision(@vacation_days_taken, precision: 1) %> taken</p>
+      </div>
+    <% end %>
 
-    <!-- Holiday Savings -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday $</h3>
-      <p class="text-xl font-bold text-green-600 mt-2"><%= format_currency(@holiday_balance) %></p>
-      <p class="text-sm text-gray-500 mt-1">balance</p>
-    </div>
+    <% if @user.holiday_enabled %>
+      <!-- Holiday Savings -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday $</h3>
+        <p class="text-xl font-bold text-green-600 mt-2"><%= format_currency(@holiday_balance) %></p>
+        <p class="text-sm text-gray-500 mt-1">balance</p>
+      </div>
 
-    <!-- Holiday Days -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday Days</h3>
-      <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@holiday_days_available, precision: 1) %> available</p>
-      <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@holiday_days_earned, precision: 1) %> earned, <%= number_with_precision(@holiday_days_taken, precision: 1) %> taken</p>
-    </div>
+      <!-- Holiday Days -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday Days</h3>
+        <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@holiday_days_available, precision: 1) %> available</p>
+        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@holiday_days_earned, precision: 1) %> earned, <%= number_with_precision(@holiday_days_taken, precision: 1) %> taken</p>
+      </div>
+    <% end %>
   </div>
 
   <!-- Savings Breakdown Chart -->
-  <% if @ytd_entries.any? %>
+  <% if @ytd_entries.any? && (@user.aguinaldo_enabled || @user.vacation_enabled || @user.holiday_enabled) %>
     <div class="bg-white rounded-lg shadow p-6 mb-8">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">
         Savings Breakdown <%= @selected_year %>
