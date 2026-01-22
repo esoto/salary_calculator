@@ -1,0 +1,75 @@
+<div class="max-w-2xl mx-auto px-4">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+
+  <%= form_with model: @user, url: settings_path, method: :patch, class: "space-y-8", data: { controller: "settings" } do |form| %>
+    <% if @user.errors.any? %>
+      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+        <h2 class="text-red-800 font-medium mb-2"><%= pluralize(@user.errors.count, "error") %> prevented saving:</h2>
+        <ul class="list-disc list-inside text-red-700 text-sm">
+          <% @user.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Savings Preferences -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Savings Preferences</h2>
+
+      <div class="space-y-4">
+        <!-- Aguinaldo -->
+        <div class="flex items-center">
+          <%= form.check_box :aguinaldo_enabled, class: "h-4 w-4 text-blue-600 rounded border-gray-300" %>
+          <%= form.label :aguinaldo_enabled, "Enable Aguinaldo savings", class: "ml-2 text-sm font-medium text-gray-700" %>
+        </div>
+
+        <!-- Vacation -->
+        <div>
+          <div class="flex items-center">
+            <%= form.check_box :vacation_enabled,
+                class: "h-4 w-4 text-blue-600 rounded border-gray-300",
+                data: { settings_target: "vacationToggle", action: "settings#toggleVacation" } %>
+            <%= form.label :vacation_enabled, "Enable Vacation savings", class: "ml-2 text-sm font-medium text-gray-700" %>
+          </div>
+          <div class="ml-6 mt-2" data-settings-target="vacationFields" <%= "hidden" unless @user.vacation_enabled %>>
+            <%= form.label :vacation_days_per_year, "Vacation days per year", class: "block text-sm text-gray-600 mb-1" %>
+            <%= form.number_field :vacation_days_per_year, min: 0, max: 50,
+                class: "w-24 border border-gray-300 rounded-lg px-3 py-2" %>
+          </div>
+        </div>
+
+        <!-- Holiday -->
+        <div>
+          <div class="flex items-center">
+            <%= form.check_box :holiday_enabled,
+                class: "h-4 w-4 text-blue-600 rounded border-gray-300",
+                data: { settings_target: "holidayToggle", action: "settings#toggleHoliday" } %>
+            <%= form.label :holiday_enabled, "Enable Holiday savings", class: "ml-2 text-sm font-medium text-gray-700" %>
+          </div>
+          <div class="ml-6 mt-2" data-settings-target="holidayFields" <%= "hidden" unless @user.holiday_enabled %>>
+            <%= form.label :holiday_days_per_year, "Holiday days per year", class: "block text-sm text-gray-600 mb-1" %>
+            <%= form.number_field :holiday_days_per_year, min: 0, max: 30,
+                class: "w-24 border border-gray-300 rounded-lg px-3 py-2" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Work Schedule -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Work Schedule</h2>
+
+      <div>
+        <%= form.label :hours_per_day, "Hours per day", class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.number_field :hours_per_day, min: 1, max: 12,
+            class: "w-24 border border-gray-300 rounded-lg px-3 py-2" %>
+      </div>
+    </div>
+
+    <div class="flex gap-4">
+      <%= form.submit "Save Settings", class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer" %>
+      <%= link_to "Cancel", dashboard_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg" %>
+    </div>
+  <% end %>
+</div>
