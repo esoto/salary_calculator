@@ -55,6 +55,23 @@
     <% end %>
   </div>
 
+  <% if @over_vacation_limit %>
+    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+      <p class="text-amber-800 font-medium">Vacation days warning</p>
+      <p class="text-amber-700 text-sm mt-1">
+        You're taking <%= number_with_precision(@vacation_over_by, precision: 1, strip_insignificant_zeros: true) %>
+        more days than earned. This means you'll need to use money from holiday
+        and/or aguinaldo savings, affecting future finances.
+      </p>
+      <label class="flex items-center mt-3">
+        <%= form.check_box :vacation_over_limit_acknowledged,
+            class: "h-4 w-4 text-amber-600 rounded border-gray-300",
+            checked: salary_entry.vacation_over_limit_acknowledged.present? %>
+        <span class="ml-2 text-sm text-amber-800">I understand this affects my savings</span>
+      </label>
+    </div>
+  <% end %>
+
   <div class="flex gap-4">
     <%= form.submit class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer" %>
     <%= link_to "Cancel", salary_entries_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg" %>
