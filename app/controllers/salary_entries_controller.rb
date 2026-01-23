@@ -18,10 +18,12 @@ class SalaryEntriesController < ApplicationController
       month: Date.current.month,
       hourly_rate: current_user.default_hourly_rate
     )
+    calculate_vacation_limit_status
   end
 
   def create
     @salary_entry = current_user.salary_entries.new(salary_entry_params)
+    calculate_vacation_limit_status
 
     if @salary_entry.save
       redirect_to @salary_entry, notice: "Salary entry was successfully created."
@@ -31,10 +33,14 @@ class SalaryEntriesController < ApplicationController
   end
 
   def edit
+    calculate_vacation_limit_status
   end
 
   def update
-    if @salary_entry.update(salary_entry_params)
+    @salary_entry.assign_attributes(salary_entry_params)
+    calculate_vacation_limit_status
+
+    if @salary_entry.save
       redirect_to @salary_entry, notice: "Salary entry was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -61,6 +67,19 @@ class SalaryEntriesController < ApplicationController
 
   def salary_entry_params
     params.require(:salary_entry).permit(:month, :year, :hours_worked, :hourly_rate,
-                                          :vacation_days_taken, :holiday_days_taken)
+                                          :vacation_days_taken, :holiday_days_taken,
+                                          :vacation_over_limit_acknowledged)
+  end
+
+  def calculate_vacation_limit_status
+    return unless current_user.vacation_enabled
+    return unless @salary_entry.present?
+
+    year = @salary_entry.year || Date.current.year
+    balance = current_user.vacation_balance_for_year(year, exclude_entry: @salary_entry)
+
+    @over_vacation_limit = balance[:balance] < 0
+    @vacation_over_by = balance[:balance].abs if @over_vacation_limit
+    @vacation_balance = balance
   end
 end
