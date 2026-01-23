@@ -2,7 +2,7 @@
 
 This document tracks features that have been identified but not yet implemented.
 
-**Last Updated:** 2026-01-08
+**Last Updated:** 2026-01-23
 
 ---
 
@@ -27,23 +27,6 @@ This document tracks features that have been identified but not yet implemented.
 
 ## Salary Entry Enhancements
 
-### Configurable Vacation/Holiday Settings
-**Priority:** Medium
-**Complexity:** Medium
-
-**Description:** Allow users to customize vacation and holiday days per year instead of hardcoded values (currently 18 vacation, 10 holidays).
-
-**Requirements:**
-- User settings page with configuration form
-- Store vacation_days_per_year and holiday_days_per_year per user
-- Update calculations to use user-specific values
-- Migration to add columns to users table
-- Default values: 18 vacation, 10 holidays
-
-**Impact:** Support different employment contracts and countries
-
----
-
 ### Multiple Entries Per Month
 **Priority:** Low
 **Complexity:** High
@@ -62,22 +45,6 @@ This document tracks features that have been identified but not yet implemented.
 ---
 
 ## Time Off Enhancements
-
-### Prevent Taking More Days Than Earned
-**Priority:** High
-**Complexity:** Low
-
-**Description:** Add validation to prevent users from taking more vacation/holiday days than they've earned.
-
-**Requirements:**
-- Add model validation: `vacation_days_taken <= vacation_days_earned`
-- Calculate days earned up to current entry's month
-- Show clear error message when validation fails
-- Consider allowing negative balance with warning (for advance time off)
-
-**Impact:** Prevent data entry errors
-
----
 
 ### Carry Over Unused Days to Next Year
 **Priority:** Medium
@@ -153,6 +120,8 @@ This document tracks features that have been identified but not yet implemented.
 
 These features have been implemented and merged:
 
+- ✅ **Vacation Over-Limit Warning** (PR #18) - Soft validation warning when taking more vacation days than earned, with acknowledgment checkbox
+- ✅ **Configurable Vacation/Holiday Settings** (PR #17) - User settings page to customize vacation/holiday days per year
 - ✅ **Charts/Graphs for Trends** (PR #12) - Savings breakdown stacked column chart on dashboard
 - ✅ **Year Selector on Dashboard** (PR #9) - View historical data from previous years with year dropdown selector
 - ✅ **Password Reset via Email** (PR #7) - Users can reset forgotten passwords via email
