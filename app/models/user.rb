@@ -18,4 +18,18 @@ class User < ApplicationRecord
   validates :vacation_days_per_year, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 50 }
   validates :holiday_days_per_year, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 30 }
   validates :hours_per_day, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }
+
+  def vacation_balance_for_year(year, exclude_entry: nil)
+    entries = salary_entries.for_year(year)
+    entries = entries.where.not(id: exclude_entry.id) if exclude_entry&.persisted?
+
+    entries_count = entries.count
+    entries_count += 1 if exclude_entry.present?
+
+    days_earned = entries_count * (vacation_days_per_year / 12.0)
+    days_taken = entries.sum(:vacation_days_taken)
+    days_taken += exclude_entry.vacation_days_taken.to_f if exclude_entry.present?
+
+    { earned: days_earned, taken: days_taken, balance: days_earned - days_taken }
+  end
 end

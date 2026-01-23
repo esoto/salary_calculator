@@ -86,4 +86,85 @@ RSpec.describe User, type: :model do
       }.to raise_error(ActiveSupport::MessageVerifier::InvalidSignature)
     end
   end
+
+  describe "#vacation_balance_for_year" do
+    let(:user) { create(:user, vacation_days_per_year: 12) } # 1 day earned per month
+
+    context "with no entries" do
+      it "returns zero balance" do
+        balance = user.vacation_balance_for_year(2025)
+        expect(balance[:earned]).to eq(0)
+        expect(balance[:taken]).to eq(0)
+        expect(balance[:balance]).to eq(0)
+      end
+    end
+
+    context "with entries and no vacation taken" do
+      before do
+        create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 0)
+        create(:salary_entry, user: user, year: 2025, month: 2, vacation_days_taken: 0)
+      end
+
+      it "calculates days earned based on entry count" do
+        balance = user.vacation_balance_for_year(2025)
+        expect(balance[:earned]).to eq(2.0) # 2 months * 1 day/month
+        expect(balance[:taken]).to eq(0)
+        expect(balance[:balance]).to eq(2.0)
+      end
+    end
+
+    context "with vacation days taken" do
+      before do
+        create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 0.5)
+        create(:salary_entry, user: user, year: 2025, month: 2, vacation_days_taken: 1)
+      end
+
+      it "calculates correct balance" do
+        balance = user.vacation_balance_for_year(2025)
+        expect(balance[:earned]).to eq(2.0)
+        expect(balance[:taken]).to eq(1.5)
+        expect(balance[:balance]).to eq(0.5)
+      end
+    end
+
+    context "with exclude_entry for new record" do
+      before do
+        create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 0)
+      end
+
+      it "includes new entry in calculation" do
+        new_entry = user.salary_entries.build(year: 2025, month: 2, vacation_days_taken: 1.5)
+        balance = user.vacation_balance_for_year(2025, exclude_entry: new_entry)
+        expect(balance[:earned]).to eq(2.0) # existing + new entry
+        expect(balance[:taken]).to eq(1.5)  # new entry's days
+        expect(balance[:balance]).to eq(0.5)
+      end
+    end
+
+    context "with exclude_entry for persisted record" do
+      let!(:entry) { create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 1) }
+
+      it "excludes persisted value and includes new value" do
+        entry.vacation_days_taken = 2.0 # changing from 1 to 2
+        balance = user.vacation_balance_for_year(2025, exclude_entry: entry)
+        expect(balance[:earned]).to eq(1.0)
+        expect(balance[:taken]).to eq(2.0) # new value, not old
+        expect(balance[:balance]).to eq(-1.0)
+      end
+    end
+
+    context "with entries from different years" do
+      before do
+        create(:salary_entry, user: user, year: 2024, month: 12, vacation_days_taken: 0.5)
+        create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 1)
+      end
+
+      it "only considers entries from specified year" do
+        balance = user.vacation_balance_for_year(2025)
+        expect(balance[:earned]).to eq(1.0)
+        expect(balance[:taken]).to eq(1.0)
+        expect(balance[:balance]).to eq(0.0)
+      end
+    end
+  end
 end

@@ -85,13 +85,13 @@ RSpec.describe "SalaryEntries", type: :request do
   describe "POST /salary_entries with time off" do
     let(:params_with_time_off) do
       { salary_entry: { month: 3, year: 2026, hours_worked: 160, hourly_rate: 50,
-                        vacation_days_taken: 2, holiday_days_taken: 1 } }
+                        vacation_days_taken: 1, holiday_days_taken: 1 } }
     end
 
     it "saves time off fields" do
       post salary_entries_path, params: params_with_time_off
       entry = SalaryEntry.last
-      expect(entry.vacation_days_taken).to eq(2)
+      expect(entry.vacation_days_taken).to eq(1)
       expect(entry.holiday_days_taken).to eq(1)
     end
   end
@@ -168,6 +168,49 @@ RSpec.describe "SalaryEntries", type: :request do
     it "redirects to login" do
       get salary_entries_path
       expect(response).to redirect_to(new_session_path)
+    end
+  end
+
+  describe "vacation over-limit handling" do
+    let(:user) { create(:user, vacation_days_per_year: 12, vacation_enabled: true) }
+
+    before do
+      delete session_path
+      post session_path, params: { email_address: user.email_address, password: "password123" }
+    end
+
+    describe "GET /salary_entries/new" do
+      it "calculates over_vacation_limit for new entry" do
+        create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 1)
+        get new_salary_entry_path, params: { year: 2025, month: 2 }
+        expect(response).to be_successful
+      end
+    end
+
+    describe "POST /salary_entries" do
+      context "when over limit without acknowledgment" do
+        it "re-renders form with warning" do
+          post salary_entries_path, params: {
+            salary_entry: {
+              year: 2025, month: 1, hours_worked: 160, hourly_rate: 50,
+              vacation_days_taken: 5
+            }
+          }
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context "when over limit with acknowledgment" do
+        it "creates entry successfully" do
+          post salary_entries_path, params: {
+            salary_entry: {
+              year: 2025, month: 1, hours_worked: 160, hourly_rate: 50,
+              vacation_days_taken: 5, vacation_over_limit_acknowledged: "1"
+            }
+          }
+          expect(response).to redirect_to(SalaryEntry.last)
+        end
+      end
     end
   end
 end

@@ -153,7 +153,7 @@ RSpec.describe "Dashboard", type: :request do
   context "with time off taken" do
     before do
       create(:salary_entry, user: user, month: 1, year: 2026, hours_worked: 160, hourly_rate: 50,
-             vacation_days_taken: 2, holiday_days_taken: 1)
+             vacation_days_taken: 1, holiday_days_taken: 1)
     end
 
     it "displays available vacation days" do
