@@ -155,7 +155,7 @@ RSpec.describe User, type: :model do
 
     context "with entries from different years" do
       before do
-        create(:salary_entry, user: user, year: 2024, month: 12, vacation_days_taken: 5)
+        create(:salary_entry, user: user, year: 2024, month: 12, vacation_days_taken: 0.5)
         create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 1)
       end
 

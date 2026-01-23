@@ -232,7 +232,7 @@ RSpec.describe SalaryEntry, type: :model do
 
     describe "#vacation_spent" do
       it "uses user's hours_per_day setting" do
-        user.update!(hours_per_day: 6)
+        user.update!(hours_per_day: 6, vacation_days_per_year: 24)
         entry.update!(vacation_days_taken: 2)
         # 2 days * 6 hours * $50/hr = $600
         expect(entry.vacation_spent).to eq(600.0)
@@ -245,6 +245,66 @@ RSpec.describe SalaryEntry, type: :model do
         entry.update!(holiday_days_taken: 1)
         # 1 day * 6 hours * $50/hr = $300
         expect(entry.holiday_spent).to eq(300.0)
+      end
+    end
+  end
+
+  describe "vacation over-limit validation" do
+    let(:user) { create(:user, vacation_days_per_year: 12, vacation_enabled: true) }
+
+    context "when within limit" do
+      it "is valid" do
+        create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 0)
+        entry = build(:salary_entry, user: user, year: 2025, month: 2, vacation_days_taken: 1)
+        expect(entry).to be_valid
+      end
+    end
+
+    context "when over limit and not acknowledged" do
+      it "is invalid" do
+        entry = build(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 5)
+        expect(entry).not_to be_valid
+        expect(entry.errors[:base]).to include("You're taking more vacation days than earned. Please acknowledge this to continue.")
+      end
+    end
+
+    context "when over limit and acknowledged" do
+      it "is valid" do
+        entry = build(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 5)
+        entry.vacation_over_limit_acknowledged = "1"
+        expect(entry).to be_valid
+      end
+    end
+
+    context "when vacation is disabled" do
+      let(:user) { create(:user, vacation_enabled: false) }
+
+      it "skips validation" do
+        entry = build(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 100)
+        expect(entry).to be_valid
+      end
+    end
+
+    context "when vacation_days_taken is zero" do
+      it "skips validation" do
+        entry = build(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 0)
+        expect(entry).to be_valid
+      end
+    end
+
+    context "when editing existing entry" do
+      let!(:entry) { create(:salary_entry, user: user, year: 2025, month: 1, vacation_days_taken: 0.5) }
+
+      it "correctly calculates balance excluding old value" do
+        entry.vacation_days_taken = 1.0 # still within limit (1 day earned)
+        expect(entry).to be_valid
+      end
+
+      it "requires acknowledgment when new value exceeds limit" do
+        entry.vacation_days_taken = 5.0 # over limit
+        expect(entry).not_to be_valid
+        entry.vacation_over_limit_acknowledged = "1"
+        expect(entry).to be_valid
       end
     end
   end
