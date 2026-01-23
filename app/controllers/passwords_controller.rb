@@ -17,6 +17,7 @@ class PasswordsController < ApplicationController
   end
 
   def update
+    @user.instance_variable_set(:@skip_current_password_validation, true)
     if @user.update(params.permit(:password, :password_confirmation))
       redirect_to new_session_path, notice: "Password has been reset."
     else

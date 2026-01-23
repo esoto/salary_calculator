@@ -79,6 +79,7 @@ RSpec.describe User, type: :model do
     it 'token is invalidated after password change' do
       token = user.password_reset_token
 
+      user.instance_variable_set(:@skip_current_password_validation, true)
       user.update!(password: 'newpassword123', password_confirmation: 'newpassword123')
 
       expect {
@@ -164,6 +165,54 @@ RSpec.describe User, type: :model do
         expect(balance[:earned]).to eq(1.0)
         expect(balance[:taken]).to eq(1.0)
         expect(balance[:balance]).to eq(0.0)
+      end
+    end
+  end
+
+  describe "password change validation" do
+    let(:user) { create(:user, password: "oldpassword123") }
+
+    context "when password is being changed" do
+      it "is valid with correct current password" do
+        user.current_password = "oldpassword123"
+        user.password = "newpassword123"
+        user.password_confirmation = "newpassword123"
+        expect(user).to be_valid
+      end
+
+      it "is invalid without current password" do
+        user.password = "newpassword123"
+        user.password_confirmation = "newpassword123"
+        expect(user).not_to be_valid
+        expect(user.errors[:current_password]).to include("is incorrect")
+      end
+
+      it "is invalid with incorrect current password" do
+        user.current_password = "wrongpassword"
+        user.password = "newpassword123"
+        user.password_confirmation = "newpassword123"
+        expect(user).not_to be_valid
+        expect(user.errors[:current_password]).to include("is incorrect")
+      end
+
+      it "is invalid when password confirmation doesn't match" do
+        user.current_password = "oldpassword123"
+        user.password = "newpassword123"
+        user.password_confirmation = "differentpassword"
+        expect(user).not_to be_valid
+        expect(user.errors[:password_confirmation]).to include("doesn't match Password")
+      end
+    end
+
+    context "when password is not being changed" do
+      it "skips password validation when password fields are blank" do
+        user.name = "New Name"
+        expect(user).to be_valid
+      end
+
+      it "allows updating other fields without current password" do
+        user.email_address = "newemail@example.com"
+        expect(user).to be_valid
       end
     end
   end
