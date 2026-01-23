@@ -3,30 +3,23 @@
 module SalaryCalculations
   extend ActiveSupport::Concern
 
-  VACATION_DAYS = 18
-  HOLIDAYS = 10
-  HOURS_PER_DAY = 8
-  MONTHS_PER_YEAR = 12
-
-  VACATION_HOURS_PER_MONTH = (VACATION_DAYS * HOURS_PER_DAY) / MONTHS_PER_YEAR.to_f
-  HOLIDAY_HOURS_PER_MONTH = (HOLIDAYS * HOURS_PER_DAY) / MONTHS_PER_YEAR.to_f
-  VACATION_DAYS_PER_MONTH = VACATION_DAYS / MONTHS_PER_YEAR.to_f
-  HOLIDAY_DAYS_PER_MONTH = HOLIDAYS / MONTHS_PER_YEAR.to_f
-
   def monthly_salary
     hours_worked * hourly_rate
   end
 
   def aguinaldo_savings
+    return 0 unless user.aguinaldo_enabled
     monthly_salary / 12.0
   end
 
   def vacation_savings
-    VACATION_HOURS_PER_MONTH * hourly_rate
+    return 0 unless user.vacation_enabled
+    vacation_hours_per_month * hourly_rate
   end
 
   def holiday_savings
-    HOLIDAY_HOURS_PER_MONTH * hourly_rate
+    return 0 unless user.holiday_enabled
+    holiday_hours_per_month * hourly_rate
   end
 
   def total_savings
@@ -38,11 +31,11 @@ module SalaryCalculations
   end
 
   def vacation_spent
-    (vacation_days_taken || 0) * HOURS_PER_DAY * hourly_rate
+    (vacation_days_taken || 0) * user.hours_per_day * hourly_rate
   end
 
   def holiday_spent
-    (holiday_days_taken || 0) * HOURS_PER_DAY * hourly_rate
+    (holiday_days_taken || 0) * user.hours_per_day * hourly_rate
   end
 
   def vacation_balance
@@ -51,5 +44,23 @@ module SalaryCalculations
 
   def holiday_balance
     holiday_savings - holiday_spent
+  end
+
+  private
+
+  def vacation_hours_per_month
+    (user.vacation_days_per_year * user.hours_per_day) / 12.0
+  end
+
+  def holiday_hours_per_month
+    (user.holiday_days_per_year * user.hours_per_day) / 12.0
+  end
+
+  def vacation_days_per_month
+    user.vacation_days_per_year / 12.0
+  end
+
+  def holiday_days_per_month
+    user.holiday_days_per_year / 12.0
   end
 end

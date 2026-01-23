@@ -1,6 +1,9 @@
 # app/controllers/dashboard_controller.rb
 class DashboardController < ApplicationController
   def show
+    # Expose user for view conditionals
+    @user = current_user
+
     # Available years for dropdown (needed for default selection)
     @available_years = current_user.salary_entries.distinct.pluck(:year).sort.reverse
 
@@ -18,32 +21,32 @@ class DashboardController < ApplicationController
     # Aguinaldo period entries
     aguinaldo_entries = current_user.salary_entries.for_aguinaldo_period(@selected_year)
 
-    # Summary stats (using SQL aggregation for performance)
+    # Summary stats (using instance methods for user-specific settings)
     @months_logged = @ytd_entries.count
-    @total_earnings = @ytd_entries.sum("hours_worked * hourly_rate")
+    @total_earnings = @ytd_entries.sum(&:monthly_salary)
 
-    # Vacation/holiday savings and spent
-    @vacation_savings = @ytd_entries.sum("#{SalaryCalculations::VACATION_HOURS_PER_MONTH} * hourly_rate")
-    @vacation_spent = @ytd_entries.sum("COALESCE(vacation_days_taken, 0) * #{SalaryCalculations::HOURS_PER_DAY} * hourly_rate")
+    # Vacation/holiday savings and spent (user-specific calculations)
+    @vacation_savings = @ytd_entries.sum(&:vacation_savings)
+    @vacation_spent = @ytd_entries.sum(&:vacation_spent)
     @vacation_balance = @vacation_savings - @vacation_spent
 
-    @holiday_savings = @ytd_entries.sum("#{SalaryCalculations::HOLIDAY_HOURS_PER_MONTH} * hourly_rate")
-    @holiday_spent = @ytd_entries.sum("COALESCE(holiday_days_taken, 0) * #{SalaryCalculations::HOURS_PER_DAY} * hourly_rate")
+    @holiday_savings = @ytd_entries.sum(&:holiday_savings)
+    @holiday_spent = @ytd_entries.sum(&:holiday_spent)
     @holiday_balance = @holiday_savings - @holiday_spent
 
-    @aguinaldo_savings = aguinaldo_entries.sum("hours_worked * hourly_rate / 12.0")
+    @aguinaldo_savings = aguinaldo_entries.sum(&:aguinaldo_savings)
 
-    # Days earned and taken
-    @vacation_days_earned = @months_logged * SalaryCalculations::VACATION_DAYS_PER_MONTH
+    # Days earned and taken (user-specific settings)
+    @vacation_days_earned = @months_logged * (current_user.vacation_days_per_year / 12.0)
     @vacation_days_taken = @ytd_entries.sum(:vacation_days_taken)
     @vacation_days_available = @vacation_days_earned - @vacation_days_taken
 
-    @holiday_days_earned = @months_logged * SalaryCalculations::HOLIDAY_DAYS_PER_MONTH
+    @holiday_days_earned = @months_logged * (current_user.holiday_days_per_year / 12.0)
     @holiday_days_taken = @ytd_entries.sum(:holiday_days_taken)
     @holiday_days_available = @holiday_days_earned - @holiday_days_taken
 
     # Total savings and net pay (YTD)
-    ytd_aguinaldo = @ytd_entries.sum("hours_worked * hourly_rate / 12.0")
+    ytd_aguinaldo = @ytd_entries.sum(&:aguinaldo_savings)
     @total_savings = ytd_aguinaldo + @vacation_balance + @holiday_balance
     @net_pay = @total_earnings - @total_savings
 
@@ -61,19 +64,19 @@ class DashboardController < ApplicationController
   def prepare_savings_chart_data(ytd_entries)
     entries_by_month = ytd_entries.group_by(&:month)
 
-    categories = {
-      "Aguinaldo" => :aguinaldo_savings,
-      "Vacation" => :vacation_savings,
-      "Holiday" => :holiday_savings
-    }
+    categories = {}
+    categories["Aguinaldo"] = :aguinaldo_savings if current_user.aguinaldo_enabled
+    categories["Vacation"] = :vacation_savings if current_user.vacation_enabled
+    categories["Holiday"] = :holiday_savings if current_user.holiday_enabled
 
-    categories.each_with_object({}) do |(name, method), result|
-      result[name] = (1..12).map do |month|
+    categories.map do |name, method|
+      series_data = (1..12).map do |month|
         month_label = Date::MONTHNAMES[month][0..2]
         entry = entries_by_month[month]&.first
         value = entry ? entry.send(method).to_f : 0
         [ month_label, value ]
       end
+      { name: name, data: series_data }
     end
   end
 end

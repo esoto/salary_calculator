@@ -9,6 +9,7 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
       allow(view).to receive(:current_user).and_return(user)
     end
 
+    assign(:user, user)
     assign(:months_logged, 2)
     assign(:total_earnings, 16000)
     assign(:net_pay, 14000)

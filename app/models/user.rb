@@ -15,4 +15,7 @@ class User < ApplicationRecord
   validates :email_address, presence: true, uniqueness: { case_sensitive: false }
   validates :name, presence: true
   validates :default_hourly_rate, numericality: { greater_than: 0 }, allow_nil: true
+  validates :vacation_days_per_year, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 50 }
+  validates :holiday_days_per_year, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 30 }
+  validates :hours_per_day, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }
 end

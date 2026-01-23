@@ -212,14 +212,19 @@ RSpec.describe "Dashboard", type: :request do
   end
 
   describe 'savings chart data' do
+    # Helper to find series data by name from chart data array
+    def find_series(chart_data, name)
+      chart_data.find { |s| s[:name] == name }&.dig(:data)
+    end
+
     it 'prepares chart data with correct structure' do
       create(:salary_entry, user: user, year: 2025, month: 1,
              hours_worked: 160, hourly_rate: 50)
 
       get dashboard_path(year: 2025)
 
-      expect(assigns(:savings_chart_data)).to be_a(Hash)
-      expect(assigns(:savings_chart_data).keys).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
+      expect(assigns(:savings_chart_data)).to be_an(Array)
+      expect(assigns(:savings_chart_data).map { |d| d[:name] }).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
     end
 
     it 'includes all 12 months in chart data' do
@@ -227,9 +232,10 @@ RSpec.describe "Dashboard", type: :request do
 
       get dashboard_path(year: 2025)
 
-      expect(assigns(:savings_chart_data)["Aguinaldo"].length).to eq(12)
-      expect(assigns(:savings_chart_data)["Vacation"].length).to eq(12)
-      expect(assigns(:savings_chart_data)["Holiday"].length).to eq(12)
+      chart_data = assigns(:savings_chart_data)
+      expect(find_series(chart_data, "Aguinaldo").length).to eq(12)
+      expect(find_series(chart_data, "Vacation").length).to eq(12)
+      expect(find_series(chart_data, "Holiday").length).to eq(12)
     end
 
     it 'includes correct calculations for months with entries' do
@@ -238,9 +244,10 @@ RSpec.describe "Dashboard", type: :request do
 
       get dashboard_path(year: 2025)
 
-      march_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][2] # 0-indexed
-      march_vacation = assigns(:savings_chart_data)["Vacation"][2]
-      march_holiday = assigns(:savings_chart_data)["Holiday"][2]
+      chart_data = assigns(:savings_chart_data)
+      march_aguinaldo = find_series(chart_data, "Aguinaldo")[2] # 0-indexed
+      march_vacation = find_series(chart_data, "Vacation")[2]
+      march_holiday = find_series(chart_data, "Holiday")[2]
 
       expect(march_aguinaldo[0]).to eq("Mar")
       expect(march_aguinaldo[1]).to eq(800.0) # (160 * 60) / 12
@@ -254,7 +261,8 @@ RSpec.describe "Dashboard", type: :request do
 
       get dashboard_path(year: 2025)
 
-      jan_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][0]
+      chart_data = assigns(:savings_chart_data)
+      jan_aguinaldo = find_series(chart_data, "Aguinaldo")[0]
       expect(jan_aguinaldo[0]).to eq("Jan")
       expect(jan_aguinaldo[1]).to eq(0)
     end
@@ -267,7 +275,8 @@ RSpec.describe "Dashboard", type: :request do
 
       get dashboard_path(year: 2024)
 
-      jan_aguinaldo = assigns(:savings_chart_data)["Aguinaldo"][0]
+      chart_data = assigns(:savings_chart_data)
+      jan_aguinaldo = find_series(chart_data, "Aguinaldo")[0]
       # Should use 2024 data: (100 * 40) / 12 = 333.33...
       expect(jan_aguinaldo[1]).to be_within(0.01).of(333.33)
     end
@@ -291,17 +300,80 @@ RSpec.describe "Dashboard", type: :request do
       expect(response.body).to include('Savings Breakdown')
       expect(response.body).to include('Chartkick')
 
-      # Verify chart data structure
+      # Verify chart data structure (now an array of hashes with :name and :data)
       chart_data = assigns(:savings_chart_data)
-      expect(chart_data.keys).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
+      expect(chart_data.map { |d| d[:name] }).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
 
       # Verify has data for months with entries
-      jan_data = chart_data["Aguinaldo"][0]
+      aguinaldo_series = chart_data.find { |s| s[:name] == "Aguinaldo" }[:data]
+      jan_data = aguinaldo_series[0]
       expect(jan_data[1]).to be > 0 # January has data
 
       # Verify zero for months without entries
-      feb_data = chart_data["Aguinaldo"][1]
+      feb_data = aguinaldo_series[1]
       expect(feb_data[1]).to eq(0) # February has no entry
+    end
+  end
+
+  describe "user settings affecting calculations" do
+    it "uses user's vacation_days_per_year for calculations" do
+      user.update!(vacation_days_per_year: 24, hours_per_day: 8)
+      create(:salary_entry, user: user, year: 2025, month: 1, hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path, params: { year: 2025 }
+
+      # 24 days * 8 hours / 12 months * $50/hr = $800
+      expect(response.body).to include("$800.00")
+    end
+
+    it "hides aguinaldo card when aguinaldo is disabled" do
+      user.update!(aguinaldo_enabled: false)
+      create(:salary_entry, user: user, year: 2025, month: 1, hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path, params: { year: 2025 }
+
+      expect(response.body).not_to include("AGUINALDO")
+    end
+
+    it "hides vacation cards when vacation is disabled" do
+      user.update!(vacation_enabled: false)
+      create(:salary_entry, user: user, year: 2025, month: 1, hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path, params: { year: 2025 }
+
+      expect(response.body).not_to include("VACATION $")
+      expect(response.body).not_to include("VACATION DAYS")
+    end
+
+    it "hides holiday cards when holiday is disabled" do
+      user.update!(holiday_enabled: false)
+      create(:salary_entry, user: user, year: 2025, month: 1, hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path, params: { year: 2025 }
+
+      expect(response.body).not_to include("HOLIDAY $")
+      expect(response.body).not_to include("HOLIDAY DAYS")
+    end
+
+    it "filters chart data based on enabled settings" do
+      user.update!(aguinaldo_enabled: false, vacation_enabled: true, holiday_enabled: true)
+      create(:salary_entry, user: user, year: 2025, month: 1, hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path, params: { year: 2025 }
+
+      chart_data = assigns(:savings_chart_data)
+      expect(chart_data.map { |d| d[:name] }).not_to include("Aguinaldo")
+      expect(chart_data.map { |d| d[:name] }).to include("Vacation", "Holiday")
+    end
+
+    it "includes all categories in chart when all are enabled" do
+      user.update!(aguinaldo_enabled: true, vacation_enabled: true, holiday_enabled: true)
+      create(:salary_entry, user: user, year: 2025, month: 1, hours_worked: 160, hourly_rate: 50)
+
+      get dashboard_path, params: { year: 2025 }
+
+      chart_data = assigns(:savings_chart_data)
+      expect(chart_data.map { |d| d[:name] }).to match_array([ "Aguinaldo", "Vacation", "Holiday" ])
     end
   end
 end
