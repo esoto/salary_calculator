@@ -54,6 +54,66 @@ RSpec.describe "Settings", type: :request do
     end
   end
 
+  describe "profile updates" do
+    describe "PATCH /settings - name update" do
+      it "updates the user name" do
+        patch settings_path, params: { user: { name: "New Name" } }
+        expect(response).to redirect_to(settings_path)
+        expect(user.reload.name).to eq("New Name")
+      end
+    end
+
+    describe "PATCH /settings - email update" do
+      it "updates the user email" do
+        patch settings_path, params: { user: { email_address: "newemail@example.com" } }
+        expect(response).to redirect_to(settings_path)
+        expect(user.reload.email_address).to eq("newemail@example.com")
+      end
+
+      it "shows error for duplicate email" do
+        create(:user, email_address: "taken@example.com")
+        patch settings_path, params: { user: { email_address: "taken@example.com" } }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    describe "PATCH /settings - password change" do
+      it "changes password with correct current password" do
+        patch settings_path, params: {
+          user: {
+            current_password: "password123",
+            password: "newpassword456",
+            password_confirmation: "newpassword456"
+          }
+        }
+        expect(response).to redirect_to(settings_path)
+        expect(user.reload.authenticate("newpassword456")).to be_truthy
+      end
+
+      it "shows error for incorrect current password" do
+        patch settings_path, params: {
+          user: {
+            current_password: "wrongpassword",
+            password: "newpassword456",
+            password_confirmation: "newpassword456"
+          }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "shows error for mismatched confirmation" do
+        patch settings_path, params: {
+          user: {
+            current_password: "password123",
+            password: "newpassword456",
+            password_confirmation: "differentpassword"
+          }
+        }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+  end
+
   describe "authentication" do
     it "redirects to login when not authenticated" do
       delete session_path
