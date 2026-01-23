@@ -35,7 +35,9 @@
           <div class="ml-6 mt-2" data-settings-target="vacationFields" <%= "hidden" unless @user.vacation_enabled %>>
             <%= form.label :vacation_days_per_year, "Vacation days per year", class: "block text-sm text-gray-600 mb-1" %>
             <%= form.number_field :vacation_days_per_year, min: 0, max: 50,
-                class: "w-24 border border-gray-300 rounded-lg px-3 py-2" %>
+                class: "w-24 border border-gray-300 rounded-lg px-3 py-2 disabled:bg-gray-100 disabled:text-gray-500",
+                data: { settings_target: "vacationInput" },
+                disabled: !@user.vacation_enabled %>
           </div>
         </div>
 
@@ -50,7 +52,9 @@
           <div class="ml-6 mt-2" data-settings-target="holidayFields" <%= "hidden" unless @user.holiday_enabled %>>
             <%= form.label :holiday_days_per_year, "Holiday days per year", class: "block text-sm text-gray-600 mb-1" %>
             <%= form.number_field :holiday_days_per_year, min: 0, max: 30,
-                class: "w-24 border border-gray-300 rounded-lg px-3 py-2" %>
+                class: "w-24 border border-gray-300 rounded-lg px-3 py-2 disabled:bg-gray-100 disabled:text-gray-500",
+                data: { settings_target: "holidayInput" },
+                disabled: !@user.holiday_enabled %>
           </div>
         </div>
       </div>
