@@ -24,7 +24,7 @@ class User < ApplicationRecord
     entries = entries.where.not(id: exclude_entry.id) if exclude_entry&.persisted?
 
     entries_count = entries.count
-    entries_count += 1 if exclude_entry.present? && (exclude_entry.new_record? || exclude_entry.persisted?)
+    entries_count += 1 if exclude_entry.present?
 
     days_earned = entries_count * (vacation_days_per_year / 12.0)
     days_taken = entries.sum(:vacation_days_taken)

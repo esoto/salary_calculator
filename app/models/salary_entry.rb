@@ -21,7 +21,7 @@ class SalaryEntry < ApplicationRecord
   validates :vacation_days_taken, numericality: { greater_than_or_equal_to: 0 }
   validates :holiday_days_taken, numericality: { greater_than_or_equal_to: 0 }
 
-  attr_accessor :vacation_over_limit_acknowledged
+  attr_accessor :vacation_over_limit_acknowledged, :cached_vacation_balance
 
   validate :vacation_within_limit_or_acknowledged
 
@@ -48,8 +48,9 @@ class SalaryEntry < ApplicationRecord
   def vacation_within_limit_or_acknowledged
     return unless user&.vacation_enabled
     return if vacation_days_taken.to_f <= 0
+    return if year.blank?
 
-    balance = user.vacation_balance_for_year(year, exclude_entry: self)
+    balance = cached_vacation_balance || user.vacation_balance_for_year(year, exclude_entry: self)
     return if balance[:balance] >= 0
     return if vacation_over_limit_acknowledged.present?
 

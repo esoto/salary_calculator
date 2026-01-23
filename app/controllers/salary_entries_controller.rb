@@ -78,6 +78,7 @@ class SalaryEntriesController < ApplicationController
     year = @salary_entry.year || Date.current.year
     balance = current_user.vacation_balance_for_year(year, exclude_entry: @salary_entry)
 
+    @salary_entry.cached_vacation_balance = balance
     @over_vacation_limit = balance[:balance] < 0
     @vacation_over_by = balance[:balance].abs if @over_vacation_limit
     @vacation_balance = balance
