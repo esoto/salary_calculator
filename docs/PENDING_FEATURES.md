@@ -99,27 +99,11 @@ This document tracks features that have been identified but not yet implemented.
 
 ---
 
-### User Profile Editing
-**Priority:** Medium
-**Complexity:** Low
-
-**Description:** Allow users to update their profile information (name, email, preferences).
-
-**Requirements:**
-- Profile page with edit form
-- Update name, email_address
-- Email confirmation for email changes
-- Password change functionality (update existing password, not reset)
-- Profile route and navigation link
-
-**Impact:** Basic user account management
-
----
-
 ## Completed Features
 
 These features have been implemented and merged:
 
+- ✅ **User Profile Editing** (PR #19) - Edit name, email, and password from Settings page
 - ✅ **Vacation Over-Limit Warning** (PR #18) - Soft validation warning when taking more vacation days than earned, with acknowledgment checkbox
 - ✅ **Configurable Vacation/Holiday Settings** (PR #17) - User settings page to customize vacation/holiday days per year
 - ✅ **Charts/Graphs for Trends** (PR #12) - Savings breakdown stacked column chart on dashboard
