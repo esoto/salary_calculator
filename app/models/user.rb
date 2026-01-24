@@ -19,6 +19,10 @@ class User < ApplicationRecord
   validates :holiday_days_per_year, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 30 }
   validates :hours_per_day, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }
 
+  attr_accessor :current_password, :skip_current_password_validation
+
+  validate :current_password_correct, if: :password_change_requested?
+
   def vacation_balance_for_year(year, exclude_entry: nil)
     entries = salary_entries.for_year(year)
     entries = entries.where.not(id: exclude_entry.id) if exclude_entry&.persisted?
@@ -31,5 +35,23 @@ class User < ApplicationRecord
     days_taken += exclude_entry.vacation_days_taken.to_f if exclude_entry.present?
 
     { earned: days_earned, taken: days_taken, balance: days_earned - days_taken }
+  end
+
+  private
+
+  def password_change_requested?
+    persisted? && password.present? && password_digest_changed? && !current_password_bypass_enabled?
+  end
+
+  def current_password_bypass_enabled?
+    skip_current_password_validation == true
+  end
+
+  def current_password_correct
+    if current_password.blank?
+      errors.add(:current_password, "can't be blank")
+    elsif BCrypt::Password.new(password_digest_was) != current_password
+      errors.add(:current_password, "is incorrect")
+    end
   end
 end

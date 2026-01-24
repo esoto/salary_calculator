@@ -1,7 +1,7 @@
 # User Profile Editing Design
 
 **Date:** 2026-01-23
-**Status:** Draft
+**Status:** Implemented
 **Priority:** Medium
 **Complexity:** Low
 
@@ -50,32 +50,42 @@ Settings Page
 - Normalized to lowercase (existing)
 
 **Error messages:**
+- "Current password can't be blank" - current password not provided
 - "Current password is incorrect" - wrong current password
-- "Password confirmation doesn't match" - mismatch
+- "Password confirmation doesn't match Password" - mismatch
 - "Email has already been taken" - duplicate email
 
 ## Implementation Details
 
 ### User Model
 
-Add virtual attribute and custom validation:
+Add virtual attributes and custom validation:
 
 ```ruby
-attr_accessor :current_password
+attr_accessor :current_password, :skip_current_password_validation
 
 validate :current_password_correct, if: :password_change_requested?
 
 private
 
 def password_change_requested?
-  password.present?
+  persisted? && password.present? && password_digest_changed? && !current_password_bypass_enabled?
+end
+
+def current_password_bypass_enabled?
+  skip_current_password_validation == true
 end
 
 def current_password_correct
-  return if authenticate(current_password)
-  errors.add(:current_password, "is incorrect")
+  if current_password.blank?
+    errors.add(:current_password, "can't be blank")
+  elsif BCrypt::Password.new(password_digest_was) != current_password
+    errors.add(:current_password, "is incorrect")
+  end
 end
 ```
+
+**Note:** Uses `password_digest_was` to compare against the old password hash, not the new one.
 
 ### Settings Controller
 

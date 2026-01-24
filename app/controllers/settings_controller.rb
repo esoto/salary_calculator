@@ -18,6 +18,11 @@ class SettingsController < ApplicationController
 
   def settings_params
     params.require(:user).permit(
+      :name,
+      :email_address,
+      :current_password,
+      :password,
+      :password_confirmation,
       :vacation_days_per_year,
       :holiday_days_per_year,
       :hours_per_day,
