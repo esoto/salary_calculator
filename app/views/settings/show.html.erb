@@ -13,6 +13,51 @@
       </div>
     <% end %>
 
+    <!-- Profile -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile</h2>
+
+      <div class="space-y-4">
+        <!-- Name -->
+        <div>
+          <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_field :name, class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <%= form.label :email_address, "Email", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.email_field :email_address, class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
+        </div>
+
+        <!-- Change Password -->
+        <div class="border-t border-gray-200 pt-4 mt-4">
+          <p class="text-sm font-medium text-gray-700 mb-1">Change Password</p>
+          <p class="text-xs text-gray-500 mb-3">Leave blank to keep current password</p>
+
+          <div class="space-y-3">
+            <div>
+              <%= form.label :current_password, class: "block text-sm text-gray-600 mb-1" %>
+              <%= form.password_field :current_password, autocomplete: "current-password",
+                  class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
+            </div>
+
+            <div>
+              <%= form.label :password, "New password", class: "block text-sm text-gray-600 mb-1" %>
+              <%= form.password_field :password, autocomplete: "new-password",
+                  class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
+            </div>
+
+            <div>
+              <%= form.label :password_confirmation, "Confirm new password", class: "block text-sm text-gray-600 mb-1" %>
+              <%= form.password_field :password_confirmation, autocomplete: "new-password",
+                  class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Savings Preferences -->
     <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Savings Preferences</h2>
