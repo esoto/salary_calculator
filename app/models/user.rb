@@ -49,7 +49,10 @@ class User < ApplicationRecord
   end
 
   def current_password_correct
-    return if current_password.present? && BCrypt::Password.new(password_digest_was) == current_password
-    errors.add(:current_password, "is incorrect")
+    if current_password.blank?
+      errors.add(:current_password, "can't be blank")
+    elsif BCrypt::Password.new(password_digest_was) != current_password
+      errors.add(:current_password, "is incorrect")
+    end
   end
 end
