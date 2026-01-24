@@ -36,7 +36,7 @@ describe "password change validation" do
       user.password = "newpassword123"
       user.password_confirmation = "newpassword123"
       expect(user).not_to be_valid
-      expect(user.errors[:current_password]).to include("is incorrect")
+      expect(user.errors[:current_password]).to include("can't be blank")
     end
 
     it "is invalid with incorrect current password" do

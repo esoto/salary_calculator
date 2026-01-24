@@ -112,6 +112,25 @@ RSpec.describe "Settings", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    describe "PATCH /settings - combined profile and password update" do
+      it "updates name, email, and password simultaneously" do
+        patch settings_path, params: {
+          user: {
+            name: "Updated Name",
+            email_address: "updated@example.com",
+            current_password: "password123",
+            password: "newpassword456",
+            password_confirmation: "newpassword456"
+          }
+        }
+        expect(response).to redirect_to(settings_path)
+        user.reload
+        expect(user.name).to eq("Updated Name")
+        expect(user.email_address).to eq("updated@example.com")
+        expect(user.authenticate("newpassword456")).to be_truthy
+      end
+    end
   end
 
   describe "authentication" do

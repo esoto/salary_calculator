@@ -19,7 +19,7 @@ class User < ApplicationRecord
   validates :holiday_days_per_year, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 30 }
   validates :hours_per_day, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 12 }
 
-  attr_accessor :current_password
+  attr_accessor :current_password, :skip_current_password_validation
 
   validate :current_password_correct, if: :password_change_requested?
 
@@ -40,12 +40,11 @@ class User < ApplicationRecord
   private
 
   def password_change_requested?
-    password.present? && password_digest_changed? && persisted? && !current_password_bypass_enabled?
+    persisted? && password.present? && password_digest_changed? && !current_password_bypass_enabled?
   end
 
   def current_password_bypass_enabled?
-    # Allow bypassing current_password validation if explicitly set to true
-    @skip_current_password_validation == true
+    skip_current_password_validation == true
   end
 
   def current_password_correct

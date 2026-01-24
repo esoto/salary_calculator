@@ -79,7 +79,7 @@ RSpec.describe User, type: :model do
     it 'token is invalidated after password change' do
       token = user.password_reset_token
 
-      user.instance_variable_set(:@skip_current_password_validation, true)
+      user.skip_current_password_validation = true
       user.update!(password: 'newpassword123', password_confirmation: 'newpassword123')
 
       expect {
