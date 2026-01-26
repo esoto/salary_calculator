@@ -40,3 +40,6 @@
 
 # Ignore git worktrees directory
 /.worktrees
+
+# Ignore test coverage reports
+/coverage
