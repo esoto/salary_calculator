@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_24_130804) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_27_012509) do
+  create_table "households", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "invite_code", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
+  end
+
   create_table "salary_entries", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "holiday_days_taken", precision: 4, scale: 2, default: "0.0", null: false
