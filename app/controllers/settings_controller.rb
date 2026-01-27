@@ -3,6 +3,7 @@
 class SettingsController < ApplicationController
   def show
     @user = current_user
+    @household = Current.user.household
   end
 
   def update
