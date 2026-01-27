@@ -22,7 +22,7 @@ Rails.application.routes.draw do
       post :regenerate_code
     end
   end
-  resource :household, only: [:show]
+  resource :household, only: [:show], controller: 'household'
 
   get "up" => "rails/health#show", as: :rails_health_check
 end
