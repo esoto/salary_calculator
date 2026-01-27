@@ -29,14 +29,18 @@ class HouseholdController < ApplicationController
   end
 
   def prepare_household_chart_data(year)
+    entries = SalaryEntry.where(user: @household.members).for_year(year)
+    entries_by_user = entries.group_by(&:user_id)
+
     @household.members.map do |member|
-      entries_by_month = member.salary_entries.for_year(year).group_by(&:month)
+      member_entries = entries_by_user[member.id] || []
+      entries_by_month = member_entries.group_by(&:month)
 
       series_data = (1..12).map do |month|
         month_label = Date::MONTHNAMES[month][0..2]
         entry = entries_by_month[month]&.first
         value = entry ? (entry.aguinaldo_savings + entry.vacation_savings + entry.holiday_savings).to_f : 0
-        [month_label, value]
+        [ month_label, value ]
       end
 
       { name: member.name, data: series_data }
