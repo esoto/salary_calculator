@@ -84,6 +84,15 @@ RSpec.describe "Households", type: :request do
         delete leave_household_path(household)
       }.not_to change(Household, :count)
     end
+
+    it "rejects non-members" do
+      other_household = create(:household)
+
+      delete leave_household_path(other_household)
+
+      expect(response).to redirect_to(settings_path)
+      expect(flash[:alert]).to be_present
+    end
   end
 
   describe "POST /households/:id/regenerate_code" do

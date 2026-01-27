@@ -1,7 +1,7 @@
 class HouseholdsController < ApplicationController
-  before_action :require_no_household, only: [:create, :join]
-  before_action :set_household, only: [:leave, :regenerate_code]
-  before_action :require_membership, only: [:leave, :regenerate_code]
+  before_action :require_no_household, only: [ :create, :join ]
+  before_action :set_household, only: [ :leave, :regenerate_code ]
+  before_action :require_membership, only: [ :leave, :regenerate_code ]
 
   def create
     @household = Household.new(household_params)
