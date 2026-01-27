@@ -162,7 +162,7 @@
 
         <div class="space-y-4">
           <!-- Create Household -->
-          <%= form_with url: households_path, class: "space-y-3" do |f| %>
+          <%= form_with url: households_path, scope: :household, class: "space-y-3" do |f| %>
             <div>
               <%= f.label :name, "Household Name", class: "block text-sm font-medium text-gray-700 mb-1" %>
               <%= f.text_field :name, placeholder: "e.g., Smith Family",
