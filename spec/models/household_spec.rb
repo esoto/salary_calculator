@@ -47,4 +47,70 @@ RSpec.describe Household, type: :model do
       expect(household.invite_code).not_to eq(old_code)
     end
   end
+
+  describe '#combined_earnings_for_year' do
+    let(:household) { create(:household) }
+    let(:user1) { create(:user) }
+    let(:user2) { create(:user) }
+
+    before do
+      create(:household_membership, household: household, user: user1)
+      create(:household_membership, household: household, user: user2)
+      create(:salary_entry, user: user1, year: 2026, month: 1, hours_worked: 100, hourly_rate: 50)
+      create(:salary_entry, user: user1, year: 2026, month: 2, hours_worked: 100, hourly_rate: 50)
+      create(:salary_entry, user: user2, year: 2026, month: 1, hours_worked: 80, hourly_rate: 50)
+    end
+
+    it 'sums earnings from all members for the year' do
+      expect(household.combined_earnings_for_year(2026)).to eq(14000)
+    end
+
+    it 'returns 0 for year with no entries' do
+      expect(household.combined_earnings_for_year(2025)).to eq(0)
+    end
+  end
+
+  describe '#combined_savings_for_year' do
+    let(:household) { create(:household) }
+    let(:user1) { create(:user, aguinaldo_enabled: true, vacation_enabled: true, holiday_enabled: true) }
+    let(:user2) { create(:user, aguinaldo_enabled: true, vacation_enabled: true, holiday_enabled: true) }
+
+    before do
+      create(:household_membership, household: household, user: user1)
+      create(:household_membership, household: household, user: user2)
+      create(:salary_entry, user: user1, year: 2026, month: 1, hours_worked: 100, hourly_rate: 50)
+      create(:salary_entry, user: user2, year: 2026, month: 1, hours_worked: 80, hourly_rate: 50)
+    end
+
+    it 'sums savings from all members for the year' do
+      total = household.combined_savings_for_year(2026)
+      expect(total).to be > 0
+    end
+  end
+
+  describe '#member_stats_for_year' do
+    let(:household) { create(:household) }
+    let(:user1) { create(:user, name: 'Alice') }
+    let(:user2) { create(:user, name: 'Bob') }
+
+    before do
+      create(:household_membership, household: household, user: user1)
+      create(:household_membership, household: household, user: user2)
+      create(:salary_entry, user: user1, year: 2026, month: 1, hours_worked: 100, hourly_rate: 50)
+      create(:salary_entry, user: user2, year: 2026, month: 1, hours_worked: 80, hourly_rate: 50)
+    end
+
+    it 'returns stats for each member' do
+      stats = household.member_stats_for_year(2026)
+      expect(stats.length).to eq(2)
+      expect(stats.map { |s| s[:name] }).to contain_exactly('Alice', 'Bob')
+    end
+
+    it 'includes earnings and savings per member' do
+      stats = household.member_stats_for_year(2026)
+      alice_stats = stats.find { |s| s[:name] == 'Alice' }
+      expect(alice_stats[:earnings]).to eq(5000)
+      expect(alice_stats[:savings]).to be_present
+    end
+  end
 end

@@ -11,6 +11,29 @@ class Household < ApplicationRecord
     update!(invite_code: self.class.generate_unique_code)
   end
 
+  def combined_earnings_for_year(year)
+    SalaryEntry.where(user: members).for_year(year).sum { |e| e.monthly_salary }
+  end
+
+  def combined_savings_for_year(year)
+    entries = SalaryEntry.where(user: members).for_year(year)
+    entries.sum { |e| e.aguinaldo_savings + e.vacation_savings + e.holiday_savings }
+  end
+
+  def member_stats_for_year(year)
+    members.map do |member|
+      entries = member.salary_entries.for_year(year)
+      earnings = entries.sum { |e| e.monthly_salary }
+      savings = entries.sum { |e| e.aguinaldo_savings + e.vacation_savings + e.holiday_savings }
+      {
+        id: member.id,
+        name: member.name,
+        earnings: earnings,
+        savings: savings
+      }
+    end
+  end
+
   private
 
   def generate_invite_code
