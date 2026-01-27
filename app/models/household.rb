@@ -17,14 +17,18 @@ class Household < ApplicationRecord
 
   def combined_savings_for_year(year)
     entries = SalaryEntry.where(user: members).for_year(year)
-    entries.sum { |e| e.aguinaldo_savings + e.vacation_savings + e.holiday_savings }
+    calculate_total_savings(entries)
   end
 
   def member_stats_for_year(year)
+    entries_by_user = SalaryEntry.where(user: members)
+                                  .for_year(year)
+                                  .group_by(&:user_id)
+
     members.map do |member|
-      entries = member.salary_entries.for_year(year)
+      entries = entries_by_user[member.id] || []
       earnings = entries.sum { |e| e.monthly_salary }
-      savings = entries.sum { |e| e.aguinaldo_savings + e.vacation_savings + e.holiday_savings }
+      savings = calculate_total_savings(entries)
       {
         id: member.id,
         name: member.name,
@@ -35,6 +39,10 @@ class Household < ApplicationRecord
   end
 
   private
+
+  def calculate_total_savings(entries)
+    entries.sum { |e| e.aguinaldo_savings + e.vacation_savings + e.holiday_savings }
+  end
 
   def generate_invite_code
     self.invite_code ||= self.class.generate_unique_code
