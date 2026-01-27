@@ -22,15 +22,8 @@ RSpec.describe Household, type: :model do
   end
 
   describe 'associations' do
-    # HouseholdMembership model will be created in Task 2
-    # These tests are pending until that model exists
-    it 'has many household_memberships with dependent destroy', pending: 'HouseholdMembership will be created in Task 2' do
-      should have_many(:household_memberships).dependent(:destroy)
-    end
-
-    it 'has many members through household_memberships', pending: 'HouseholdMembership will be created in Task 2' do
-      should have_many(:members).through(:household_memberships).source(:user)
-    end
+    it { should have_many(:household_memberships).dependent(:destroy) }
+    it { should have_many(:members).through(:household_memberships).source(:user) }
   end
 
   describe 'invite_code generation' do

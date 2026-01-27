@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_27_012509) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_27_013653) do
+  create_table "household_memberships", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "household_id", null: false
+    t.datetime "joined_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["household_id"], name: "index_household_memberships_on_household_id"
+    t.index ["user_id"], name: "index_household_memberships_on_user_id", unique: true
+  end
+
   create_table "households", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "invite_code", null: false
@@ -58,6 +68,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_012509) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "household_memberships", "households"
+  add_foreign_key "household_memberships", "users"
   add_foreign_key "salary_entries", "users"
   add_foreign_key "sessions", "users"
 end
