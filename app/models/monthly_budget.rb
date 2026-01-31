@@ -23,7 +23,7 @@ class MonthlyBudget < ApplicationRecord
   }.freeze
 
   # Warning: This triggers N+1 unless income_sources are eager loaded.
-  # Use: user.income_sources.active.includes(linked_user: :salary_entries)
+  # Use: user.income_sources.active.with_salary_data
   def total_income_usd
     user.income_sources.active.sum do |source|
       amount = source.amount_for_month(year, month)
