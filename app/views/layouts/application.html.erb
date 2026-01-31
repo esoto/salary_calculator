@@ -27,6 +27,9 @@
           <div class="flex items-center gap-4">
             <% if authenticated? %>
               <%= link_to "Entries", salary_entries_path, class: "text-gray-600 hover:text-gray-800" %>
+              <% if Current.user.household.present? %>
+                <%= link_to "Household", household_path, class: "text-gray-600 hover:text-gray-800" %>
+              <% end %>
               <%= link_to Current.user.name, settings_path, class: "text-gray-600 hover:text-gray-800" %>
               <%= button_to "Log out", session_path, method: :delete,
                   class: "text-gray-600 hover:text-gray-800" %>

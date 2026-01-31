@@ -13,5 +13,16 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :households, only: [ :create ] do
+    collection do
+      post :join
+    end
+    member do
+      delete :leave
+      post :regenerate_code
+    end
+  end
+  resource :household, only: [ :show ], controller: "household"
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

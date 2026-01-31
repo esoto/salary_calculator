@@ -1,0 +1,51 @@
+<div class="max-w-6xl mx-auto px-4">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-900"><%= @household.name %></h1>
+
+    <%= form_with url: household_path, method: :get, class: "flex items-center gap-2" do %>
+      <%= select_tag :year,
+          options_for_select(@available_years.presence || [Date.current.year], @selected_year),
+          class: "border border-gray-300 rounded-lg px-3 py-2",
+          onchange: "this.form.requestSubmit()" %>
+    <% end %>
+  </div>
+
+  <!-- Combined Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white rounded-lg shadow p-6">
+      <p class="text-sm text-gray-600 mb-1">Combined Earnings</p>
+      <p class="text-3xl font-bold text-gray-900"><%= number_to_currency(@combined_earnings) %></p>
+      <p class="text-sm text-gray-500">YTD <%= @selected_year %></p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-6">
+      <p class="text-sm text-gray-600 mb-1">Combined Savings</p>
+      <p class="text-3xl font-bold text-green-600"><%= number_to_currency(@combined_savings) %></p>
+      <p class="text-sm text-gray-500">YTD <%= @selected_year %></p>
+    </div>
+  </div>
+
+  <!-- Member Breakdown -->
+  <div class="bg-white rounded-lg shadow p-6 mb-8">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">By Member</h2>
+
+    <div class="space-y-4">
+      <% @member_stats.each do |member| %>
+        <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+          <span class="font-medium text-gray-900"><%= member[:name] %></span>
+          <div class="text-right">
+            <span class="text-gray-600"><%= number_to_currency(member[:earnings]) %> earnings</span>
+            <span class="mx-2 text-gray-300">|</span>
+            <span class="text-green-600"><%= number_to_currency(member[:savings]) %> savings</span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Combined Savings Chart -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Monthly Savings by Member</h2>
+    <%= column_chart @savings_chart_data, stacked: true, library: { colors: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'] } %>
+  </div>
+</div>

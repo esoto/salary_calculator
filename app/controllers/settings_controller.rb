@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 class SettingsController < ApplicationController
+  before_action :set_user_and_household
+
   def show
-    @user = current_user
   end
 
   def update
-    @user = current_user
     if @user.update(settings_params)
       redirect_to settings_path, notice: "Settings saved successfully."
     else
@@ -15,6 +15,11 @@ class SettingsController < ApplicationController
   end
 
   private
+
+  def set_user_and_household
+    @user = current_user
+    @household = current_user.household
+  end
 
   def settings_params
     params.require(:user).permit(

@@ -15,6 +15,23 @@ RSpec.describe User, type: :model do
     it { should have_many(:salary_entries).dependent(:destroy) }
   end
 
+  describe 'household association' do
+    it { should have_one(:household_membership).dependent(:destroy) }
+    it { should have_one(:household).through(:household_membership) }
+
+    it 'returns nil when user has no household' do
+      user = create(:user)
+      expect(user.household).to be_nil
+    end
+
+    it 'returns household when user is a member' do
+      user = create(:user)
+      household = create(:household)
+      create(:household_membership, user: user, household: household)
+      expect(user.household).to eq(household)
+    end
+  end
+
   describe "savings settings validations" do
     subject { build(:user) }
 
