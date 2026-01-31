@@ -1,4 +1,6 @@
 class MonthlyBudget < ApplicationRecord
+  include CurrencyPrecision
+
   belongs_to :user
   has_many :budget_items, dependent: :destroy
 
@@ -35,7 +37,7 @@ class MonthlyBudget < ApplicationRecord
 
   def category_percentage(category)
     return 0.0 if total_income_usd.zero?
-    ((category_total_usd(category) / total_income_usd) * 100).round(2)
+    ((category_total_usd(category) / total_income_usd) * 100).round(PERCENTAGE_DECIMAL_PLACES)
   end
 
   def total_expenses_usd

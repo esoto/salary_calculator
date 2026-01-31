@@ -1,4 +1,6 @@
 class BudgetItem < ApplicationRecord
+  include CurrencyPrecision
+
   belongs_to :monthly_budget
 
   enum :category, {
@@ -19,11 +21,11 @@ class BudgetItem < ApplicationRecord
 
   def amount_in_usd
     return amount if usd?
-    (amount / monthly_budget.exchange_rate).round(2)
+    (amount / monthly_budget.exchange_rate).round(CURRENCY_DECIMAL_PLACES)
   end
 
   def amount_in_crc
     return amount if crc?
-    (amount * monthly_budget.exchange_rate).round(2)
+    (amount * monthly_budget.exchange_rate).round(CURRENCY_DECIMAL_PLACES)
   end
 end
