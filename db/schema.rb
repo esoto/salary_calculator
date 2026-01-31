@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_27_013653) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_31_200901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "budget_items", force: :cascade do |t|
+    t.decimal "amount", precision: 12, scale: 2, null: false
+    t.string "category", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "CRC", null: false
+    t.bigint "monthly_budget_id", null: false
+    t.string "name", null: false
+    t.boolean "paid", default: false, null: false
+    t.integer "position"
+    t.datetime "updated_at", null: false
+    t.index ["monthly_budget_id", "category"], name: "index_budget_items_on_monthly_budget_id_and_category"
+    t.index ["monthly_budget_id"], name: "index_budget_items_on_monthly_budget_id"
+  end
 
   create_table "household_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -30,6 +44,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_013653) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
+  end
+
+  create_table "monthly_budgets", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "exchange_rate", precision: 10, scale: 4, null: false
+    t.integer "month", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.integer "year", null: false
+    t.index ["user_id", "year", "month"], name: "index_monthly_budgets_on_user_id_and_year_and_month", unique: true
+    t.index ["user_id"], name: "index_monthly_budgets_on_user_id"
   end
 
   create_table "salary_entries", force: :cascade do |t|
@@ -71,8 +96,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_27_013653) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "budget_items", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
+  add_foreign_key "monthly_budgets", "users"
   add_foreign_key "salary_entries", "users"
   add_foreign_key "sessions", "users"
 end
