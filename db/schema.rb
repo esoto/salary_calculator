@@ -11,12 +11,15 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[8.1].define(version: 2026_01_27_013653) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
+
   create_table "household_memberships", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "household_id", null: false
+    t.bigint "household_id", null: false
     t.datetime "joined_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.index ["household_id"], name: "index_household_memberships_on_household_id"
     t.index ["user_id"], name: "index_household_memberships_on_user_id", unique: true
   end
