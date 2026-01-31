@@ -23,12 +23,12 @@ class MonthlyBudget < ApplicationRecord
   def total_income_usd
     user.income_sources.active.sum do |source|
       amount = source.amount_for_month(year, month)
-      source.currency == "USD" ? amount : (amount / exchange_rate)
+      source.usd? ? amount : (amount / exchange_rate)
     end
   end
 
   def category_total_usd(category)
-    budget_items.by_category(category).sum(&:amount_in_usd)
+    budget_items.where(category: category).sum(&:amount_in_usd)
   end
 
   def category_percentage(category)

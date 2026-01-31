@@ -1,15 +1,31 @@
 require 'rails_helper'
 
 RSpec.describe BudgetItem, type: :model do
-  describe "validations" do
+  describe "associations" do
     it { should belong_to(:monthly_budget) }
+  end
+
+  describe "validations" do
     it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:category) }
     it { should validate_presence_of(:amount) }
-    it { should validate_presence_of(:currency) }
     it { should validate_numericality_of(:amount).is_greater_than_or_equal_to(0) }
-    it { should validate_inclusion_of(:category).in_array(%w[fixed guilt_free savings investments]) }
-    it { should validate_inclusion_of(:currency).in_array(%w[CRC USD]) }
+  end
+
+  describe "enums" do
+    it { should define_enum_for(:category).with_values(fixed: "fixed", guilt_free: "guilt_free", savings: "savings", investments: "investments").backed_by_column_of_type(:string) }
+    it { should define_enum_for(:currency).with_values(crc: "CRC", usd: "USD").backed_by_column_of_type(:string) }
+  end
+
+  describe "enum scopes" do
+    let(:budget) { create(:monthly_budget) }
+    let!(:fixed_item) { create(:budget_item, monthly_budget: budget, category: "fixed") }
+    let!(:savings_item) { create(:budget_item, monthly_budget: budget, category: "savings") }
+
+    it "provides category scopes" do
+      expect(BudgetItem.fixed).to include(fixed_item)
+      expect(BudgetItem.fixed).not_to include(savings_item)
+      expect(BudgetItem.savings).to include(savings_item)
+    end
   end
 
   describe "#amount_in_usd" do

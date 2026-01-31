@@ -1,14 +1,34 @@
 require 'rails_helper'
 
 RSpec.describe IncomeSource, type: :model do
-  describe "validations" do
+  describe "associations" do
     it { should belong_to(:user) }
     it { should belong_to(:linked_user).class_name("User").optional }
+  end
+
+  describe "validations" do
     it { should validate_presence_of(:name) }
-    it { should validate_presence_of(:currency) }
-    it { should validate_presence_of(:income_type) }
-    it { should validate_inclusion_of(:currency).in_array(%w[CRC USD]) }
-    it { should validate_inclusion_of(:income_type).in_array(%w[hourly fixed]) }
+  end
+
+  describe "enums" do
+    it { should define_enum_for(:currency).with_values(crc: "CRC", usd: "USD").backed_by_column_of_type(:string) }
+    it { should define_enum_for(:income_type).with_values(hourly: "hourly", fixed: "fixed").backed_by_column_of_type(:string) }
+  end
+
+  describe "enum scopes and predicates" do
+    let(:user) { create(:user) }
+    let!(:fixed_source) { create(:income_source, user: user, income_type: "fixed") }
+    let!(:hourly_source) { create(:income_source, user: user, income_type: "hourly") }
+
+    it "provides income_type scopes" do
+      expect(IncomeSource.fixed).to include(fixed_source)
+      expect(IncomeSource.hourly).to include(hourly_source)
+    end
+
+    it "provides predicates" do
+      expect(fixed_source.fixed?).to be true
+      expect(hourly_source.hourly?).to be true
+    end
   end
 
   describe "#amount_for_month" do
