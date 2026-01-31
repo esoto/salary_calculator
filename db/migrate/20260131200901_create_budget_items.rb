@@ -12,6 +12,6 @@ class CreateBudgetItems < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :budget_items, [:monthly_budget_id, :category]
+    add_index :budget_items, [ :monthly_budget_id, :category ]
   end
 end
