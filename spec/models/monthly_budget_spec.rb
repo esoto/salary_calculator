@@ -21,4 +21,45 @@ RSpec.describe MonthlyBudget, type: :model do
       expect(duplicate.errors[:month]).to include("has already been taken")
     end
   end
+
+  describe "calculations" do
+    let(:user) { create(:user) }
+    let!(:income_source) { create(:income_source, user: user, amount: 5000, currency: "USD") }
+    let(:budget) { create(:monthly_budget, user: user, exchange_rate: 500) }
+
+    before do
+      create(:budget_item, monthly_budget: budget, category: "fixed", amount: 1500, currency: "USD")
+      create(:budget_item, monthly_budget: budget, category: "fixed", amount: 250000, currency: "CRC")
+      create(:budget_item, monthly_budget: budget, category: "guilt_free", amount: 500, currency: "USD")
+      create(:budget_item, monthly_budget: budget, category: "savings", amount: 400, currency: "USD")
+      create(:budget_item, monthly_budget: budget, category: "investments", amount: 500, currency: "USD")
+    end
+
+    describe "#total_income_usd" do
+      it "sums all active income sources in USD" do
+        expect(budget.total_income_usd).to eq(5000)
+      end
+    end
+
+    describe "#category_total_usd" do
+      it "sums items in category, converting CRC to USD" do
+        # 1500 USD + 250000 CRC / 500 = 1500 + 500 = 2000
+        expect(budget.category_total_usd("fixed")).to eq(2000)
+      end
+    end
+
+    describe "#category_percentage" do
+      it "calculates percentage of income" do
+        # 2000 / 5000 = 40%
+        expect(budget.category_percentage("fixed")).to eq(40.0)
+      end
+    end
+
+    describe "#total_expenses_usd" do
+      it "sums all budget items in USD" do
+        # 2000 + 500 + 400 + 500 = 3400
+        expect(budget.total_expenses_usd).to eq(3400)
+      end
+    end
+  end
 end
