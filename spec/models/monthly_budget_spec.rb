@@ -61,5 +61,94 @@ RSpec.describe MonthlyBudget, type: :model do
         expect(budget.total_expenses_usd).to eq(3400)
       end
     end
+
+    describe "#category_status" do
+      # Using fixed category: target is { min: 50, max: 60 }
+      # With $1000 income, each $10 spent = 1%
+
+      let(:status_user) { create(:user) }
+      let!(:status_income) { create(:income_source, user: status_user, amount: 1000, currency: "USD") }
+      let(:status_budget) { create(:monthly_budget, user: status_user, exchange_rate: 500) }
+
+      context "when percentage is within target range" do
+        before do
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 550, currency: "USD")
+        end
+
+        it "returns :ok" do
+          expect(status_budget.category_status("fixed")).to eq(:ok)
+        end
+      end
+
+      context "when percentage is at exact minimum boundary" do
+        before do
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 500, currency: "USD")
+        end
+
+        it "returns :ok" do
+          expect(status_budget.category_status("fixed")).to eq(:ok)
+        end
+      end
+
+      context "when percentage is at exact maximum boundary" do
+        before do
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 600, currency: "USD")
+        end
+
+        it "returns :ok" do
+          expect(status_budget.category_status("fixed")).to eq(:ok)
+        end
+      end
+
+      context "when percentage is below min but within warning band (min - 5)" do
+        before do
+          # 46% is below 50 but >= 45
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 460, currency: "USD")
+        end
+
+        it "returns :warning" do
+          expect(status_budget.category_status("fixed")).to eq(:warning)
+        end
+      end
+
+      context "when percentage is more than 5% below min" do
+        before do
+          # 44% is below 45 (min - 5)
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 440, currency: "USD")
+        end
+
+        it "returns :low" do
+          expect(status_budget.category_status("fixed")).to eq(:low)
+        end
+      end
+
+      context "when percentage is above max but within warning band (max + 5)" do
+        before do
+          # 64% is above 60 but <= 65
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 640, currency: "USD")
+        end
+
+        it "returns :warning" do
+          expect(status_budget.category_status("fixed")).to eq(:warning)
+        end
+      end
+
+      context "when percentage is more than 5% above max" do
+        before do
+          # 66% is above 65 (max + 5)
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 660, currency: "USD")
+        end
+
+        it "returns :high" do
+          expect(status_budget.category_status("fixed")).to eq(:high)
+        end
+      end
+
+      context "when category has no defined target" do
+        it "returns :ok" do
+          expect(status_budget.category_status("unknown")).to eq(:ok)
+        end
+      end
+    end
   end
 end
