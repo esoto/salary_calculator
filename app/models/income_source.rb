@@ -9,6 +9,7 @@ class IncomeSource < ApplicationRecord
   validates :amount, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   scope :active, -> { where(active: true) }
+  scope :with_salary_data, -> { includes(linked_user: :salary_entries) }
 
   def amount_for_month(year, month)
     if fixed?

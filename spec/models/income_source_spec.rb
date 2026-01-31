@@ -29,6 +29,10 @@ RSpec.describe IncomeSource, type: :model do
       expect(fixed_source.fixed?).to be true
       expect(hourly_source.hourly?).to be true
     end
+
+    it "provides with_salary_data scope for eager loading" do
+      expect(IncomeSource.with_salary_data.to_sql).to include("income_sources")
+    end
   end
 
   describe "#amount_for_month" do
