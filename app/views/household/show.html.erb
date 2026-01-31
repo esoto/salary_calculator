@@ -6,7 +6,7 @@
       <%= select_tag :year,
           options_for_select(@available_years.presence || [Date.current.year], @selected_year),
           class: "border border-gray-300 rounded-lg px-3 py-2",
-          onchange: "this.form.submit()" %>
+          onchange: "this.form.requestSubmit()" %>
     <% end %>
   </div>
 

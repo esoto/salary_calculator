@@ -7,11 +7,10 @@ class HouseholdController < ApplicationController
     @available_years = SalaryEntry.where(user: @household.members)
                                   .distinct.pluck(:year).sort.reverse
 
-    selected_year = params[:year].to_i
-    if (2020..2100).cover?(selected_year)
-      @selected_year = selected_year
+    @selected_year = if params[:year].present? && (2020..2100).cover?(params[:year].to_i)
+                        params[:year].to_i
     else
-      @selected_year = @available_years.first || Date.current.year
+                        @available_years.first || Date.current.year
     end
 
     @combined_earnings = @household.combined_earnings_for_year(@selected_year)
@@ -28,6 +27,9 @@ class HouseholdController < ApplicationController
     end
   end
 
+  # Loads entries into memory because savings calculations are computed Ruby methods
+  # (aguinaldo_savings, vacation_savings, holiday_savings depend on user settings).
+  # Scale is small: ~2-3 members × 12 months = ~36 records max per year.
   def prepare_household_chart_data(year)
     entries = SalaryEntry.where(user: @household.members).for_year(year)
     entries_by_user = entries.group_by(&:user_id)

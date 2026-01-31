@@ -8,11 +8,12 @@ class Household < ApplicationRecord
   before_validation :generate_invite_code, on: :create
 
   def regenerate_invite_code!
-    update!(invite_code: self.class.generate_unique_code)
+    regenerate_invite_code
+    save!
   end
 
   def combined_earnings_for_year(year)
-    SalaryEntry.where(user: members).for_year(year).sum { |e| e.monthly_salary }
+    SalaryEntry.where(user: members).for_year(year).sum("hours_worked * hourly_rate")
   end
 
   def combined_savings_for_year(year)
@@ -21,19 +22,24 @@ class Household < ApplicationRecord
   end
 
   def member_stats_for_year(year)
+    # Get earnings per user via SQL aggregation
+    earnings_by_user = SalaryEntry.where(user: members)
+                                   .for_year(year)
+                                   .group(:user_id)
+                                   .sum("hours_worked * hourly_rate")
+
+    # Savings require Ruby calculation (computed methods depend on user settings)
     entries_by_user = SalaryEntry.where(user: members)
                                   .for_year(year)
                                   .group_by(&:user_id)
 
     members.map do |member|
       entries = entries_by_user[member.id] || []
-      earnings = entries.sum { |e| e.monthly_salary }
-      savings = calculate_total_savings(entries)
       {
         id: member.id,
         name: member.name,
-        earnings: earnings,
-        savings: savings
+        earnings: earnings_by_user[member.id] || 0,
+        savings: calculate_total_savings(entries)
       }
     end
   end
@@ -48,10 +54,15 @@ class Household < ApplicationRecord
     self.invite_code ||= self.class.generate_unique_code
   end
 
+  def regenerate_invite_code
+    self.invite_code = self.class.generate_unique_code
+  end
+
   def self.generate_unique_code
-    loop do
+    10.times do
       code = SecureRandom.alphanumeric(6).upcase
-      break code unless exists?(invite_code: code)
+      return code unless exists?(invite_code: code)
     end
+    raise ActiveRecord::RecordNotUnique, "Failed to generate unique invite code after 10 attempts"
   end
 end

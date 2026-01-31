@@ -7,8 +7,13 @@ class HouseholdsController < ApplicationController
     @household = Household.new(household_params)
 
     if @household.save
-      @household.household_memberships.create!(user: Current.user)
-      redirect_to settings_path, notice: "Household created successfully."
+      membership = @household.household_memberships.create(user: Current.user)
+      if membership.persisted?
+        redirect_to settings_path, notice: "Household created successfully."
+      else
+        @household.destroy
+        redirect_to settings_path, alert: "You are already in a household."
+      end
     else
       redirect_to settings_path, alert: @household.errors.full_messages.join(", ")
     end
@@ -20,14 +25,20 @@ class HouseholdsController < ApplicationController
     if household.nil?
       redirect_to settings_path, alert: "Invalid invite code."
     else
-      household.household_memberships.create!(user: Current.user)
-      redirect_to settings_path, notice: "You have joined #{household.name}."
+      membership = household.household_memberships.create(user: Current.user)
+      if membership.persisted?
+        redirect_to settings_path, notice: "You have joined #{household.name}."
+      else
+        redirect_to settings_path, alert: "You are already in a household."
+      end
     end
   end
 
   def leave
-    @household.household_memberships.find_by(user: Current.user)&.destroy
-    @household.destroy if @household.members.empty?
+    @household.transaction do
+      @household.household_memberships.find_by(user: Current.user)&.destroy
+      @household.destroy if @household.household_memberships.count.zero?
+    end
     redirect_to settings_path, notice: "You have left the household."
   end
 

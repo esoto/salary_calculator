@@ -26,6 +26,15 @@ RSpec.describe "Households", type: :request do
       expect(response).to redirect_to(settings_path)
       expect(flash[:alert]).to include('already')
     end
+
+    it "shows error with blank name" do
+      expect {
+        post households_path, params: { household: { name: '' } }
+      }.not_to change(Household, :count)
+
+      expect(response).to redirect_to(settings_path)
+      expect(flash[:alert]).to include("Name can't be blank")
+    end
   end
 
   describe "POST /households/join" do
