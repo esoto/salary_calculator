@@ -117,7 +117,7 @@ RSpec.describe "Vacation Over-Limit Flow", type: :request do
       post salary_entries_path, params: {
         salary_entry: {
           year: 2025, month: 1, hours_worked: 160, hourly_rate: 50,
-          vacation_days_taken: 100
+          vacation_days_taken: 99
         }
       }
 
