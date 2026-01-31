@@ -14,10 +14,10 @@ class MonthlyBudget < ApplicationRecord
   scope :ordered, -> { order(year: :desc, month: :desc) }
 
   CATEGORY_TARGETS = {
-    "fixed" => { min: 50, max: 60 },
-    "guilt_free" => { min: 20, max: 35 },
-    "savings" => { min: 5, max: 10 },
-    "investments" => { min: 10, max: 10 }
+    "fixed" => { min: 50, max: 60 }.freeze,
+    "guilt_free" => { min: 20, max: 35 }.freeze,
+    "savings" => { min: 5, max: 10 }.freeze,
+    "investments" => { min: 10, max: 10 }.freeze
   }.freeze
 
   # Warning: This triggers N+1 unless income_sources are eager loaded.
