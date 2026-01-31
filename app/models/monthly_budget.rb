@@ -22,10 +22,8 @@ class MonthlyBudget < ApplicationRecord
     "investments" => { min: 10, max: 10 }.freeze
   }.freeze
 
-  # Warning: This triggers N+1 unless income_sources are eager loaded.
-  # Use: user.income_sources.active.with_salary_data
   def total_income_usd
-    user.income_sources.active.sum do |source|
+    user.income_sources.active.with_salary_data.sum do |source|
       amount = source.amount_for_month(year, month)
       source.usd? ? amount : (amount / exchange_rate)
     end
