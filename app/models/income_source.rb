@@ -15,7 +15,8 @@ class IncomeSource < ApplicationRecord
     if fixed?
       amount || 0
     elsif linked_user.present?
-      entry = linked_user.salary_entries.find_by(year: year, month: month)
+      # Use detect to leverage preloaded salary_entries from with_salary_data scope
+      entry = linked_user.salary_entries.detect { |e| e.year == year && e.month == month }
       entry ? (entry.hours_worked * entry.hourly_rate) : 0
     else
       0
