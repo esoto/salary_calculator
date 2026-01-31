@@ -2,7 +2,7 @@
 
 This document tracks features that have been identified but not yet implemented.
 
-**Last Updated:** 2026-01-23
+**Last Updated:** 2026-01-31
 
 ---
 
@@ -80,29 +80,11 @@ This document tracks features that have been identified but not yet implemented.
 
 ---
 
-## User/Authentication Enhancements
-
-### Household/Shared View
-**Priority:** Low
-**Complexity:** High
-
-**Description:** Allow multiple users to access shared salary data for household financial planning.
-
-**Requirements:**
-- Household model with multiple users
-- Invitation system for adding family members
-- Permission levels (owner, editor, viewer)
-- Aggregate household view combining multiple users
-- Privacy settings for individual entries
-
-**Impact:** Family financial planning
-
----
-
 ## Completed Features
 
 These features have been implemented and merged:
 
+- ✅ **Household/Shared View** (PR #20) - Create or join a household to view combined earnings with a partner
 - ✅ **User Profile Editing** (PR #19) - Edit name, email, and password from Settings page
 - ✅ **Vacation Over-Limit Warning** (PR #18) - Soft validation warning when taking more vacation days than earned, with acknowledgment checkbox
 - ✅ **Configurable Vacation/Holiday Settings** (PR #17) - User settings page to customize vacation/holiday days per year

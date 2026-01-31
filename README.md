@@ -1,24 +1,83 @@
-# README
+# Salary Calculator
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Ruby on Rails application for tracking freelance earnings, calculating savings for Mexican labor benefits (aguinaldo, vacation premium, holiday pay), and managing household finances.
 
-Things you may want to cover:
+## Features
 
-* Ruby version
+- **Salary Entry Tracking** - Log hours worked and hourly rate per month
+- **Automatic Savings Calculations** - Computes aguinaldo, vacation, and holiday savings based on Mexican labor law
+- **Time Off Tracking** - Track vacation and holiday days taken with over-limit warnings
+- **Dashboard** - View year-to-date earnings, savings breakdown, and trends
+- **Savings Charts** - Visual breakdown of savings by category
+- **Configurable Settings** - Customize vacation/holiday days per year and hours per day
+- **Household Sharing** - Create or join a household to view combined earnings with a partner
+- **User Authentication** - Secure login, registration, and password reset via email
 
-* System dependencies
+## Tech Stack
 
-* Configuration
+- **Ruby** 3.4.1
+- **Rails** 8.1
+- **PostgreSQL** - Database
+- **TailwindCSS** - Styling
+- **Hotwire (Turbo + Stimulus)** - Frontend interactivity
+- **Chartkick** - Charts and graphs
+- **RSpec** - Testing framework
 
-* Database creation
+## Getting Started
 
-* Database initialization
+### Prerequisites
 
-* How to run the test suite
+- Ruby 3.4.1
+- PostgreSQL
+- Node.js (for TailwindCSS)
 
-* Services (job queues, cache servers, search engines, etc.)
+### Installation
 
-* Deployment instructions
+```bash
+# Clone the repository
+git clone https://github.com/esoto/salary_calculator.git
+cd salary_calculator
 
-* ...
+# Install dependencies
+bundle install
+
+# Setup database
+bin/rails db:setup
+
+# Build CSS
+bin/rails tailwindcss:build
+
+# Run the server
+bin/rails server
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+bundle exec rspec
+
+# Run with coverage report
+COVERAGE=true bundle exec rspec
+```
+
+### Code Quality
+
+```bash
+# Run RuboCop
+bundle exec rubocop
+
+# Run Brakeman security scanner
+bundle exec brakeman
+```
+
+## Documentation
+
+See the [docs/](docs/) folder for:
+- Feature design documents
+- Implementation plans
+- Development workflow guidelines
+
+## License
+
+This project is private and not licensed for public use.
