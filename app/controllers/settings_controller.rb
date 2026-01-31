@@ -17,8 +17,8 @@ class SettingsController < ApplicationController
   private
 
   def set_user_and_household
-    @user = Current.user
-    @household = Current.user.household
+    @user = current_user
+    @household = current_user.household
   end
 
   def settings_params

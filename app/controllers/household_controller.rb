@@ -2,7 +2,7 @@ class HouseholdController < ApplicationController
   before_action :require_household_membership
 
   def show
-    @household = Current.user.household
+    @household = current_user.household
 
     @available_years = SalaryEntry.where(user: @household.members)
                                   .distinct.pluck(:year).sort.reverse
@@ -22,7 +22,7 @@ class HouseholdController < ApplicationController
   private
 
   def require_household_membership
-    unless Current.user.household.present?
+    unless current_user.household.present?
       redirect_to dashboard_path, alert: "You are not a member of a household."
     end
   end
@@ -31,7 +31,7 @@ class HouseholdController < ApplicationController
   # (aguinaldo_savings, vacation_savings, holiday_savings depend on user settings).
   # Scale is small: ~2-3 members × 12 months = ~36 records max per year.
   def prepare_household_chart_data(year)
-    entries = SalaryEntry.where(user: @household.members).for_year(year)
+    entries = SalaryEntry.where(user: @household.members).for_year(year).includes(:user)
     entries_by_user = entries.group_by(&:user_id)
 
     @household.members.map do |member|

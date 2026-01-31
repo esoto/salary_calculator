@@ -17,7 +17,7 @@ class Household < ApplicationRecord
   end
 
   def combined_savings_for_year(year)
-    entries = SalaryEntry.where(user: members).for_year(year)
+    entries = SalaryEntry.where(user: members).for_year(year).includes(:user)
     calculate_total_savings(entries)
   end
 
@@ -31,6 +31,7 @@ class Household < ApplicationRecord
     # Savings require Ruby calculation (computed methods depend on user settings)
     entries_by_user = SalaryEntry.where(user: members)
                                   .for_year(year)
+                                  .includes(:user)
                                   .group_by(&:user_id)
 
     members.map do |member|
