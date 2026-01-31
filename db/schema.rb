@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_31_200901) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_31_201714) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,6 +44,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_200901) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
+  end
+
+  create_table "income_sources", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.decimal "amount", precision: 12, scale: 2
+    t.datetime "created_at", null: false
+    t.string "currency", default: "USD", null: false
+    t.string "income_type", default: "fixed", null: false
+    t.bigint "linked_user_id"
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["linked_user_id"], name: "index_income_sources_on_linked_user_id"
+    t.index ["user_id"], name: "index_income_sources_on_user_id"
   end
 
   create_table "monthly_budgets", force: :cascade do |t|
@@ -99,6 +113,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_200901) do
   add_foreign_key "budget_items", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
+  add_foreign_key "income_sources", "users"
+  add_foreign_key "income_sources", "users", column: "linked_user_id"
   add_foreign_key "monthly_budgets", "users"
   add_foreign_key "salary_entries", "users"
   add_foreign_key "sessions", "users"
