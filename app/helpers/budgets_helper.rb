@@ -50,7 +50,7 @@ module BudgetsHelper
   end
 
   def month_options_for_select(selected = nil)
-    (1..12).map { |m| [Date::MONTHNAMES[m], m] }
+    (1..12).map { |m| [ Date::MONTHNAMES[m], m ] }
   end
 
   def year_options_for_select(selected = nil, range: 5)
