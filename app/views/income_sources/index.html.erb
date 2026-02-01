@@ -89,9 +89,9 @@
               <td class="px-6 py-4 whitespace-nowrap text-right">
                 <% if source.fixed? && source.amount %>
                   <% if source.usd? %>
-                    <%= number_to_currency(source.amount, precision: 2) %>
+                    <%= format_usd(source.amount) %>
                   <% else %>
-                    ₡<%= number_with_delimiter(source.amount.to_i) %>
+                    <%= format_crc(source.amount) %>
                   <% end %>
                 <% elsif source.hourly? %>
                   <span class="text-gray-500 text-sm">From salary</span>

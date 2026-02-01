@@ -1,14 +1,6 @@
 # frozen_string_literal: true
 
 module BudgetsHelper
-  def format_usd(amount)
-    number_to_currency(amount, precision: 2)
-  end
-
-  def format_crc(amount)
-    number_to_currency(amount, unit: "₡", precision: 0, delimiter: ",")
-  end
-
   def category_display_name(category)
     {
       "fixed" => "Fixed Expenses",
