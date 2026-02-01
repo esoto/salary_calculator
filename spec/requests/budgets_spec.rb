@@ -14,7 +14,7 @@ RSpec.describe "Budgets", type: :request do
     end
 
     it "shows user's budgets" do
-      budget = create(:monthly_budget, user: user, month: 1)
+      create(:monthly_budget, user: user, month: 1)
       get budgets_path
       expect(response.body).to include("January #{Date.current.year}")
     end

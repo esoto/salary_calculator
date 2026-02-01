@@ -14,7 +14,7 @@ RSpec.describe "IncomeSources", type: :request do
     end
 
     it "shows user's income sources" do
-      source = create(:income_source, user: user, name: "Main Salary")
+      create(:income_source, user: user, name: "Main Salary")
       get income_sources_path
       expect(response.body).to include("Main Salary")
     end
