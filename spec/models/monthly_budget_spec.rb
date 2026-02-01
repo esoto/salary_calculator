@@ -150,5 +150,39 @@ RSpec.describe MonthlyBudget, type: :model do
         end
       end
     end
+
+    describe "#copy_items_from" do
+      let(:copy_user) { create(:user) }
+      let(:source_budget) { create(:monthly_budget, user: copy_user, year: 2026, month: 1) }
+      let(:target_budget) { create(:monthly_budget, user: copy_user, year: 2026, month: 2) }
+
+      before do
+        create(:budget_item, monthly_budget: source_budget, name: "Rent", category: "fixed", amount: 1000, currency: "USD", position: 1)
+        create(:budget_item, monthly_budget: source_budget, name: "Netflix", category: "guilt_free", amount: 15, currency: "USD", position: 2)
+      end
+
+      it "copies all items from source budget" do
+        expect {
+          target_budget.copy_items_from(source_budget)
+        }.to change(target_budget.budget_items, :count).by(2)
+      end
+
+      it "copies item attributes" do
+        target_budget.copy_items_from(source_budget)
+        copied_item = target_budget.budget_items.find_by(name: "Rent")
+
+        expect(copied_item.category).to eq("fixed")
+        expect(copied_item.amount).to eq(1000)
+        expect(copied_item.currency).to eq("usd")
+        expect(copied_item.position).to eq(1)
+      end
+
+      it "does not copy paid status" do
+        source_budget.budget_items.first.update!(paid: true)
+        target_budget.copy_items_from(source_budget)
+
+        expect(target_budget.budget_items.first.paid).to be false
+      end
+    end
   end
 end

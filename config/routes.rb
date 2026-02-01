@@ -13,6 +13,16 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :budgets, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
+    resources :budget_items, only: [ :create, :update, :destroy ] do
+      member do
+        patch :toggle_paid
+      end
+    end
+  end
+
+  resources :income_sources, only: [ :index, :create, :update, :destroy ]
+
   resources :households, only: [ :create ] do
     collection do
       post :join
