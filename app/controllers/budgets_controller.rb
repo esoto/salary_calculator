@@ -34,7 +34,7 @@ class BudgetsController < ApplicationController
     @budget = current_user.monthly_budgets.build(budget_params)
 
     if @budget.save
-      copy_from_previous_month if previous_budget
+      @budget.copy_items_from(previous_budget) if previous_budget
       redirect_to budget_path(@budget), notice: "Budget created successfully."
     else
       render :new, status: :unprocessable_entity
@@ -79,17 +79,5 @@ class BudgetsController < ApplicationController
       .where("(year = ? AND month < ?) OR year < ?", @budget.year, @budget.month, @budget.year)
       .order(year: :desc, month: :desc)
       .first
-  end
-
-  def copy_from_previous_month
-    previous_budget.budget_items.each do |item|
-      @budget.budget_items.create!(
-        name: item.name,
-        category: item.category,
-        amount: item.amount,
-        currency: item.currency,
-        position: item.position
-      )
-    end
   end
 end

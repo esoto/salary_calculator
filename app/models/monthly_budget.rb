@@ -55,4 +55,12 @@ class MonthlyBudget < ApplicationRecord
       :ok
     end
   end
+
+  def copy_items_from(source_budget)
+    source_budget.budget_items.each do |item|
+      budget_items.create!(
+        item.attributes.slice("name", "category", "amount", "currency", "position")
+      )
+    end
+  end
 end
