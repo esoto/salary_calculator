@@ -15,6 +15,8 @@ class MonthlyBudget < ApplicationRecord
   scope :for_year, ->(year) { where(year: year) }
   scope :ordered, -> { order(year: :desc, month: :desc) }
 
+  DEFAULT_EXCHANGE_RATE = 503
+
   CATEGORY_TARGETS = {
     "fixed" => { min: 50, max: 60 }.freeze,
     "guilt_free" => { min: 20, max: 35 }.freeze,

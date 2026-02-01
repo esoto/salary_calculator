@@ -46,10 +46,16 @@ class BudgetItemsController < ApplicationController
   end
 
   def toggle_paid
-    @budget_item.update!(paid: !@budget_item.paid)
-    respond_to do |format|
-      format.html { redirect_to budget_path(@budget) }
-      format.turbo_stream
+    if @budget_item.update(paid: !@budget_item.paid)
+      respond_to do |format|
+        format.html { redirect_to budget_path(@budget) }
+        format.turbo_stream
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to budget_path(@budget), alert: @budget_item.errors.full_messages.join(", ") }
+        format.turbo_stream
+      end
     end
   end
 

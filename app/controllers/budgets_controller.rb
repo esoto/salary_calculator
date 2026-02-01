@@ -31,7 +31,7 @@ class BudgetsController < ApplicationController
     @budget = current_user.monthly_budgets.build(
       year: params[:year] || Date.current.year,
       month: params[:month] || Date.current.month,
-      exchange_rate: 503
+      exchange_rate: MonthlyBudget::DEFAULT_EXCHANGE_RATE
     )
   end
 
