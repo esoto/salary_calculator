@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class BudgetItemsController < ApplicationController
+  include BudgetScoped
+
   before_action :set_budget
   before_action :authorize_budget_access
   before_action :set_budget_item, only: [ :update, :destroy, :toggle_paid ]
@@ -53,22 +55,11 @@ class BudgetItemsController < ApplicationController
 
   private
 
-  def set_budget
-    @budget = MonthlyBudget.find(params[:budget_id])
-  end
-
   def set_budget_item
     @budget_item = @budget.budget_items.find(params[:id])
   end
 
   def budget_item_params
     params.require(:budget_item).permit(:name, :category, :amount, :currency, :paid, :position)
-  end
-
-  def authorize_budget_access
-    return if @budget.user == current_user
-    return if current_user.household&.members&.include?(@budget.user)
-
-    redirect_to budgets_path, alert: "Access denied."
   end
 end
