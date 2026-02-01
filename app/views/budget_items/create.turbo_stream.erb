@@ -1,0 +1,14 @@
+<%# Append the new item to the category items list %>
+<%= turbo_stream.append dom_id(@budget, "#{@budget_item.category}_items") do %>
+  <%= render "budget_items/item", item: @budget_item %>
+<% end %>
+
+<%# Reset the form %>
+<%= turbo_stream.replace "item_form_#{@budget_item.category}" do %>
+  <%= render "budget_items/form", budget: @budget, category: @budget_item.category, budget_item: BudgetItem.new(category: @budget_item.category) %>
+<% end %>
+
+<%# Update the category header with new totals %>
+<%= turbo_stream.replace dom_id(@budget, @budget_item.category) do %>
+  <%= render "budgets/category_column", budget: @budget.reload, category: @budget_item.category %>
+<% end %>

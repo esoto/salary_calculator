@@ -1,0 +1,4 @@
+<%# Replace the toggled item with updated styling %>
+<%= turbo_stream.replace @budget_item do %>
+  <%= render "budget_items/item", item: @budget_item %>
+<% end %>
