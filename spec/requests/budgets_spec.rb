@@ -14,9 +14,9 @@ RSpec.describe "Budgets", type: :request do
     end
 
     it "shows user's budgets" do
-      budget = create(:monthly_budget, user: user, year: 2026, month: 1)
+      budget = create(:monthly_budget, user: user, month: 1)
       get budgets_path
-      expect(response.body).to include("January 2026")
+      expect(response.body).to include("January #{Date.current.year}")
     end
 
     context "with household member" do
@@ -29,7 +29,7 @@ RSpec.describe "Budgets", type: :request do
       end
 
       it "shows household member budgets" do
-        create(:monthly_budget, user: partner, year: 2026, month: 1)
+        create(:monthly_budget, user: partner, month: 1)
         get budgets_path
         expect(response.body).to include("Partner")
       end
@@ -53,7 +53,7 @@ RSpec.describe "Budgets", type: :request do
   end
 
   describe "POST /budgets" do
-    let(:valid_params) { { monthly_budget: { year: 2026, month: 3, exchange_rate: 503 } } }
+    let(:valid_params) { { monthly_budget: { year: Date.current.year, month: 3, exchange_rate: 503 } } }
 
     it "creates a budget" do
       expect {
@@ -67,7 +67,7 @@ RSpec.describe "Budgets", type: :request do
     end
 
     it "copies items from previous month" do
-      previous = create(:monthly_budget, user: user, year: 2026, month: 2)
+      previous = create(:monthly_budget, user: user, month: 2)
       create(:budget_item, monthly_budget: previous, name: "Rent", amount: 1000)
 
       post budgets_path, params: valid_params
