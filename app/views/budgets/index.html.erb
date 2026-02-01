@@ -1,0 +1,33 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">Budgets</h1>
+    <%= link_to "New Budget", new_budget_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" %>
+  </div>
+
+  <% if @my_budgets.any? %>
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">My Budgets</h2>
+    <div class="grid gap-4 mb-8">
+      <% @my_budgets.each do |budget| %>
+        <div class="bg-white rounded-lg shadow p-4">
+          <%= link_to budget_path(budget), class: "text-blue-600 hover:text-blue-800" do %>
+            <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @household_budgets.any? %>
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Household Budgets</h2>
+    <div class="grid gap-4">
+      <% @household_budgets.each do |budget| %>
+        <div class="bg-white rounded-lg shadow p-4">
+          <span class="font-medium"><%= budget.user.name %></span> -
+          <%= link_to budget_path(budget), class: "text-blue-600 hover:text-blue-800" do %>
+            <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

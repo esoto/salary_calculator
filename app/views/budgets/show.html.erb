@@ -1,0 +1,34 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-900">
+      <%= Date::MONTHNAMES[@budget.month] %> <%= @budget.year %>
+    </h1>
+    <div class="flex gap-4">
+      <%= link_to "Edit", edit_budget_path(@budget), class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg" %>
+      <%= link_to "Back to Budgets", budgets_path, class: "text-gray-600 hover:text-gray-800" %>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg shadow p-6 mb-6">
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <span class="text-gray-500">Exchange Rate:</span>
+        <span class="font-medium"><%= @budget.exchange_rate %></span>
+      </div>
+      <div>
+        <span class="text-gray-500">Total Income:</span>
+        <span class="font-medium">$<%= number_with_precision(@budget.total_income_usd, precision: 2) %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <% MonthlyBudget::CATEGORY_TARGETS.each_key do |category| %>
+      <div class="bg-white rounded-lg shadow p-4">
+        <h3 class="font-semibold text-gray-800 capitalize mb-2"><%= category.humanize %></h3>
+        <p class="text-2xl font-bold">$<%= number_with_precision(@budget.category_total_usd(category), precision: 2) %></p>
+        <p class="text-sm text-gray-500"><%= @budget.category_percentage(category) %>% of income</p>
+      </div>
+    <% end %>
+  </div>
+</div>
