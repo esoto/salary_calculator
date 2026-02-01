@@ -1,34 +1,87 @@
-<div class="max-w-6xl mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">
-      <%= Date::MONTHNAMES[@budget.month] %> <%= @budget.year %>
-    </h1>
-    <div class="flex gap-4">
-      <%= link_to "Edit", edit_budget_path(@budget), class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg" %>
-      <%= link_to "Back to Budgets", budgets_path, class: "text-gray-600 hover:text-gray-800" %>
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
+    <div>
+      <% if @budget.user != current_user %>
+        <p class="text-sm text-gray-500"><%= @budget.user.name %>'s Budget</p>
+      <% end %>
+      <h1 class="text-3xl font-bold text-gray-900">
+        <%= Date::MONTHNAMES[@budget.month] %> <%= @budget.year %>
+      </h1>
+    </div>
+    <div class="flex gap-3">
+      <%= link_to "Edit Settings", edit_budget_path(@budget),
+          class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg" %>
+      <%= link_to "Back to Budgets", budgets_path(year: @budget.year),
+          class: "text-gray-600 hover:text-gray-800" %>
     </div>
   </div>
 
-  <div class="bg-white rounded-lg shadow p-6 mb-6">
-    <div class="grid grid-cols-2 gap-4">
+  <!-- Summary Bar -->
+  <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
       <div>
         <span class="text-gray-500">Exchange Rate:</span>
-        <span class="font-medium"><%= @budget.exchange_rate %></span>
+        <span class="font-medium">₡<%= number_with_delimiter(@budget.exchange_rate.to_i) %>/$1</span>
       </div>
       <div>
         <span class="text-gray-500">Total Income:</span>
-        <span class="font-medium">$<%= number_with_precision(@budget.total_income_usd, precision: 2) %></span>
+        <span class="font-medium text-green-600"><%= format_usd(@budget.total_income_usd) %></span>
+      </div>
+      <div>
+        <span class="text-gray-500">Total Expenses:</span>
+        <span class="font-medium"><%= format_usd(@budget.total_expenses_usd) %></span>
+      </div>
+      <div>
+        <span class="text-gray-500">Remaining:</span>
+        <% remaining = @budget.total_income_usd - @budget.total_expenses_usd %>
+        <span class="font-medium <%= remaining >= 0 ? 'text-green-600' : 'text-red-600' %>">
+          <%= format_usd(remaining) %>
+        </span>
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <!-- Category Columns -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <% MonthlyBudget::CATEGORY_TARGETS.each_key do |category| %>
-      <div class="bg-white rounded-lg shadow p-4">
-        <h3 class="font-semibold text-gray-800 capitalize mb-2"><%= category.humanize %></h3>
-        <p class="text-2xl font-bold">$<%= number_with_precision(@budget.category_total_usd(category), precision: 2) %></p>
-        <p class="text-sm text-gray-500"><%= @budget.category_percentage(category) %>% of income</p>
-      </div>
+      <%= render "category_column", budget: @budget, category: category %>
     <% end %>
   </div>
+
+  <!-- Income Sources Section -->
+  <% if @income_sources.any? %>
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-semibold text-gray-800 mb-3">Income Sources</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <% @income_sources.each do |source| %>
+          <div class="border border-gray-200 rounded-lg p-3">
+            <div class="flex justify-between items-center">
+              <span class="font-medium"><%= source.name %></span>
+              <span class="text-green-600 font-medium">
+                <% if source.currency == "USD" %>
+                  <%= format_usd(source.amount_for_month(@budget.year, @budget.month)) %>
+                <% else %>
+                  <%= format_crc(source.amount_for_month(@budget.year, @budget.month)) %>
+                <% end %>
+              </span>
+            </div>
+            <% if source.linked_user %>
+              <p class="text-sm text-gray-500">From <%= source.linked_user.name %>'s salary</p>
+            <% else %>
+              <p class="text-sm text-gray-500">Fixed income</p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <div class="mt-3 pt-3 border-t border-gray-200">
+        <%= link_to "Manage Income Sources", income_sources_path, class: "text-blue-600 hover:text-blue-800 text-sm" %>
+      </div>
+    </div>
+  <% else %>
+    <div class="bg-white rounded-lg shadow p-4 text-center">
+      <p class="text-gray-500 mb-2">No income sources configured.</p>
+      <%= link_to "Add Income Sources", income_sources_path, class: "text-blue-600 hover:text-blue-800" %>
+    </div>
+  <% end %>
 </div>
