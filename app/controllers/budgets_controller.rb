@@ -8,7 +8,10 @@ class BudgetsController < ApplicationController
 
   def index
     @year = params[:year]&.to_i || Date.current.year
-    @my_budgets = current_user.monthly_budgets.for_year(@year).ordered
+    @my_budgets = current_user.monthly_budgets
+      .for_year(@year)
+      .ordered
+      .includes(:budget_items, user: { income_sources: { linked_user: :salary_entries } })
 
     @household_budgets = []
     if current_user.household
@@ -16,7 +19,7 @@ class BudgetsController < ApplicationController
         .where(user: current_user.household.members.where.not(id: current_user.id))
         .for_year(@year)
         .ordered
-        .includes(:user)
+        .includes(:budget_items, user: { income_sources: { linked_user: :salary_entries } })
     end
   end
 
