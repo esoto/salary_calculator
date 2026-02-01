@@ -27,6 +27,7 @@
           <div class="flex items-center gap-4">
             <% if authenticated? %>
               <%= link_to "Entries", salary_entries_path, class: "text-gray-600 hover:text-gray-800" %>
+              <%= link_to "Budgets", budgets_path, class: "text-gray-600 hover:text-gray-800" %>
               <% if Current.user.household.present? %>
                 <%= link_to "Household", household_path, class: "text-gray-600 hover:text-gray-800" %>
               <% end %>
