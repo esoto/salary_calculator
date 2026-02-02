@@ -161,6 +161,24 @@ RSpec.describe "Budget Management", type: :system do
       expect(page).to have_content("February 2026")
       expect(page).to have_content("Partner's Budget")
     end
+
+    it "shows shared badge and owner name when viewing shared budget" do
+      partner_budget = create(:monthly_budget, user: partner, year: 2026, month: 3, shared_with_household: true)
+
+      visit budget_path(partner_budget)
+
+      expect(page).to have_content("Shared")
+      expect(page).to have_content("Partner's Budget")
+    end
+
+    it "does not show shared badge on own budget" do
+      own_budget = create(:monthly_budget, user: user, year: 2026, month: 4)
+
+      visit budget_path(own_budget)
+
+      expect(page).not_to have_content("Shared")
+      expect(page).not_to have_content("#{user.name}'s Budget")
+    end
   end
 
   describe "access control" do

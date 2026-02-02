@@ -2,8 +2,11 @@
   <!-- Header -->
   <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
     <div>
-      <% if @budget.user != current_user %>
-        <p class="text-sm text-gray-500"><%= @budget.user.name %>'s Budget</p>
+      <% if @budget.shared_with_household? && !@budget.owned_by?(current_user) %>
+        <%= budget_shared_badge %>
+      <% end %>
+      <% if owner_label = budget_owner_label(@budget) %>
+        <p class="text-sm text-gray-500"><%= owner_label %></p>
       <% end %>
       <h1 class="text-3xl font-bold text-gray-900">
         <%= Date::MONTHNAMES[@budget.month] %> <%= @budget.year %>
