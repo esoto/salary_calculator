@@ -66,7 +66,7 @@ class BudgetsController < ApplicationController
   private
 
   def budget_params
-    params.require(:monthly_budget).permit(:year, :month, :exchange_rate)
+    params.require(:monthly_budget).permit(:year, :month, :exchange_rate, :shared_with_household)
   end
 
   def previous_budget

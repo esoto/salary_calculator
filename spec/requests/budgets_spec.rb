@@ -211,4 +211,26 @@ RSpec.describe "Budgets", type: :request do
       end
     end
   end
+
+  describe "sharing toggle" do
+    let(:household) { create(:household) }
+    let(:user) { create(:user) }
+    let!(:budget) { create(:monthly_budget, user: user, shared_with_household: false) }
+
+    before do
+      create(:household_membership, household: household, user: user)
+      sign_in(user)
+    end
+
+    it "allows owner to enable sharing" do
+      patch budget_path(budget), params: { monthly_budget: { shared_with_household: true } }
+      expect(budget.reload.shared_with_household).to be true
+    end
+
+    it "allows owner to disable sharing" do
+      budget.update!(shared_with_household: true)
+      patch budget_path(budget), params: { monthly_budget: { shared_with_household: false } }
+      expect(budget.reload.shared_with_household).to be false
+    end
+  end
 end
