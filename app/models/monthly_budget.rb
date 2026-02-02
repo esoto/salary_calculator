@@ -1,6 +1,8 @@
 class MonthlyBudget < ApplicationRecord
   include CurrencyPrecision
 
+  has_paper_trail
+
   belongs_to :user
   has_many :budget_items, dependent: :destroy
 

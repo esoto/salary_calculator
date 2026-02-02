@@ -185,4 +185,20 @@ RSpec.describe MonthlyBudget, type: :model do
       end
     end
   end
+
+  describe "versioning" do
+    it "tracks changes with PaperTrail" do
+      budget = create(:monthly_budget)
+      expect(budget).to respond_to(:versions)
+    end
+
+    it "records who made changes" do
+      user = create(:user)
+      PaperTrail.request.whodunnit = user.id
+      budget = create(:monthly_budget, exchange_rate: 500)
+      budget.update!(exchange_rate: 510)
+
+      expect(budget.versions.last.whodunnit).to eq(user.id.to_s)
+    end
+  end
 end

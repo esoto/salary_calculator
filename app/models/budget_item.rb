@@ -1,6 +1,8 @@
 class BudgetItem < ApplicationRecord
   include CurrencyPrecision
 
+  has_paper_trail
+
   belongs_to :monthly_budget
 
   enum :category, {
