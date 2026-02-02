@@ -8,6 +8,8 @@
 
 **Tech Stack:** Rails 8.1, PaperTrail gem, TailwindCSS, Turbo
 
+> ⚠️ **IMPORTANT:** Do NOT include "Co-Authored-By: Claude" or any Claude reference in commit messages.
+
 ---
 
 ## Task 1: Add PaperTrail Gem
