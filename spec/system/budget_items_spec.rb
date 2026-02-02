@@ -20,7 +20,7 @@ RSpec.describe "Budget Items Management", type: :system do
       within("##{dom_id(budget, 'fixed')}") do
         fill_in "Item name", with: "Netflix"
         fill_in "Amount", with: "15.99"
-        select "USD", from: "budget_item_currency"
+        select "USD", from: "fixed_budget_item_currency"
         click_button "+ Add"
       end
 
@@ -48,7 +48,7 @@ RSpec.describe "Budget Items Management", type: :system do
       within("##{dom_id(budget, 'fixed')}") do
         fill_in "Item name", with: "Electric Bill"
         fill_in "Amount", with: "50000"
-        select "CRC", from: "budget_item_currency"
+        select "CRC", from: "fixed_budget_item_currency"
         click_button "+ Add"
       end
 

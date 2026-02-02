@@ -1,6 +1,7 @@
 <%= form_with model: [budget, budget_item],
               url: budget_item.persisted? ? budget_budget_item_path(budget, budget_item) : budget_budget_items_path(budget),
               id: budget_item_form_id(budget_item, category),
+              namespace: category,
               class: "flex flex-col gap-2" do |f| %>
   <% if budget_item.errors.any? %>
     <div class="text-red-600 text-xs">
