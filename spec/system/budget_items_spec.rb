@@ -65,7 +65,7 @@ RSpec.describe "Budget Items Management", type: :system do
   end
 
   describe "viewing budget items" do
-    let!(:item) { create(:budget_item, monthly_budget: budget, name: "Rent", category: "fixed", amount: 1500, currency: "usd") }
+    let!(:item) { create(:budget_item, monthly_budget: budget, name: "Rent", category: "fixed", amount: 1500, currency: "USD") }
 
     it "shows item in the correct category" do
       visit budget_path(budget)
@@ -115,8 +115,8 @@ RSpec.describe "Budget Items Management", type: :system do
 
   describe "category totals" do
     before do
-      create(:budget_item, monthly_budget: budget, name: "Rent", category: "fixed", amount: 1500, currency: "usd")
-      create(:budget_item, monthly_budget: budget, name: "Electric", category: "fixed", amount: 100, currency: "usd")
+      create(:budget_item, monthly_budget: budget, name: "Rent", category: "fixed", amount: 1500, currency: "USD")
+      create(:budget_item, monthly_budget: budget, name: "Electric", category: "fixed", amount: 100, currency: "USD")
     end
 
     it "shows category total in USD" do

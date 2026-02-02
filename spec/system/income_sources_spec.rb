@@ -27,7 +27,7 @@ RSpec.describe "Income Sources Management", type: :system do
     end
 
     it "shows existing income sources" do
-      create(:income_source, user: user, name: "Main Job", amount: 5000, currency: "usd")
+      create(:income_source, user: user, name: "Main Job", amount: 5000, currency: "USD")
       visit income_sources_path
 
       expect(page).to have_content("Main Job")
@@ -138,7 +138,7 @@ RSpec.describe "Income Sources Management", type: :system do
     it "shows household members in the linked user dropdown" do
       visit income_sources_path
 
-      expect(page).to have_select("Link to User", options: [ "None", user.name, "Partner" ])
+      expect(page).to have_select("Link to User (for hourly)", options: [ "None", user.name, "Partner" ])
     end
   end
 end
