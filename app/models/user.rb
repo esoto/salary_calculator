@@ -41,6 +41,13 @@ class User < ApplicationRecord
     { earned: days_earned, taken: days_taken, balance: days_earned - days_taken }
   end
 
+  def shares_household_with?(other_user)
+    return false unless household.present?
+    return false unless other_user.household.present?
+
+    household == other_user.household
+  end
+
   private
 
   def password_change_requested?

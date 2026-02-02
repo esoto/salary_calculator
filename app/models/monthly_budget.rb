@@ -74,4 +74,19 @@ class MonthlyBudget < ApplicationRecord
       )
     end
   end
+
+  def owned_by?(check_user)
+    user_id == check_user.id
+  end
+
+  def accessible_by?(check_user)
+    return true if owned_by?(check_user)
+    return false unless shared_with_household?
+
+    check_user.shares_household_with?(user)
+  end
+
+  def editable_by?(check_user)
+    accessible_by?(check_user)
+  end
 end
