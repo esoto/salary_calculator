@@ -1,33 +1,55 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-3xl font-bold text-gray-900">Budgets</h1>
-    <%= link_to "New Budget", new_budget_path, class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg" %>
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Budgets</h1>
+      <p class="text-gray-600">Monthly budget planning</p>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-3">
+      <%= form_with url: budgets_path, method: :get, local: true,
+                    data: { turbo_frame: "_top" },
+                    class: "flex items-center gap-2" do |form| %>
+        <label for="year" class="text-sm font-medium text-gray-700">Year:</label>
+        <%= form.select :year,
+                        options_for_select(year_options_for_select, @year),
+                        {},
+                        id: "year",
+                        class: "border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                        onchange: "this.form.requestSubmit()" %>
+      <% end %>
+
+      <%= link_to "New Budget", new_budget_path(year: @year),
+          class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center" %>
+    </div>
   </div>
 
-  <% if @my_budgets.any? %>
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">My Budgets</h2>
-    <div class="grid gap-4 mb-8">
-      <% @my_budgets.each do |budget| %>
-        <div class="bg-white rounded-lg shadow p-4">
-          <%= link_to budget_path(budget), class: "text-blue-600 hover:text-blue-800" do %>
-            <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
+  <% if @my_budgets.any? || @household_budgets.any? %>
+    <% if @my_budgets.any? %>
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">My Budgets</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% @my_budgets.each do |budget| %>
+            <%= render "budget_card", budget: budget, show_owner: false %>
           <% end %>
         </div>
-      <% end %>
-    </div>
-  <% end %>
+      </div>
+    <% end %>
 
-  <% if @household_budgets.any? %>
-    <h2 class="text-xl font-semibold text-gray-800 mb-4">Household Budgets</h2>
-    <div class="grid gap-4">
-      <% @household_budgets.each do |budget| %>
-        <div class="bg-white rounded-lg shadow p-4">
-          <span class="font-medium"><%= budget.user.name %></span> -
-          <%= link_to budget_path(budget), class: "text-blue-600 hover:text-blue-800" do %>
-            <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
+    <% if @household_budgets.any? %>
+      <div>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Household Budgets</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <% @household_budgets.each do |budget| %>
+            <%= render "budget_card", budget: budget, show_owner: true %>
           <% end %>
         </div>
-      <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="bg-white rounded-lg shadow p-8 text-center">
+      <p class="text-gray-500 mb-4">No budgets for <%= @year %> yet.</p>
+      <%= link_to "Create your first budget", new_budget_path(year: @year, month: Date.current.month),
+          class: "text-blue-600 hover:text-blue-800" %>
     </div>
   <% end %>
 </div>

@@ -10,23 +10,31 @@
     </div>
   <% end %>
 
-  <div class="mb-4">
-    <%= f.label :year, class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.select :year, (2020..2100).to_a, {}, class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div>
+      <%= f.label :year, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :year, options_for_select(year_options_for_select, budget.year),
+          {},
+          class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+    </div>
+
+    <div>
+      <%= f.label :month, class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.select :month, options_for_select(month_options_for_select, budget.month),
+          {},
+          class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+    </div>
+
+    <div>
+      <%= f.label :exchange_rate, "Exchange Rate (₡ per $1)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+      <%= f.number_field :exchange_rate, step: 0.01, min: 0,
+          class: "w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+    </div>
   </div>
 
-  <div class="mb-4">
-    <%= f.label :month, class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.select :month, (1..12).map { |m| [Date::MONTHNAMES[m], m] }, {}, class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
-  </div>
-
-  <div class="mb-6">
-    <%= f.label :exchange_rate, class: "block text-sm font-medium text-gray-700 mb-1" %>
-    <%= f.number_field :exchange_rate, step: 0.01, class: "w-full border border-gray-300 rounded-lg px-3 py-2" %>
-  </div>
-
-  <div class="flex justify-between">
-    <%= link_to "Cancel", budgets_path, class: "text-gray-600 hover:text-gray-800" %>
-    <%= f.submit class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer" %>
+  <div class="flex justify-between items-center">
+    <%= link_to "Cancel", budgets_path(year: budget.year), class: "text-gray-600 hover:text-gray-800" %>
+    <%= f.submit budget.persisted? ? "Update Budget" : "Create Budget",
+        class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer" %>
   </div>
 <% end %>

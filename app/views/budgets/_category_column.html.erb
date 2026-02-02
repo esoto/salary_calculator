@@ -1,0 +1,32 @@
+<% status = budget.category_status(category) %>
+<% percentage = budget.category_percentage(category) %>
+<% target = category_target_range(category) %>
+<% items = budget.budget_items.select { |i| i.category == category } %>
+
+<div class="bg-white rounded-lg shadow" id="<%= dom_id(budget, category) %>">
+  <!-- Category Header -->
+  <div class="p-4 border-b border-gray-200">
+    <div class="flex justify-between items-start mb-2">
+      <h3 class="font-semibold text-gray-800"><%= category_display_name(category) %></h3>
+      <span class="text-xs px-2 py-1 rounded <%= category_status_bg(status) %> <%= category_status_color(status) %>">
+        <%= category_status_icon(status) %> <%= percentage %>%
+      </span>
+    </div>
+    <div class="flex justify-between items-center text-sm">
+      <span class="text-gray-500">Target: <%= target %></span>
+      <span class="font-medium"><%= format_usd(budget.category_total_usd(category)) %></span>
+    </div>
+  </div>
+
+  <!-- Items List -->
+  <div class="divide-y divide-gray-100" id="<%= dom_id(budget, "#{category}_items") %>">
+    <% items.sort_by { |i| [i.position || 999, i.created_at] }.each do |item| %>
+      <%= render "budget_items/item", item: item %>
+    <% end %>
+  </div>
+
+  <!-- Add Item Form -->
+  <div class="p-3 border-t border-gray-200" id="<%= dom_id(budget, "#{category}_form") %>">
+    <%= render "budget_items/form", budget: budget, category: category, budget_item: BudgetItem.new(category: category) %>
+  </div>
+</div>
