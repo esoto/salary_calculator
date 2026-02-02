@@ -5,6 +5,7 @@ class BudgetsController < ApplicationController
 
   before_action :set_budget, only: [ :show, :edit, :update, :destroy ]
   before_action :authorize_budget_access, only: [ :show, :edit, :update, :destroy ]
+  before_action :authorize_budget_owner, only: [:destroy]
 
   def index
     @year = params[:year]&.to_i || Date.current.year
