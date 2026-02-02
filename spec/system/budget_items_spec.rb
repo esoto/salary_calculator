@@ -2,6 +2,13 @@
 
 require "rails_helper"
 
+# NOTE: These tests use rack_test which does not support JavaScript.
+# This verifies the HTML fallback behavior (form submissions, redirects) but does NOT
+# test the actual Turbo Stream experience (inline updates without page reload).
+#
+# Future improvement: Add selenium-webdriver and use driven_by(:selenium_chrome_headless)
+# to test the full Turbo Stream UX (inline replacements, flash effects, etc.).
+
 RSpec.describe "Budget Items Management", type: :system do
   include ActionView::RecordIdentifier
 

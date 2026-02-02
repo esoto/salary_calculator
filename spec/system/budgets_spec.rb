@@ -2,6 +2,10 @@
 
 require "rails_helper"
 
+# NOTE: These tests use rack_test which does not support JavaScript.
+# This verifies the HTML fallback behavior but does NOT test Turbo Stream/Stimulus features.
+# Future improvement: Use driven_by(:selenium_chrome_headless) for full JS testing.
+
 RSpec.describe "Budget Management", type: :system do
   let(:user) { create(:user) }
 
