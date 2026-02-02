@@ -1,4 +1,5 @@
 <%# Replace the entire category column (includes updated item and totals) %>
+<% @budget.budget_items.reload %>
 <%= turbo_stream.replace dom_id(@budget, @budget_item.category) do %>
-  <%= render "budgets/category_column", budget: @budget.reload, category: @budget_item.category %>
+  <%= render "budgets/category_column", budget: @budget, category: @budget_item.category %>
 <% end %>

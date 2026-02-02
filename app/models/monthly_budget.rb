@@ -17,6 +17,13 @@ class MonthlyBudget < ApplicationRecord
 
   DEFAULT_EXCHANGE_RATE = 503
 
+  CATEGORY_DISPLAY_NAMES = {
+    "fixed" => "Fixed Expenses",
+    "guilt_free" => "Guilt-Free",
+    "savings" => "Savings",
+    "investments" => "Investments"
+  }.freeze
+
   CATEGORY_TARGETS = {
     "fixed" => { min: 50, max: 60 }.freeze,
     "guilt_free" => { min: 20, max: 35 }.freeze,

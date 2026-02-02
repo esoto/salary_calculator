@@ -3,8 +3,10 @@ module SalaryEntriesHelper
     Date::MONTHNAMES[month]
   end
 
+  # Delegates to format_usd in ApplicationHelper for consistency.
+  # Kept for backwards compatibility with existing views.
   def format_currency(amount)
-    number_to_currency(amount, precision: 2)
+    format_usd(amount)
   end
 
   def format_hours(hours)

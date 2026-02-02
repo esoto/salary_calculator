@@ -59,7 +59,7 @@
             <div class="flex justify-between items-center">
               <span class="font-medium"><%= source.name %></span>
               <span class="text-green-600 font-medium">
-                <% if source.currency == "USD" %>
+                <% if source.usd? %>
                   <%= format_usd(source.amount_for_month(@budget.year, @budget.month)) %>
                 <% else %>
                   <%= format_crc(source.amount_for_month(@budget.year, @budget.month)) %>

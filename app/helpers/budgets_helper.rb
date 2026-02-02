@@ -2,12 +2,7 @@
 
 module BudgetsHelper
   def category_display_name(category)
-    {
-      "fixed" => "Fixed Expenses",
-      "guilt_free" => "Guilt-Free",
-      "savings" => "Savings",
-      "investments" => "Investments"
-    }[category] || category.humanize
+    MonthlyBudget::CATEGORY_DISPLAY_NAMES[category] || category.humanize
   end
 
   def category_target_range(category)
@@ -49,11 +44,11 @@ module BudgetsHelper
     end
   end
 
-  def month_options_for_select(selected = nil)
+  def month_options_for_select
     (1..12).map { |m| [ Date::MONTHNAMES[m], m ] }
   end
 
-  def year_options_for_select(selected = nil, range: 5)
+  def year_options_for_select(range: 5)
     current_year = Date.current.year
     ((current_year - range)..(current_year + 1)).to_a.reverse
   end

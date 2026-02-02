@@ -83,6 +83,11 @@ bin/rails db:test:prepare
 - **Factories**: Create minimal valid records, override as needed
 - **Test pattern**: `build(:salary_entry, hours_worked: 180)` for unsaved, `create(:user)` for persisted
 
+## Code Review Behavior
+- **Only comment when 100% confident**: If you are not absolutely certain about an issue, do not add a comment. Stay silent rather than provide uncertain or speculative feedback.
+- **Avoid false positives**: Verify your understanding of the code before flagging issues. Check if the code you're reviewing has already been updated or if you're looking at stale context.
+- **No speculative suggestions**: Do not suggest changes based on assumptions. If you need to see more context to be confident, do not comment.
+
 ## Critical Non-Obvious Details
 1. **Vacation Balance Logic** ([app/models/user.rb#L22-29](app/models/user.rb#L22-29)): Accrued monthly as `entries_count * (vacation_days_per_year / 12)`, compared against `sum(:vacation_days_taken)`. Edit/new forms exclude the current entry from balance check.
 2. **Aguinaldo Calculation**: Simple 1/12th monthly accrual, not tied to specific period (user sets toggle)

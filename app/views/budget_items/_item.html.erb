@@ -6,13 +6,14 @@
     <!-- Paid checkbox -->
     <%= form_with url: toggle_paid_budget_budget_item_path(item.monthly_budget, item),
                   method: :patch,
-                  data: { turbo_frame: dom_id(item) },
                   class: "inline" do %>
-      <button type="submit" class="text-lg leading-none">
+      <button type="submit"
+              class="text-lg leading-none"
+              aria-label="<%= item.paid ? 'Mark as unpaid' : 'Mark as paid' %>">
         <% if item.paid %>
-          <span class="text-green-600">☑</span>
+          <span class="text-green-600" aria-hidden="true">☑</span>
         <% else %>
-          <span class="text-gray-400 hover:text-gray-600">☐</span>
+          <span class="text-gray-400 hover:text-gray-600" aria-hidden="true">☐</span>
         <% end %>
       </button>
     <% end %>
@@ -36,16 +37,18 @@
     <!-- Edit button (visible on hover) -->
     <button type="button"
             data-action="click->inline-edit#edit"
+            aria-label="Edit <%= item.name %>"
             class="opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-700 text-sm transition-opacity">
-      ✎
+      <span aria-hidden="true">✎</span>
     </button>
 
     <!-- Delete button (visible on hover) -->
     <%= button_to budget_budget_item_path(item.monthly_budget, item),
         method: :delete,
         data: { turbo_confirm: "Delete this item?" },
+        aria: { label: "Delete #{item.name}" },
         class: "opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-sm transition-opacity" do %>
-      ✕
+      <span aria-hidden="true">✕</span>
     <% end %>
   </div>
 
