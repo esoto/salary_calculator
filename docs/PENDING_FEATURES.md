@@ -2,7 +2,7 @@
 
 This document tracks features that have been identified but not yet implemented.
 
-**Last Updated:** 2026-01-31
+**Last Updated:** 2026-02-01
 
 ---
 
@@ -84,6 +84,7 @@ This document tracks features that have been identified but not yet implemented.
 
 These features have been implemented and merged:
 
+- ✅ **Household Budget Planning** (PRs #24-27) - Monthly budget planning with dual currency support (CRC/USD), four expense categories with target percentages, household sharing, and Turbo Stream inline editing
 - ✅ **Household/Shared View** (PR #20) - Create or join a household to view combined earnings with a partner
 - ✅ **User Profile Editing** (PR #19) - Edit name, email, and password from Settings page
 - ✅ **Vacation Over-Limit Warning** (PR #18) - Soft validation warning when taking more vacation days than earned, with acknowledgment checkbox
