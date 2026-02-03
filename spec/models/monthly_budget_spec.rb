@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe MonthlyBudget, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe "validations" do
     it { should belong_to(:user) }
     it { should validate_presence_of(:year) }
@@ -224,8 +226,9 @@ RSpec.describe MonthlyBudget, type: :model do
     end
 
     it "orders by most recent first" do
-      budget.update!(exchange_rate: 510)
-      sleep 0.01
+      travel_to 2.seconds.ago do
+        budget.update!(exchange_rate: 510)
+      end
       budget.update!(exchange_rate: 520)
       activity = budget.recent_activity
 
