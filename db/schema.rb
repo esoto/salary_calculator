@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_032626) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_03_232704) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,6 +26,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_032626) do
     t.datetime "updated_at", null: false
     t.index ["monthly_budget_id", "category"], name: "index_budget_items_on_monthly_budget_id_and_category"
     t.index ["monthly_budget_id"], name: "index_budget_items_on_monthly_budget_id"
+  end
+
+  create_table "budget_shares", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.bigint "monthly_budget_id", null: false
+    t.string "name"
+    t.boolean "show_budget", default: true, null: false
+    t.boolean "show_income_sources", default: false, null: false
+    t.boolean "show_personal_savings", default: false, null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["monthly_budget_id"], name: "index_budget_shares_on_monthly_budget_id"
+    t.index ["token"], name: "index_budget_shares_on_token", unique: true
   end
 
   create_table "household_memberships", force: :cascade do |t|
@@ -123,6 +137,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_032626) do
   end
 
   add_foreign_key "budget_items", "monthly_budgets"
+  add_foreign_key "budget_shares", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
   add_foreign_key "income_sources", "users"

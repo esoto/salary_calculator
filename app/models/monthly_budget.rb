@@ -5,6 +5,7 @@ class MonthlyBudget < ApplicationRecord
 
   belongs_to :user
   has_many :budget_items, dependent: :destroy
+  has_many :budget_shares, dependent: :destroy
 
   validates :year, presence: true,
                    numericality: { only_integer: true, greater_than_or_equal_to: 2020, less_than_or_equal_to: 2100 }
