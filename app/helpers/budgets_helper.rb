@@ -75,7 +75,7 @@ module BudgetsHelper
   end
 
   def activity_actor_name(version, current_user)
-    return "You" if version.whodunnit == current_user.id.to_s
+    return "You" if current_user && version.whodunnit == current_user.id.to_s
 
     user = User.find_by(id: version.whodunnit)
     user&.name || "Someone"
