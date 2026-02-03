@@ -94,7 +94,8 @@ class MonthlyBudget < ApplicationRecord
     budget_versions = versions.order(created_at: :desc).limit(limit)
     item_versions = PaperTrail::Version
       .where(item_type: "BudgetItem")
-      .where(item_id: budget_items.pluck(:id))
+      .where(item_id: budget_items.select(:id))
+      .includes(:item)
       .order(created_at: :desc)
       .limit(limit)
 
