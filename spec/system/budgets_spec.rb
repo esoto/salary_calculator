@@ -211,4 +211,60 @@ RSpec.describe "Budget Management", type: :system do
       expect(page).to have_content("changed exchange rate")
     end
   end
+
+  describe "personal savings" do
+    let!(:budget) { create(:monthly_budget, user: user, year: 2026, month: 6) }
+
+    context "when user has salary entry with savings enabled" do
+      before do
+        user.update!(aguinaldo_enabled: true, vacation_enabled: true, holiday_enabled: true,
+                     vacation_days_per_year: 12, holiday_days_per_year: 6, hours_per_day: 8)
+        create(:salary_entry, user: user, year: 2026, month: 6, hours_worked: 160, hourly_rate: 50)
+      end
+
+      it "shows personal savings section" do
+        visit budget_path(budget)
+        expect(page).to have_content("Personal Savings")
+      end
+
+      it "shows aguinaldo savings" do
+        visit budget_path(budget)
+        expect(page).to have_content("Aguinaldo:")
+      end
+
+      it "shows vacation savings" do
+        visit budget_path(budget)
+        expect(page).to have_content("Vacation:")
+      end
+
+      it "shows holiday savings" do
+        visit budget_path(budget)
+        expect(page).to have_content("Holiday:")
+      end
+
+      it "shows total savings" do
+        visit budget_path(budget)
+        expect(page).to have_content("Total:")
+      end
+    end
+
+    context "when user has no salary entry for the month" do
+      it "does not show personal savings section" do
+        visit budget_path(budget)
+        expect(page).not_to have_content("Personal Savings")
+      end
+    end
+
+    context "when user has all savings disabled" do
+      before do
+        user.update!(aguinaldo_enabled: false, vacation_enabled: false, holiday_enabled: false)
+        create(:salary_entry, user: user, year: 2026, month: 6, hours_worked: 160, hourly_rate: 50)
+      end
+
+      it "does not show personal savings section" do
+        visit budget_path(budget)
+        expect(page).not_to have_content("Personal Savings")
+      end
+    end
+  end
 end
