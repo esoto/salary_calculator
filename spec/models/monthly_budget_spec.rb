@@ -185,4 +185,86 @@ RSpec.describe MonthlyBudget, type: :model do
       end
     end
   end
+
+  describe "versioning" do
+    it "tracks changes with PaperTrail" do
+      budget = create(:monthly_budget)
+      expect(budget).to respond_to(:versions)
+    end
+
+    it "records who made changes" do
+      user = create(:user)
+      PaperTrail.request.whodunnit = user.id
+      budget = create(:monthly_budget, exchange_rate: 500)
+      budget.update!(exchange_rate: 510)
+
+      expect(budget.versions.last.whodunnit).to eq(user.id.to_s)
+    end
+  end
+
+  describe "ownership and access" do
+    let(:owner) { create(:user) }
+    let(:partner) { create(:user) }
+    let(:stranger) { create(:user) }
+    let(:household) { create(:household) }
+    let(:budget) { create(:monthly_budget, user: owner) }
+
+    before do
+      create(:household_membership, household: household, user: owner)
+      create(:household_membership, household: household, user: partner)
+    end
+
+    describe "#owned_by?" do
+      it "returns true for the owner" do
+        expect(budget.owned_by?(owner)).to be true
+      end
+
+      it "returns false for non-owners" do
+        expect(budget.owned_by?(partner)).to be false
+        expect(budget.owned_by?(stranger)).to be false
+      end
+    end
+
+    describe "#accessible_by?" do
+      context "when not shared" do
+        it "returns true for owner" do
+          expect(budget.accessible_by?(owner)).to be true
+        end
+
+        it "returns false for household members" do
+          expect(budget.accessible_by?(partner)).to be false
+        end
+
+        it "returns false for strangers" do
+          expect(budget.accessible_by?(stranger)).to be false
+        end
+      end
+
+      context "when shared with household" do
+        before { budget.update!(shared_with_household: true) }
+
+        it "returns true for owner" do
+          expect(budget.accessible_by?(owner)).to be true
+        end
+
+        it "returns true for household members" do
+          expect(budget.accessible_by?(partner)).to be true
+        end
+
+        it "returns false for strangers" do
+          expect(budget.accessible_by?(stranger)).to be false
+        end
+      end
+    end
+
+    describe "#editable_by?" do
+      it "follows same rules as accessible_by?" do
+        expect(budget.editable_by?(owner)).to be true
+        expect(budget.editable_by?(partner)).to be false
+
+        budget.update!(shared_with_household: true)
+        expect(budget.editable_by?(partner)).to be true
+      end
+    end
+  end
 end

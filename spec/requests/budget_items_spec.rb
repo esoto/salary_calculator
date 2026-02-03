@@ -97,16 +97,24 @@ RSpec.describe "BudgetItems", type: :request do
 
     context "with household member" do
       let(:household) { create(:household) }
+      let(:shared_budget) { create(:monthly_budget, user: other_user, shared_with_household: true) }
 
       before do
         create(:household_membership, household: household, user: user)
         create(:household_membership, household: household, user: other_user)
       end
 
-      it "allows create access to household member budget" do
+      it "allows create access to shared household member budget" do
+        expect {
+          post budget_budget_items_path(shared_budget), params: { budget_item: { name: "Test", category: "fixed", amount: 10, currency: "USD" } }
+        }.to change(BudgetItem, :count).by(1)
+      end
+
+      it "denies create access to non-shared household member budget" do
         expect {
           post budget_budget_items_path(other_budget), params: { budget_item: { name: "Test", category: "fixed", amount: 10, currency: "USD" } }
-        }.to change(BudgetItem, :count).by(1)
+        }.not_to change(BudgetItem, :count)
+        expect(response).to redirect_to(budgets_path)
       end
     end
   end

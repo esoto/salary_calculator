@@ -55,4 +55,11 @@ RSpec.describe BudgetItem, type: :model do
       expect(item.amount_in_crc).to eq(50000)
     end
   end
+
+  describe "versioning" do
+    it "tracks changes with PaperTrail" do
+      item = create(:budget_item)
+      expect(item).to respond_to(:versions)
+    end
+  end
 end

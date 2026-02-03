@@ -52,4 +52,14 @@ module BudgetsHelper
     current_year = Date.current.year
     ((current_year - range)..(current_year + 1)).to_a.reverse
   end
+
+  def budget_owner_label(budget)
+    return nil if budget.owned_by?(current_user)
+
+    "#{budget.user.name}'s Budget"
+  end
+
+  def budget_shared_badge
+    content_tag(:span, "🏠 Shared", class: "text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded")
+  end
 end

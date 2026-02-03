@@ -116,7 +116,7 @@ RSpec.describe "Budgets", type: :request do
 
   describe "access control" do
     let(:other_user) { create(:user) }
-    let(:other_budget) { create(:monthly_budget, user: other_user) }
+    let(:other_budget) { create(:monthly_budget, user: other_user, shared_with_household: true) }
 
     it "denies access to non-household member budget" do
       get budget_path(other_budget)
@@ -135,6 +135,102 @@ RSpec.describe "Budgets", type: :request do
         get budget_path(other_budget)
         expect(response).to have_http_status(:success)
       end
+    end
+  end
+
+  describe "access control with sharing" do
+    let(:household) { create(:household) }
+    let(:owner) { create(:user) }
+    let(:partner) { create(:user) }
+    let(:stranger) { create(:user) }
+
+    before do
+      create(:household_membership, household: household, user: owner)
+      create(:household_membership, household: household, user: partner)
+    end
+
+    describe "private budget" do
+      let!(:budget) { create(:monthly_budget, user: owner, shared_with_household: false) }
+
+      it "allows owner to view" do
+        sign_in(owner)
+        get budget_path(budget)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "denies household member access" do
+        sign_in(partner)
+        get budget_path(budget)
+        expect(response).to redirect_to(budgets_path)
+      end
+
+      it "denies stranger access" do
+        sign_in(stranger)
+        get budget_path(budget)
+        expect(response).to redirect_to(budgets_path)
+      end
+    end
+
+    describe "shared budget" do
+      let!(:budget) { create(:monthly_budget, user: owner, shared_with_household: true) }
+
+      it "allows owner to view" do
+        sign_in(owner)
+        get budget_path(budget)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "allows household member to view" do
+        sign_in(partner)
+        get budget_path(budget)
+        expect(response).to have_http_status(:success)
+      end
+
+      it "denies stranger access" do
+        sign_in(stranger)
+        get budget_path(budget)
+        expect(response).to redirect_to(budgets_path)
+      end
+    end
+
+    describe "delete protection" do
+      let!(:budget) { create(:monthly_budget, user: owner, shared_with_household: true) }
+
+      it "allows owner to delete" do
+        sign_in(owner)
+        delete budget_path(budget)
+        expect(response).to redirect_to(budgets_path)
+        expect(MonthlyBudget.exists?(budget.id)).to be false
+      end
+
+      it "denies household member from deleting" do
+        sign_in(partner)
+        delete budget_path(budget)
+        expect(response).to redirect_to(budgets_path)
+        expect(MonthlyBudget.exists?(budget.id)).to be true
+      end
+    end
+  end
+
+  describe "sharing toggle" do
+    let(:household) { create(:household) }
+    let(:user) { create(:user) }
+    let!(:budget) { create(:monthly_budget, user: user, shared_with_household: false) }
+
+    before do
+      create(:household_membership, household: household, user: user)
+      sign_in(user)
+    end
+
+    it "allows owner to enable sharing" do
+      patch budget_path(budget), params: { monthly_budget: { shared_with_household: true } }
+      expect(budget.reload.shared_with_household).to be true
+    end
+
+    it "allows owner to disable sharing" do
+      budget.update!(shared_with_household: true)
+      patch budget_path(budget), params: { monthly_budget: { shared_with_household: false } }
+      expect(budget.reload.shared_with_household).to be false
     end
   end
 end
