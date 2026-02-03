@@ -233,4 +233,13 @@ RSpec.describe "Budgets", type: :request do
       expect(budget.reload.shared_with_household).to be false
     end
   end
+
+  describe "PaperTrail whodunnit" do
+    let(:budget) { create(:monthly_budget, user: user) }
+
+    it "records the user who made changes" do
+      patch budget_path(budget), params: { monthly_budget: { exchange_rate: 510 } }
+      expect(budget.versions.last.whodunnit).to eq(user.id.to_s)
+    end
+  end
 end
