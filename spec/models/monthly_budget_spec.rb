@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe MonthlyBudget, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe "validations" do
     it { should belong_to(:user) }
     it { should validate_presence_of(:year) }
@@ -199,6 +201,45 @@ RSpec.describe MonthlyBudget, type: :model do
       budget.update!(exchange_rate: 510)
 
       expect(budget.versions.last.whodunnit).to eq(user.id.to_s)
+    end
+  end
+
+  describe "#recent_activity" do
+    let(:user) { create(:user) }
+    let(:budget) { create(:monthly_budget, user: user) }
+
+    it "includes budget versions" do
+      budget.update!(exchange_rate: 510)
+      activity = budget.recent_activity
+
+      expect(activity).not_to be_empty
+      expect(activity.first.item_type).to eq("MonthlyBudget")
+    end
+
+    it "includes budget item versions" do
+      item = create(:budget_item, monthly_budget: budget)
+      item.update!(amount: 100)
+      activity = budget.recent_activity
+
+      item_versions = activity.select { |v| v.item_type == "BudgetItem" }
+      expect(item_versions).not_to be_empty
+    end
+
+    it "orders by most recent first" do
+      travel_to 2.seconds.ago do
+        budget.update!(exchange_rate: 510)
+      end
+      budget.update!(exchange_rate: 520)
+      activity = budget.recent_activity
+
+      expect(activity.first.created_at).to be >= activity.last.created_at
+    end
+
+    it "respects limit parameter" do
+      5.times { |i| budget.update!(exchange_rate: 500 + i) }
+      activity = budget.recent_activity(limit: 3)
+
+      expect(activity.size).to eq(3)
     end
   end
 

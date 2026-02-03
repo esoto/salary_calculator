@@ -87,4 +87,25 @@
       <%= link_to "Add Income Sources", income_sources_path, class: "text-blue-600 hover:text-blue-800" %>
     </div>
   <% end %>
+
+  <!-- Activity Log Section -->
+  <% activity = @budget.recent_activity(limit: 10) %>
+  <% if activity.any? %>
+    <details class="bg-white rounded-lg shadow mt-6">
+      <summary class="cursor-pointer px-4 py-3 text-lg font-semibold text-gray-800 hover:bg-gray-50 rounded-t-lg">
+        Recent Activity
+      </summary>
+      <div class="px-4 pb-4">
+        <ul class="divide-y divide-gray-100">
+          <% activity.each do |version| %>
+            <li class="py-2 text-sm">
+              <span class="font-medium"><%= activity_actor_name(version, current_user) %></span>
+              <span class="text-gray-600"><%= activity_description(version) %></span>
+              <span class="text-gray-400 text-xs ml-2"><%= activity_time_ago(version) %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </details>
+  <% end %>
 </div>

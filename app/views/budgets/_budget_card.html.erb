@@ -5,9 +5,14 @@
         <% if show_owner %>
           <p class="text-sm text-gray-500"><%= budget.user.name %>'s Budget</p>
         <% end %>
-        <h3 class="text-lg font-semibold text-gray-900">
-          <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
-        </h3>
+        <div class="flex items-center gap-2">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
+          </h3>
+          <% if budget.shared_with_household? %>
+            <%= budget_shared_badge %>
+          <% end %>
+        </div>
       </div>
       <span class="text-sm text-gray-500">₡<%= number_with_delimiter(budget.exchange_rate.to_i) %>/$1</span>
     </div>

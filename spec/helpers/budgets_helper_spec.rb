@@ -149,4 +149,88 @@ RSpec.describe BudgetsHelper, type: :helper do
       expect(options).to eq(options.sort.reverse)
     end
   end
+
+  describe "#activity_description" do
+    let(:user) { create(:user) }
+    let(:budget) { create(:monthly_budget, user: user) }
+
+    context "for budget changes" do
+      it "describes budget creation" do
+        version = budget.versions.find_by(event: "create")
+        expect(helper.activity_description(version)).to eq("created this budget")
+      end
+
+      it "describes exchange rate changes" do
+        budget.update!(exchange_rate: 510)
+        version = budget.versions.last
+        expect(helper.activity_description(version)).to include("changed exchange rate")
+      end
+
+      it "describes sharing changes" do
+        budget.update!(shared_with_household: true)
+        version = budget.versions.last
+        expect(helper.activity_description(version)).to include("shared this budget")
+      end
+    end
+
+    context "for budget item changes" do
+      let(:item) { create(:budget_item, monthly_budget: budget, name: "Netflix", amount: 15) }
+
+      it "describes item creation" do
+        version = item.versions.find_by(event: "create")
+        expect(helper.activity_description(version)).to include("added")
+        expect(helper.activity_description(version)).to include("Netflix")
+      end
+
+      it "describes amount changes" do
+        item.update!(amount: 20)
+        version = item.versions.last
+        expect(helper.activity_description(version)).to include("changed")
+        expect(helper.activity_description(version)).to include("Netflix")
+      end
+
+      it "describes paid status changes" do
+        item.update!(paid: true)
+        version = item.versions.last
+        expect(helper.activity_description(version)).to include("marked")
+        expect(helper.activity_description(version)).to include("paid")
+      end
+    end
+  end
+
+  describe "#activity_actor_name" do
+    let(:user) { create(:user, name: "Maria") }
+    let(:current_user) { create(:user, name: "John") }
+    let(:budget) { create(:monthly_budget, user: user) }
+
+    it "returns 'You' for current user's changes" do
+      PaperTrail.request.whodunnit = current_user.id
+      budget.update!(exchange_rate: 510)
+      version = budget.versions.last
+      expect(helper.activity_actor_name(version, current_user)).to eq("You")
+    end
+
+    it "returns user name for other users' changes" do
+      PaperTrail.request.whodunnit = user.id
+      budget.update!(exchange_rate: 510)
+      version = budget.versions.last
+      expect(helper.activity_actor_name(version, current_user)).to eq("Maria")
+    end
+
+    it "returns 'Someone' for unknown users" do
+      PaperTrail.request.whodunnit = nil
+      budget.update!(exchange_rate: 510)
+      version = budget.versions.last
+      expect(helper.activity_actor_name(version, current_user)).to eq("Someone")
+    end
+  end
+
+  describe "#activity_time_ago" do
+    let(:budget) { create(:monthly_budget) }
+
+    it "returns a time ago string" do
+      version = budget.versions.last
+      expect(helper.activity_time_ago(version)).to match(/ago$/)
+    end
+  end
 end

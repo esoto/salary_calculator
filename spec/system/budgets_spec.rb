@@ -191,4 +191,24 @@ RSpec.describe "Budget Management", type: :system do
       expect(page).to have_content("Access denied")
     end
   end
+
+  describe "activity log" do
+    let!(:budget) { create(:monthly_budget, user: user, year: 2026, month: 5) }
+
+    it "shows recent activity section" do
+      budget.update!(exchange_rate: 510)
+
+      visit budget_path(budget)
+      expect(page).to have_content("Recent Activity")
+    end
+
+    it "shows who made changes" do
+      PaperTrail.request.whodunnit = user.id
+      budget.update!(exchange_rate: 510)
+
+      visit budget_path(budget)
+      expect(page).to have_content("You")
+      expect(page).to have_content("changed exchange rate")
+    end
+  end
 end

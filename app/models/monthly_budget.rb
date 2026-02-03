@@ -89,4 +89,19 @@ class MonthlyBudget < ApplicationRecord
   def editable_by?(check_user)
     accessible_by?(check_user)
   end
+
+  def recent_activity(limit: 10)
+    budget_versions = versions.order(created_at: :desc).limit(limit)
+    item_versions = PaperTrail::Version
+      .where(item_type: "BudgetItem")
+      .where(item_id: budget_items.select(:id))
+      .includes(:item)
+      .order(created_at: :desc)
+      .limit(limit)
+
+    (budget_versions + item_versions)
+      .sort_by(&:created_at)
+      .reverse
+      .first(limit)
+  end
 end
