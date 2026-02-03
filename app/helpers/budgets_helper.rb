@@ -92,12 +92,6 @@ module BudgetsHelper
     user.aguinaldo_enabled || user.vacation_enabled || user.holiday_enabled
   end
 
-  def total_savings(salary_entry)
-    return 0 unless salary_entry
-
-    salary_entry.aguinaldo_savings + salary_entry.vacation_savings + salary_entry.holiday_savings
-  end
-
   private
 
   def budget_activity_description(version)

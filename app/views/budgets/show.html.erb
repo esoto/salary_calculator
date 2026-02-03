@@ -113,7 +113,7 @@
         <% end %>
         <div class="border-l border-gray-300 pl-6">
           <span class="text-gray-500">Total:</span>
-          <span class="font-semibold text-blue-700"><%= format_usd(total_savings(@salary_entry)) %></span>
+          <span class="font-semibold text-blue-700"><%= format_usd(@salary_entry.monthly_savings_accrual) %></span>
         </div>
       </div>
       <p class="text-xs text-gray-400 mt-2">Based on salary entry for this month</p>
