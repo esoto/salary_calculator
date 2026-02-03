@@ -2,7 +2,7 @@
 
 This document tracks features that have been identified but not yet implemented.
 
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-03
 
 ---
 
@@ -77,6 +77,104 @@ This document tracks features that have been identified but not yet implemented.
 - Support partial days (e.g., half-day off)
 
 **Impact:** Detailed time off tracking and calendar integration
+
+---
+
+## Budget Sharing Enhancements
+
+### Share via Link/Token
+**Priority:** Low
+**Complexity:** Medium
+
+**Description:** Generate shareable links with access tokens for external users to view budgets without needing an account.
+
+**Requirements:**
+- Generate secure, expiring tokens for budget access
+- Public view page for shared budgets
+- Token management UI (revoke, regenerate)
+- Optional password protection
+
+**Impact:** Share budgets with accountants, family members outside the app
+
+---
+
+### Invite by Email
+**Priority:** Low
+**Complexity:** Medium
+
+**Description:** Send email invitations to share budgets with specific people.
+
+**Requirements:**
+- Email invitation system
+- Accept/decline workflow
+- Link to existing user or create new account
+- Notification when invitation is accepted
+
+**Impact:** Easier onboarding for household members
+
+---
+
+### Read-only vs Edit Permissions
+**Priority:** Low
+**Complexity:** Medium
+
+**Description:** Granular permission levels for shared budgets (view-only, edit items, full access).
+
+**Requirements:**
+- Permission levels enum (view, edit_items, full)
+- Per-share permission setting
+- UI to manage permissions
+- Authorization checks throughout budget controllers
+
+**Impact:** More control over shared budget access
+
+---
+
+### Undo/Restore from Activity Log
+**Priority:** Low
+**Complexity:** High
+
+**Description:** Restore deleted items or revert changes using the PaperTrail activity log.
+
+**Requirements:**
+- Restore button next to delete events in activity log
+- Revert changes for specific versions
+- Confirmation dialog before restore
+- Handle cascading restores (budget + items)
+
+**Impact:** Recovery from accidental deletions
+
+---
+
+### Export to CSV/PDF
+**Priority:** Medium
+**Complexity:** Medium
+
+**Description:** Export budget data to CSV or PDF format for external use.
+
+**Requirements:**
+- CSV export with all budget items
+- PDF export with formatted layout
+- Download buttons on budget show page
+- Include summary statistics
+
+**Impact:** Offline access, sharing with external tools
+
+---
+
+### Recurring Items
+**Priority:** Medium
+**Complexity:** Medium
+
+**Description:** Mark budget items as recurring so they automatically copy to new months.
+
+**Requirements:**
+- Add recurring flag to budget_items
+- Auto-populate recurring items when creating new budget
+- UI to toggle recurring status
+- Option to skip specific months
+
+**Impact:** Reduce manual entry for fixed expenses
 
 ---
 
