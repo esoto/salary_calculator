@@ -17,4 +17,8 @@ class ApplicationController < ActionController::Base
   def authenticated?
     Current.user.present?
   end
+
+  def user_for_paper_trail
+    current_user&.id
+  end
 end
