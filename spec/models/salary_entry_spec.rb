@@ -51,6 +51,22 @@ RSpec.describe SalaryEntry, type: :model do
       end
     end
 
+    describe '#monthly_savings_accrual' do
+      it 'sums raw savings without balance adjustments' do
+        # aguinaldo = 666.67, vacation = 600, holiday = 333.33
+        expected = entry.aguinaldo_savings + entry.vacation_savings + entry.holiday_savings
+        expect(entry.monthly_savings_accrual).to be_within(0.01).of(expected)
+      end
+
+      it 'ignores time off taken (unlike total_savings)' do
+        entry = build(:salary_entry, hours_worked: 160, hourly_rate: 50, vacation_days_taken: 1, holiday_days_taken: 0.5)
+
+        # monthly_savings_accrual should be the raw sum: 666.67 + 600 + 333.33 = 1600
+        # (total_savings would be ~1000 due to balance adjustments)
+        expect(entry.monthly_savings_accrual).to be_within(0.01).of(1600)
+      end
+    end
+
     describe '#total_savings' do
       it 'sums all savings' do
         expected = entry.aguinaldo_savings + entry.vacation_savings + entry.holiday_savings
