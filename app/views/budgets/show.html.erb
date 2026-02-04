@@ -88,6 +88,38 @@
     </div>
   <% end %>
 
+  <!-- Personal Savings Section -->
+  <% if @salary_entry && @budget.user.any_savings_enabled? %>
+    <div class="bg-white rounded-lg shadow p-4 mt-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-3">Personal Savings</h3>
+      <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+        <% if @budget.user.aguinaldo_enabled %>
+          <div>
+            <span class="text-gray-500">Aguinaldo:</span>
+            <span class="font-medium text-blue-600"><%= format_usd(@salary_entry.aguinaldo_savings) %></span>
+          </div>
+        <% end %>
+        <% if @budget.user.vacation_enabled %>
+          <div>
+            <span class="text-gray-500">Vacation:</span>
+            <span class="font-medium text-blue-600"><%= format_usd(@salary_entry.vacation_savings) %></span>
+          </div>
+        <% end %>
+        <% if @budget.user.holiday_enabled %>
+          <div>
+            <span class="text-gray-500">Holiday:</span>
+            <span class="font-medium text-blue-600"><%= format_usd(@salary_entry.holiday_savings) %></span>
+          </div>
+        <% end %>
+        <div class="border-l border-gray-300 pl-6">
+          <span class="text-gray-500">Total:</span>
+          <span class="font-semibold text-blue-700"><%= format_usd(@salary_entry.monthly_savings_accrual) %></span>
+        </div>
+      </div>
+      <p class="text-xs text-gray-400 mt-2">Based on salary entry for this month</p>
+    </div>
+  <% end %>
+
   <!-- Activity Log Section -->
   <% activity = @budget.recent_activity(limit: 10) %>
   <% if activity.any? %>

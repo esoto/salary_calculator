@@ -68,6 +68,25 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#any_savings_enabled?' do
+    let(:user) { create(:user) }
+
+    it 'returns true when all savings are enabled' do
+      user.update!(aguinaldo_enabled: true, vacation_enabled: true, holiday_enabled: true)
+      expect(user.any_savings_enabled?).to be true
+    end
+
+    it 'returns true when only one saving is enabled' do
+      user.update!(aguinaldo_enabled: false, vacation_enabled: true, holiday_enabled: false)
+      expect(user.any_savings_enabled?).to be true
+    end
+
+    it 'returns false when all savings are disabled' do
+      user.update!(aguinaldo_enabled: false, vacation_enabled: false, holiday_enabled: false)
+      expect(user.any_savings_enabled?).to be false
+    end
+  end
+
   describe '#password_reset_token' do
     let(:user) { create(:user) }
 

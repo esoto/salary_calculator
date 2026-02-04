@@ -211,4 +211,75 @@ RSpec.describe "Budget Management", type: :system do
       expect(page).to have_content("changed exchange rate")
     end
   end
+
+  describe "personal savings" do
+    let!(:budget) { create(:monthly_budget, user: user, year: 2026, month: 6) }
+
+    context "when user has salary entry with all savings enabled" do
+      # monthly_salary = 160 * 50 = $8,000
+      # aguinaldo = $8,000 / 12 = $666.67
+      # vacation = (12 days * 8 hours / 12 months) * $50 = $400
+      # holiday = (6 days * 8 hours / 12 months) * $50 = $200
+      # total = $1,266.67
+      before do
+        user.update!(aguinaldo_enabled: true, vacation_enabled: true, holiday_enabled: true,
+                     vacation_days_per_year: 12, holiday_days_per_year: 6, hours_per_day: 8)
+        create(:salary_entry, user: user, year: 2026, month: 6, hours_worked: 160, hourly_rate: 50)
+      end
+
+      it "shows personal savings section with correct amounts" do
+        visit budget_path(budget)
+
+        expect(page).to have_content("Personal Savings")
+        expect(page).to have_content("Aguinaldo:")
+        expect(page).to have_content("$666.67")
+        expect(page).to have_content("Vacation:")
+        expect(page).to have_content("$400.00")
+        expect(page).to have_content("Holiday:")
+        expect(page).to have_content("$200.00")
+        expect(page).to have_content("Total:")
+        expect(page).to have_content("$1,266.67")
+      end
+    end
+
+    context "when user has only vacation savings enabled" do
+      # vacation = (12 days * 8 hours / 12 months) * $50 = $400
+      before do
+        user.update!(aguinaldo_enabled: false, vacation_enabled: true, holiday_enabled: false,
+                     vacation_days_per_year: 12, hours_per_day: 8)
+        create(:salary_entry, user: user, year: 2026, month: 6, hours_worked: 160, hourly_rate: 50)
+      end
+
+      it "shows only vacation savings with correct total" do
+        visit budget_path(budget)
+
+        expect(page).to have_content("Personal Savings")
+        expect(page).not_to have_content("Aguinaldo:")
+        expect(page).to have_content("Vacation:")
+        expect(page).not_to have_content("Holiday:")
+        expect(page).to have_content("Total:")
+        # Verify $400.00 appears twice: once for Vacation, once for Total
+        expect(page).to have_content("$400.00", count: 2)
+      end
+    end
+
+    context "when user has no salary entry for the month" do
+      it "does not show personal savings section" do
+        visit budget_path(budget)
+        expect(page).not_to have_content("Personal Savings")
+      end
+    end
+
+    context "when user has all savings disabled" do
+      before do
+        user.update!(aguinaldo_enabled: false, vacation_enabled: false, holiday_enabled: false)
+        create(:salary_entry, user: user, year: 2026, month: 6, hours_worked: 160, hourly_rate: 50)
+      end
+
+      it "does not show personal savings section" do
+        visit budget_path(budget)
+        expect(page).not_to have_content("Personal Savings")
+      end
+    end
+  end
 end

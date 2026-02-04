@@ -22,6 +22,10 @@ module SalaryCalculations
     holiday_hours_per_month * hourly_rate
   end
 
+  def monthly_savings_accrual
+    aguinaldo_savings + vacation_savings + holiday_savings
+  end
+
   def total_savings
     aguinaldo_savings + vacation_balance + holiday_balance
   end

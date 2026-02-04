@@ -48,6 +48,10 @@ class User < ApplicationRecord
     household == other_user.household
   end
 
+  def any_savings_enabled?
+    aguinaldo_enabled || vacation_enabled || holiday_enabled
+  end
+
   private
 
   def password_change_requested?
