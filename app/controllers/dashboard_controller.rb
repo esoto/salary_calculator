@@ -23,7 +23,7 @@ class DashboardController < ApplicationController
 
     # Summary stats (using instance methods for user-specific settings)
     @months_logged = @ytd_entries.count
-    @total_earnings = @ytd_entries.sum(&:monthly_salary)
+    @total_earnings = @ytd_entries.sum(&:gross_salary)
 
     # Vacation/holiday savings and spent (user-specific calculations)
     @vacation_savings = @ytd_entries.sum(&:vacation_savings)
@@ -49,6 +49,9 @@ class DashboardController < ApplicationController
     ytd_aguinaldo = @ytd_entries.sum(&:aguinaldo_savings)
     @total_savings = ytd_aguinaldo + @vacation_balance + @holiday_balance
     @net_pay = @total_earnings - @total_savings
+
+    # Bank fees (YTD)
+    @total_bank_fees = @ytd_entries.sum(&:bank_fee)
 
     # Recent entries
     @recent_entries = current_user.salary_entries.order(year: :desc, month: :desc).limit(5)

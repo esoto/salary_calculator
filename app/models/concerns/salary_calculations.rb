@@ -3,13 +3,27 @@
 module SalaryCalculations
   extend ActiveSupport::Concern
 
-  def monthly_salary
+  BANK_TRANSFER_FEE = 40
+
+  def base_salary
     hours_worked * hourly_rate
+  end
+
+  def gross_salary
+    base_salary + vacation_spent
+  end
+
+  def bank_fee
+    user.bank_fee_enabled ? BANK_TRANSFER_FEE : 0
+  end
+
+  def monthly_salary
+    gross_salary - bank_fee
   end
 
   def aguinaldo_savings
     return 0 unless user.aguinaldo_enabled
-    monthly_salary / 12.0
+    gross_salary / 12.0
   end
 
   def vacation_savings
