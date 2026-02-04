@@ -4,7 +4,7 @@ class BudgetSharesController < ApplicationController
   include BudgetScoped
 
   before_action :set_budget
-  before_action :set_budget_share, only: [:destroy]
+  before_action :set_budget_share, only: [ :destroy ]
   before_action :authorize_budget_owner
 
   def create
