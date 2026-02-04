@@ -13,6 +13,7 @@ class IncomeSourcesController < ApplicationController
 
   def create
     @income_source = current_user.income_sources.build(income_source_params)
+    @income_source.monthly_budget = current_budget
 
     if @income_source.save
       redirect_to income_sources_path, notice: "Income source added."
@@ -66,5 +67,11 @@ class IncomeSourcesController < ApplicationController
     users = [ current_user ]
     users += current_user.household.members.to_a if current_user.household
     users.uniq
+  end
+
+  def current_budget
+    year = Date.current.year
+    month = Date.current.month
+    current_user.monthly_budgets.find_or_create_by(year: year, month: month)
   end
 end

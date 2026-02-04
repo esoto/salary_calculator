@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_04_031653) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_04_044555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -67,10 +67,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_031653) do
     t.string "currency", default: "USD", null: false
     t.string "income_type", default: "fixed", null: false
     t.bigint "linked_user_id"
+    t.bigint "monthly_budget_id"
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["linked_user_id"], name: "index_income_sources_on_linked_user_id"
+    t.index ["monthly_budget_id"], name: "index_income_sources_on_monthly_budget_id"
     t.index ["user_id"], name: "index_income_sources_on_user_id"
   end
 
@@ -141,6 +143,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_031653) do
   add_foreign_key "budget_shares", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
+  add_foreign_key "income_sources", "monthly_budgets"
   add_foreign_key "income_sources", "users"
   add_foreign_key "income_sources", "users", column: "linked_user_id"
   add_foreign_key "monthly_budgets", "users"

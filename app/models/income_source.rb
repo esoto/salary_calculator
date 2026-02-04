@@ -1,5 +1,6 @@
 class IncomeSource < ApplicationRecord
   belongs_to :user
+  belongs_to :monthly_budget, optional: true
   belongs_to :linked_user, class_name: "User", optional: true
 
   enum :currency, { crc: "CRC", usd: "USD" }, validate: true
@@ -30,9 +31,8 @@ class IncomeSource < ApplicationRecord
   def accessible_by?(check_user)
     return true if owned_by?(check_user)
 
-    # Accessible if owner has any shared budget and users share a household
-    user.monthly_budgets.where(shared_with_household: true).exists? &&
-      check_user.shares_household_with?(user)
+    # Accessible if attached to a shared budget and users share a household
+    monthly_budget&.shared_with_household? && check_user.shares_household_with?(user)
   end
 
   def editable_by?(check_user)

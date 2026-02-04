@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe IncomeSource, type: :model do
   describe "associations" do
     it { should belong_to(:user) }
+    it { should belong_to(:monthly_budget).optional }
     it { should belong_to(:linked_user).class_name("User").optional }
   end
 
@@ -66,7 +67,8 @@ RSpec.describe IncomeSource, type: :model do
     let(:household_member) { create(:user) }
     let(:stranger) { create(:user) }
     let(:household) { create(:household) }
-    let(:income_source) { create(:income_source, user: owner) }
+    let(:budget) { create(:monthly_budget, user: owner) }
+    let(:income_source) { create(:income_source, user: owner, monthly_budget: budget) }
 
     before do
       create(:household_membership, household: household, user: owner)
@@ -102,9 +104,9 @@ RSpec.describe IncomeSource, type: :model do
         end
       end
 
-      context "when owner has shared budget" do
+      context "when income is attached to shared budget" do
         before do
-          create(:monthly_budget, user: owner, shared_with_household: true)
+          budget.update!(shared_with_household: true)
         end
 
         it "returns true for owner" do
@@ -124,7 +126,7 @@ RSpec.describe IncomeSource, type: :model do
     describe "#editable_by?" do
       context "without linked_user" do
         before do
-          create(:monthly_budget, user: owner, shared_with_household: true)
+          budget.update!(shared_with_household: true)
         end
 
         it "returns true for owner" do
@@ -137,10 +139,10 @@ RSpec.describe IncomeSource, type: :model do
       end
 
       context "with linked_user" do
-        let(:linked_income) { create(:income_source, user: owner, linked_user: household_member) }
+        let(:linked_income) { create(:income_source, user: owner, monthly_budget: budget, linked_user: household_member) }
 
         before do
-          create(:monthly_budget, user: owner, shared_with_household: true)
+          budget.update!(shared_with_household: true)
         end
 
         it "returns false for owner (not the linked user)" do
