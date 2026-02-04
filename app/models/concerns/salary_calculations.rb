@@ -10,7 +10,7 @@ module SalaryCalculations
   end
 
   def gross_salary
-    base_salary + vacation_spent
+    base_salary + vacation_spent + holiday_spent
   end
 
   def bank_fee

@@ -120,11 +120,13 @@ RSpec.describe SalaryEntry, type: :model do
       it 'ignores time off taken (unlike total_savings)' do
         entry = build(:salary_entry, hours_worked: 160, hourly_rate: 50, vacation_days_taken: 1, holiday_days_taken: 0.5)
 
-        # monthly_salary = 8000 + 400 (vacation pay) = 8400
-        # aguinaldo = 8400/12 = 700
+        # base_salary = 8000
+        # vacation_spent = 1 * 8 * 50 = 400, holiday_spent = 0.5 * 8 * 50 = 200
+        # gross_salary = 8000 + 400 + 200 = 8600
+        # aguinaldo = 8600/12 = 716.67
         # vacation = 600, holiday = 333.33
-        # monthly_savings_accrual = 700 + 600 + 333.33 = 1633.33
-        expect(entry.monthly_savings_accrual).to be_within(0.01).of(1633.33)
+        # monthly_savings_accrual = 716.67 + 600 + 333.33 = 1650
+        expect(entry.monthly_savings_accrual).to be_within(0.01).of(1650)
       end
     end
 
@@ -137,15 +139,15 @@ RSpec.describe SalaryEntry, type: :model do
       it 'reflects time off taken' do
         entry = build(:salary_entry, hours_worked: 160, hourly_rate: 50, vacation_days_taken: 1, holiday_days_taken: 0.5)
 
-        # monthly_salary = 8000 + 400 (vacation pay) = 8400
-        # aguinaldo = 8400/12 = 700
-        # vacation_spent = 1 * 8 * 50 = 400
-        # holiday_spent = 0.5 * 8 * 50 = 200
+        # base_salary = 8000
+        # vacation_spent = 1 * 8 * 50 = 400, holiday_spent = 0.5 * 8 * 50 = 200
+        # gross_salary = 8000 + 400 + 200 = 8600
+        # aguinaldo = 8600/12 = 716.67
         # vacation_balance = 600 - 400 = 200
         # holiday_balance = 333.33 - 200 = 133.33
-        # total = 700 + 200 + 133.33 = 1033.33
+        # total = 716.67 + 200 + 133.33 = 1050
 
-        expect(entry.total_savings).to be_within(1).of(1033.33)
+        expect(entry.total_savings).to be_within(1).of(1050)
       end
     end
 
