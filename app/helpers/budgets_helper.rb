@@ -85,13 +85,6 @@ module BudgetsHelper
     time_ago_in_words(version.created_at) + " ago"
   end
 
-  def has_any_savings?(salary_entry)
-    return false unless salary_entry
-
-    user = salary_entry.user
-    user.aguinaldo_enabled || user.vacation_enabled || user.holiday_enabled
-  end
-
   private
 
   def budget_activity_description(version)
