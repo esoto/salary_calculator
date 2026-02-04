@@ -48,7 +48,8 @@ class DashboardController < ApplicationController
     # Total savings and net pay (YTD)
     ytd_aguinaldo = @ytd_entries.sum(&:aguinaldo_savings)
     @total_savings = ytd_aguinaldo + @vacation_balance + @holiday_balance
-    @net_pay = @total_earnings - @total_savings
+    @monthly_savings_deduction = ytd_aguinaldo + @vacation_savings + @holiday_savings
+    @net_pay = @total_earnings - @monthly_savings_deduction
 
     # Bank fees (YTD)
     @total_bank_fees = @ytd_entries.sum(&:bank_fee)

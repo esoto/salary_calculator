@@ -40,12 +40,16 @@ module SalaryCalculations
     aguinaldo_savings + vacation_savings + holiday_savings
   end
 
+  def monthly_savings_deduction
+    aguinaldo_savings + vacation_savings + holiday_savings
+  end
+
   def total_savings
     aguinaldo_savings + vacation_balance + holiday_balance
   end
 
   def net_pay
-    monthly_salary - total_savings
+    monthly_salary - monthly_savings_deduction
   end
 
   def vacation_spent
