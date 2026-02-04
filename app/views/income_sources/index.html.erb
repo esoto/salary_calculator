@@ -64,8 +64,11 @@
     <% end %>
   </div>
 
-  <% if @income_sources.any? %>
+  <% if @my_income_sources.any? %>
     <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+        <h3 class="text-sm font-medium text-gray-700">My Income Sources</h3>
+      </div>
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
@@ -77,55 +80,8 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <% @income_sources.each do |source| %>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span class="font-medium"><%= source.name %></span>
-                <% if source.linked_user %>
-                  <p class="text-xs text-gray-500">Linked to <%= source.linked_user.name %></p>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap"><%= source.income_type.humanize %></td>
-              <td class="px-6 py-4 whitespace-nowrap text-right">
-                <% if source.fixed? && source.amount %>
-                  <% if source.usd? %>
-                    <%= format_usd(source.amount) %>
-                  <% else %>
-                    <%= format_crc(source.amount) %>
-                  <% end %>
-                <% elsif source.hourly? %>
-                  <span class="text-gray-500 text-sm">From salary</span>
-                <% else %>
-                  <span class="text-gray-400">-</span>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <% if source.active? %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
-                <% else %>
-                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Inactive</span>
-                <% end %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right">
-                <div class="flex justify-end gap-3">
-                  <% if source.active? %>
-                    <%= button_to "Deactivate", income_source_path(source),
-                        method: :patch,
-                        params: { income_source: { active: false } },
-                        class: "text-gray-600 hover:text-gray-800 text-sm" %>
-                  <% else %>
-                    <%= button_to "Activate", income_source_path(source),
-                        method: :patch,
-                        params: { income_source: { active: true } },
-                        class: "text-green-600 hover:text-green-800 text-sm" %>
-                  <% end %>
-                  <%= button_to "Delete", income_source_path(source),
-                      method: :delete,
-                      data: { turbo_confirm: "Are you sure you want to delete this income source?" },
-                      class: "text-red-600 hover:text-red-800 text-sm" %>
-                </div>
-              </td>
-            </tr>
+          <% @my_income_sources.each do |source| %>
+            <%= render partial: "income_source_row", locals: { source: source, can_edit: true } %>
           <% end %>
         </tbody>
       </table>
@@ -133,6 +89,30 @@
   <% else %>
     <div class="text-center py-12 bg-white rounded-lg shadow">
       <p class="text-gray-500">No income sources yet. Add one above to get started.</p>
+    </div>
+  <% end %>
+
+  <% if @household_income_sources.any? %>
+    <div class="bg-white rounded-lg shadow overflow-hidden mt-6">
+      <div class="px-6 py-3 bg-purple-50 border-b border-purple-200">
+        <h3 class="text-sm font-medium text-purple-700">Household Income Sources</h3>
+      </div>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <% @household_income_sources.each do |source| %>
+            <%= render partial: "income_source_row", locals: { source: source, can_edit: source.editable_by?(current_user) } %>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   <% end %>
 </div>

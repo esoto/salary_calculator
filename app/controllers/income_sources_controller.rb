@@ -2,9 +2,11 @@
 
 class IncomeSourcesController < ApplicationController
   before_action :set_income_source, only: [ :update, :destroy ]
+  before_action :authorize_edit, only: [ :update, :destroy ]
 
   def index
-    @income_sources = current_user.income_sources.to_a
+    @my_income_sources = current_user.income_sources.to_a
+    @household_income_sources = household_income_sources
     @new_income_source = IncomeSource.new
     @linkable_users = linkable_users
   end
@@ -15,7 +17,8 @@ class IncomeSourcesController < ApplicationController
     if @income_source.save
       redirect_to income_sources_path, notice: "Income source added."
     else
-      @income_sources = current_user.income_sources.reload.to_a
+      @my_income_sources = current_user.income_sources.reload.to_a
+      @household_income_sources = household_income_sources
       @new_income_source = @income_source
       @linkable_users = linkable_users
       render :index, status: :unprocessable_entity
@@ -38,8 +41,21 @@ class IncomeSourcesController < ApplicationController
   private
 
   def set_income_source
-    @income_source = current_user.income_sources.find_by(id: params[:id])
-    redirect_to income_sources_path, alert: "Income source not found." unless @income_source
+    @income_source = IncomeSource.find_by(id: params[:id])
+    return redirect_to income_sources_path, alert: "Income source not found." unless @income_source
+    redirect_to income_sources_path, alert: "Access denied." unless @income_source.accessible_by?(current_user)
+  end
+
+  def authorize_edit
+    redirect_to income_sources_path, alert: "You cannot edit this income source." unless @income_source.editable_by?(current_user)
+  end
+
+  def household_income_sources
+    return [] unless current_user.household
+
+    current_user.household.members
+      .where.not(id: current_user.id)
+      .flat_map { |member| member.income_sources.select { |is| is.accessible_by?(current_user) } }
   end
 
   def income_source_params

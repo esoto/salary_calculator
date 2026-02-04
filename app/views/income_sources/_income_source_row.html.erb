@@ -1,0 +1,55 @@
+<tr class="hover:bg-gray-50">
+  <td class="px-6 py-4 whitespace-nowrap">
+    <span class="font-medium"><%= source.name %></span>
+    <% if source.linked_user %>
+      <p class="text-xs text-gray-500">Linked to <%= source.linked_user.name %></p>
+    <% end %>
+    <% unless source.owned_by?(current_user) %>
+      <p class="text-xs text-purple-600">Owner: <%= source.user.name %></p>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap"><%= source.income_type.humanize %></td>
+  <td class="px-6 py-4 whitespace-nowrap text-right">
+    <% if source.fixed? && source.amount %>
+      <% if source.usd? %>
+        <%= format_usd(source.amount) %>
+      <% else %>
+        <%= format_crc(source.amount) %>
+      <% end %>
+    <% elsif source.hourly? %>
+      <span class="text-gray-500 text-sm">From salary</span>
+    <% else %>
+      <span class="text-gray-400">-</span>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap">
+    <% if source.active? %>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+    <% else %>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Inactive</span>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-right">
+    <% if can_edit %>
+      <div class="flex justify-end gap-3">
+        <% if source.active? %>
+          <%= button_to "Deactivate", income_source_path(source),
+              method: :patch,
+              params: { income_source: { active: false } },
+              class: "text-gray-600 hover:text-gray-800 text-sm" %>
+        <% else %>
+          <%= button_to "Activate", income_source_path(source),
+              method: :patch,
+              params: { income_source: { active: true } },
+              class: "text-green-600 hover:text-green-800 text-sm" %>
+        <% end %>
+        <%= button_to "Delete", income_source_path(source),
+            method: :delete,
+            data: { turbo_confirm: "Are you sure you want to delete this income source?" },
+            class: "text-red-600 hover:text-red-800 text-sm" %>
+      </div>
+    <% else %>
+      <span class="text-gray-400 text-sm">View only</span>
+    <% end %>
+  </td>
+</tr>

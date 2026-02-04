@@ -60,4 +60,101 @@ RSpec.describe IncomeSource, type: :model do
       end
     end
   end
+
+  describe "authorization" do
+    let(:owner) { create(:user) }
+    let(:household_member) { create(:user) }
+    let(:stranger) { create(:user) }
+    let(:household) { create(:household) }
+    let(:income_source) { create(:income_source, user: owner) }
+
+    before do
+      create(:household_membership, household: household, user: owner)
+      create(:household_membership, household: household, user: household_member)
+    end
+
+    describe "#owned_by?" do
+      it "returns true for owner" do
+        expect(income_source.owned_by?(owner)).to be true
+      end
+
+      it "returns false for household member" do
+        expect(income_source.owned_by?(household_member)).to be false
+      end
+
+      it "returns false for stranger" do
+        expect(income_source.owned_by?(stranger)).to be false
+      end
+    end
+
+    describe "#accessible_by?" do
+      context "when owner has no shared budgets" do
+        it "returns true for owner" do
+          expect(income_source.accessible_by?(owner)).to be true
+        end
+
+        it "returns false for household member" do
+          expect(income_source.accessible_by?(household_member)).to be false
+        end
+
+        it "returns false for stranger" do
+          expect(income_source.accessible_by?(stranger)).to be false
+        end
+      end
+
+      context "when owner has shared budget" do
+        before do
+          create(:monthly_budget, user: owner, shared_with_household: true)
+        end
+
+        it "returns true for owner" do
+          expect(income_source.accessible_by?(owner)).to be true
+        end
+
+        it "returns true for household member" do
+          expect(income_source.accessible_by?(household_member)).to be true
+        end
+
+        it "returns false for stranger" do
+          expect(income_source.accessible_by?(stranger)).to be false
+        end
+      end
+    end
+
+    describe "#editable_by?" do
+      context "without linked_user" do
+        before do
+          create(:monthly_budget, user: owner, shared_with_household: true)
+        end
+
+        it "returns true for owner" do
+          expect(income_source.editable_by?(owner)).to be true
+        end
+
+        it "returns true for household member when accessible" do
+          expect(income_source.editable_by?(household_member)).to be true
+        end
+      end
+
+      context "with linked_user" do
+        let(:linked_income) { create(:income_source, user: owner, linked_user: household_member) }
+
+        before do
+          create(:monthly_budget, user: owner, shared_with_household: true)
+        end
+
+        it "returns false for owner (not the linked user)" do
+          expect(linked_income.editable_by?(owner)).to be false
+        end
+
+        it "returns true for linked user" do
+          expect(linked_income.editable_by?(household_member)).to be true
+        end
+
+        it "returns false for stranger" do
+          expect(linked_income.editable_by?(stranger)).to be false
+        end
+      end
+    end
+  end
 end

@@ -22,4 +22,23 @@ class IncomeSource < ApplicationRecord
       0
     end
   end
+
+  def owned_by?(check_user)
+    user_id == check_user.id
+  end
+
+  def accessible_by?(check_user)
+    return true if owned_by?(check_user)
+
+    # Accessible if owner has any shared budget and users share a household
+    user.monthly_budgets.where(shared_with_household: true).exists? &&
+      check_user.shares_household_with?(user)
+  end
+
+  def editable_by?(check_user)
+    # Linked income sources can only be edited by the linked user
+    return linked_user_id == check_user.id if linked_user_id.present?
+
+    accessible_by?(check_user)
+  end
 end
