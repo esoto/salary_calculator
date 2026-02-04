@@ -18,7 +18,7 @@ class IncomeSource < ApplicationRecord
     elsif linked_user.present?
       # Use detect to leverage preloaded salary_entries from with_salary_data scope
       entry = linked_user.salary_entries.detect { |e| e.year == year && e.month == month }
-      entry ? (entry.hours_worked * entry.hourly_rate) : 0
+      entry ? entry.net_pay : 0
     else
       0
     end
@@ -31,8 +31,9 @@ class IncomeSource < ApplicationRecord
   def accessible_by?(check_user)
     return true if owned_by?(check_user)
 
-    # Accessible if attached to a shared budget and users share a household
-    monthly_budget&.shared_with_household? && check_user.shares_household_with?(user)
+    # Accessible if owner has any shared budget and users share a household
+    user.monthly_budgets.where(shared_with_household: true).exists? &&
+      check_user.shares_household_with?(user)
   end
 
   def editable_by?(check_user)

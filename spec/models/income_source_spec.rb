@@ -52,8 +52,8 @@ RSpec.describe IncomeSource, type: :model do
       let(:source) { create(:income_source, user: user, linked_user: linked_user, income_type: "hourly") }
       let!(:salary_entry) { create(:salary_entry, user: linked_user, year: 2026, month: 1, hours_worked: 160, hourly_rate: 50) }
 
-      it "returns income from salary entry" do
-        expect(source.amount_for_month(2026, 1)).to eq(8000)
+      it "returns net pay from salary entry" do
+        expect(source.amount_for_month(2026, 1)).to be_within(0.01).of(6400)
       end
 
       it "returns 0 when no salary entry exists" do
@@ -104,9 +104,9 @@ RSpec.describe IncomeSource, type: :model do
         end
       end
 
-      context "when income is attached to shared budget" do
+      context "when owner has shared budget" do
         before do
-          budget.update!(shared_with_household: true)
+          create(:monthly_budget, user: owner, shared_with_household: true)
         end
 
         it "returns true for owner" do
@@ -126,7 +126,7 @@ RSpec.describe IncomeSource, type: :model do
     describe "#editable_by?" do
       context "without linked_user" do
         before do
-          budget.update!(shared_with_household: true)
+          create(:monthly_budget, user: owner, shared_with_household: true)
         end
 
         it "returns true for owner" do
@@ -139,10 +139,10 @@ RSpec.describe IncomeSource, type: :model do
       end
 
       context "with linked_user" do
-        let(:linked_income) { create(:income_source, user: owner, monthly_budget: budget, linked_user: household_member) }
+        let(:linked_income) { create(:income_source, user: owner, linked_user: household_member) }
 
         before do
-          budget.update!(shared_with_household: true)
+          create(:monthly_budget, user: owner, shared_with_household: true)
         end
 
         it "returns false for owner (not the linked user)" do
