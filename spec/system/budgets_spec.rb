@@ -256,9 +256,10 @@ RSpec.describe "Budget Management", type: :system do
         expect(page).to have_content("Personal Savings")
         expect(page).not_to have_content("Aguinaldo:")
         expect(page).to have_content("Vacation:")
-        expect(page).to have_content("$400.00")
         expect(page).not_to have_content("Holiday:")
         expect(page).to have_content("Total:")
+        # Verify $400.00 appears twice: once for Vacation, once for Total
+        expect(page).to have_content("$400.00", count: 2)
       end
     end
 
