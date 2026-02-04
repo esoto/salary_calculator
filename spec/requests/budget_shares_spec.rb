@@ -28,7 +28,7 @@ RSpec.describe "BudgetShares", type: :request do
 
     it "returns the share with token" do
       post budget_budget_shares_path(budget), params: valid_params, as: :turbo_stream
-      expect(response).to have_http_status(:no_content)
+      expect(response).to have_http_status(:ok)
     end
 
     context "when not the budget owner" do

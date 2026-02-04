@@ -1,0 +1,21 @@
+<%= turbo_stream.prepend "shares-list" do %>
+  <%= render "budget_shares/share", share: @share %>
+<% end %>
+
+<%= turbo_stream.replace "share_form" do %>
+  <div class="text-center py-4">
+    <p class="text-green-600 font-medium mb-2">Share link created!</p>
+    <div class="flex items-center gap-2 justify-center">
+      <input type="text" readonly value="<%= shared_budget_url(@share.token) %>"
+             class="text-sm bg-gray-100 px-3 py-2 rounded w-72" />
+      <button onclick="navigator.clipboard.writeText('<%= shared_budget_url(@share.token) %>')"
+              class="text-blue-600 hover:text-blue-800 text-sm">
+        Copy
+      </button>
+    </div>
+    <button onclick="document.getElementById('share-modal').close()"
+            class="mt-4 text-gray-600 hover:text-gray-800">
+      Done
+    </button>
+  </div>
+<% end %>
