@@ -79,7 +79,7 @@
         </div>
         <div class="flex justify-between border-t pt-4">
           <span class="font-semibold text-gray-900">Total Savings</span>
-          <span class="font-bold text-green-700 text-xl"><%= format_currency(@salary_entry.total_savings) %></span>
+          <span class="font-bold text-green-700 text-xl"><%= format_currency(@salary_entry.monthly_savings_accrual) %></span>
         </div>
       </div>
     </div>
@@ -105,8 +105,11 @@
     <% end %>
 
     <div class="border-t pt-6 mt-6">
-      <p class="text-sm text-gray-500 mb-2">Net Pay (Salary - Savings)</p>
+      <p class="text-sm text-gray-500 mb-2">Net Pay (Monthly Salary - Savings)</p>
       <p class="text-4xl font-bold text-blue-600"><%= format_currency(@salary_entry.net_pay) %></p>
+      <div class="mt-2 text-sm text-gray-500">
+        <span><%= format_currency(@salary_entry.monthly_salary) %> - <%= format_currency(@salary_entry.monthly_savings_deduction) %></span>
+      </div>
     </div>
 
     <div class="mt-8 flex gap-4">
