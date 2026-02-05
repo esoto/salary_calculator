@@ -18,6 +18,8 @@ class IncomeSource < ApplicationRecord
     elsif linked_user.present?
       # Use detect to leverage preloaded salary_entries from with_salary_data scope
       entry = linked_user.salary_entries.detect { |e| e.year == year && e.month == month }
+      # Use net_pay (take-home after savings deductions) for budget calculations
+      # This reflects actual available income for household budgeting
       entry ? entry.net_pay : 0
     else
       0
