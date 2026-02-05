@@ -12,8 +12,8 @@ class IncomeSourcesController < ApplicationController
   end
 
   def create
-    @income_source = current_user.income_sources.build(income_source_params)
-    @income_source.monthly_budget = current_budget
+    owner = find_owner_for_income_source
+    @income_source = owner.income_sources.build(income_source_params)
 
     if @income_source.save
       redirect_to income_sources_path, notice: "Income source added."
@@ -80,9 +80,11 @@ class IncomeSourcesController < ApplicationController
     users.uniq
   end
 
-  def current_budget
-    year = Date.current.year
-    month = Date.current.month
-    current_user.monthly_budgets.find_or_create_by(year: year, month: month)
+  def find_owner_for_income_source
+    return current_user unless params[:income_source][:user_id].present?
+
+    user_id = params[:income_source][:user_id].to_i
+    owner = linkable_users.find { |u| u.id == user_id }
+    owner || current_user
   end
 end
