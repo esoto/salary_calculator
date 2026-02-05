@@ -161,11 +161,6 @@ RSpec.describe "Dashboard", type: :request do
       # 1 month logged = 1.5 days earned, 2 taken = -0.5 available (or 0 if clamped)
       expect(response.body).to include("available")
     end
-
-    it "displays days taken" do
-      get dashboard_path
-      expect(response.body).to include("taken")
-    end
   end
 
   describe 'year selection integration' do

@@ -58,11 +58,11 @@
       <p class="text-sm text-gray-500 mt-1"><%= @current_year %></p>
     </div>
 
-    <% if @user.bank_fee_enabled %>
-      <!-- Bank Fees Card -->
+    <% if @user.any_savings_enabled? %>
+      <!-- Total Savings Card -->
       <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Bank Fees</h3>
-        <p class="text-2xl font-bold text-red-600 mt-2">-<%= format_currency(@total_bank_fees) %></p>
+        <h3 class="text-sm font-medium text-gray-500 uppercase">Total Savings</h3>
+        <p class="text-2xl font-bold text-green-600 mt-2"><%= format_currency(@total_savings) %></p>
         <p class="text-sm text-gray-500 mt-1">YTD <%= @current_year %></p>
       </div>
     <% end %>
@@ -82,7 +82,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation Days</h3>
         <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@vacation_days_available, precision: 1) %> available</p>
-        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@vacation_days_earned, precision: 1) %> earned, <%= number_with_precision(@vacation_days_taken, precision: 1) %> taken</p>
+        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@vacation_days_earned, precision: 1) %> earned</p>
       </div>
     <% end %>
 
@@ -98,7 +98,7 @@
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday Days</h3>
         <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@holiday_days_available, precision: 1) %> available</p>
-        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@holiday_days_earned, precision: 1) %> earned, <%= number_with_precision(@holiday_days_taken, precision: 1) %> taken</p>
+        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@holiday_days_earned, precision: 1) %> earned</p>
       </div>
     <% end %>
   </div>
