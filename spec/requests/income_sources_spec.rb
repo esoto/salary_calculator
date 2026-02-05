@@ -99,4 +99,94 @@ RSpec.describe "IncomeSources", type: :request do
       }.not_to change(IncomeSource, :count)
     end
   end
+
+  describe "household income sharing" do
+    let(:household) { create(:household) }
+    let(:partner) { create(:user) }
+    let!(:partner_source) { create(:income_source, user: partner, name: "Partner Income") }
+
+    before do
+      create(:household_membership, household: household, user: user)
+      create(:household_membership, household: household, user: partner)
+    end
+
+    context "when partner has no shared budgets" do
+      it "does not show partner's income sources" do
+        get income_sources_path
+        expect(response.body).not_to include("Partner Income")
+      end
+
+      it "cannot update partner's income source" do
+        patch income_source_path(partner_source), params: { income_source: { amount: 9999 } }
+        expect(response).to redirect_to(income_sources_path)
+        expect(partner_source.reload.amount).not_to eq(9999)
+      end
+
+      it "cannot delete partner's income source" do
+        expect {
+          delete income_source_path(partner_source)
+        }.not_to change(IncomeSource, :count)
+      end
+    end
+
+    context "when partner has shared budget" do
+      before do
+        create(:monthly_budget, user: partner, shared_with_household: true)
+      end
+
+      it "shows partner's income sources in household section" do
+        get income_sources_path
+        expect(response.body).to include("Partner Income")
+        expect(response.body).to include("Household Income Sources")
+      end
+
+      it "can update partner's income source" do
+        patch income_source_path(partner_source), params: { income_source: { amount: 9999 } }
+        expect(response).to redirect_to(income_sources_path)
+        expect(partner_source.reload.amount).to eq(9999)
+      end
+
+      it "can delete partner's income source" do
+        expect {
+          delete income_source_path(partner_source)
+        }.to change(IncomeSource, :count).by(-1)
+      end
+    end
+
+    context "creating income for household members" do
+      it "can create income source for another household member" do
+        params = {
+          income_source: {
+            name: "New Partner Income",
+            amount: 2000,
+            currency: "USD",
+            income_type: "fixed",
+            user_id: partner.id
+          }
+        }
+
+        expect {
+          post income_sources_path, params: params
+        }.to change(partner.income_sources, :count).by(1)
+      end
+
+      it "cannot create income source for non-household member" do
+        stranger = create(:user)
+        params = {
+          income_source: {
+            name: "Stranger Income",
+            amount: 2000,
+            currency: "USD",
+            income_type: "fixed",
+            user_id: stranger.id
+          }
+        }
+
+        post income_sources_path, params: params
+        # Should default to current user, not stranger
+        expect(stranger.income_sources.count).to eq(0)
+        expect(user.income_sources.find_by(name: "Stranger Income")).to be_present
+      end
+    end
+  end
 end
