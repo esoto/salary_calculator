@@ -41,6 +41,26 @@ RSpec.describe MonthlyBudget, type: :model do
       it "sums all active income sources in USD" do
         expect(budget.total_income_usd).to eq(5000)
       end
+
+      context "with household income sharing" do
+        let(:partner) { create(:user) }
+        let(:household) { create(:household) }
+        let!(:partner_income) { create(:income_source, user: partner, amount: 3000, currency: "USD") }
+
+        before do
+          create(:household_membership, household: household, user: user)
+          create(:household_membership, household: household, user: partner)
+        end
+
+        it "excludes household income when not shared" do
+          expect(budget.total_income_usd).to eq(5000)
+        end
+
+        it "includes household income when shared" do
+          budget.update!(shared_with_household: true)
+          expect(budget.total_income_usd).to eq(8000)
+        end
+      end
     end
 
     describe "#category_total_usd" do

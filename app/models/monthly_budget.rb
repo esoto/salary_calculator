@@ -34,10 +34,26 @@ class MonthlyBudget < ApplicationRecord
   }.freeze
 
   def total_income_usd
-    user.income_sources.active.with_salary_data.sum do |source|
+    all_income_sources.sum do |source|
       amount = source.amount_for_month(year, month)
       source.usd? ? amount : (amount / exchange_rate)
     end
+  end
+
+  def all_income_sources
+    sources = user.income_sources.active.with_salary_data.to_a
+
+    # Include household members' income sources when budget is shared
+    if shared_with_household? && user.household.present?
+      household_sources = IncomeSource.active.with_salary_data
+        .joins(user: :household_membership)
+        .where(household_memberships: { household_id: user.household_membership.household_id })
+        .where.not(user_id: user.id)
+        .to_a
+      sources += household_sources
+    end
+
+    sources
   end
 
   def category_total_usd(category)
