@@ -41,6 +41,26 @@ RSpec.describe MonthlyBudget, type: :model do
       it "sums all active income sources in USD" do
         expect(budget.total_income_usd).to eq(5000)
       end
+
+      context "with household income sharing" do
+        let(:partner) { create(:user) }
+        let(:household) { create(:household) }
+        let!(:partner_income) { create(:income_source, user: partner, amount: 3000, currency: "USD") }
+
+        before do
+          create(:household_membership, household: household, user: user)
+          create(:household_membership, household: household, user: partner)
+        end
+
+        it "excludes household income when not shared" do
+          expect(budget.total_income_usd).to eq(5000)
+        end
+
+        it "includes household income when shared" do
+          budget.update!(shared_with_household: true)
+          expect(budget.total_income_usd).to eq(8000)
+        end
+      end
     end
 
     describe "#category_total_usd" do
@@ -102,10 +122,21 @@ RSpec.describe MonthlyBudget, type: :model do
         end
       end
 
-      context "when percentage is below min but within warning band (min - 5)" do
+      context "expense category (fixed) below target" do
         before do
-          # 46% is below 50 but >= 45
-          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 460, currency: "USD")
+          # 40% is below min 50 - for expenses this is OK (spending less)
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 400, currency: "USD")
+        end
+
+        it "returns :ok for expenses below target" do
+          expect(status_budget.category_status("fixed")).to eq(:ok)
+        end
+      end
+
+      context "expense category (fixed) above max within warning band" do
+        before do
+          # 68% is above 60 but <= 70 (max + 10)
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 680, currency: "USD")
         end
 
         it "returns :warning" do
@@ -113,36 +144,43 @@ RSpec.describe MonthlyBudget, type: :model do
         end
       end
 
-      context "when percentage is more than 5% below min" do
+      context "expense category (fixed) more than 10% above max" do
         before do
-          # 44% is below 45 (min - 5)
-          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 440, currency: "USD")
-        end
-
-        it "returns :low" do
-          expect(status_budget.category_status("fixed")).to eq(:low)
-        end
-      end
-
-      context "when percentage is above max but within warning band (max + 5)" do
-        before do
-          # 64% is above 60 but <= 65
-          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 640, currency: "USD")
-        end
-
-        it "returns :warning" do
-          expect(status_budget.category_status("fixed")).to eq(:warning)
-        end
-      end
-
-      context "when percentage is more than 5% above max" do
-        before do
-          # 66% is above 65 (max + 5)
-          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 660, currency: "USD")
+          # 72% is above 70 (max + 10)
+          create(:budget_item, monthly_budget: status_budget, category: "fixed", amount: 720, currency: "USD")
         end
 
         it "returns :high" do
           expect(status_budget.category_status("fixed")).to eq(:high)
+        end
+      end
+
+      context "savings category below min within warning band" do
+        before do
+          # 3% is below min 5 but >= 0 (min - 5)
+          create(:budget_item, monthly_budget: status_budget, category: "savings", amount: 30, currency: "USD")
+        end
+
+        it "returns :warning for savings below target" do
+          expect(status_budget.category_status("savings")).to eq(:warning)
+        end
+      end
+
+      context "savings category more than 5% below min" do
+        it "returns :low when no savings at all" do
+          # 0% is below 0 (min - 5)
+          expect(status_budget.category_status("savings")).to eq(:low)
+        end
+      end
+
+      context "savings category at or above target" do
+        before do
+          # 8% is within target 5-10%
+          create(:budget_item, monthly_budget: status_budget, category: "savings", amount: 80, currency: "USD")
+        end
+
+        it "returns :ok" do
+          expect(status_budget.category_status("savings")).to eq(:ok)
         end
       end
 

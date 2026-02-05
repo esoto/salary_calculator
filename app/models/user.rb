@@ -42,10 +42,11 @@ class User < ApplicationRecord
   end
 
   def shares_household_with?(other_user)
-    return false unless household.present?
-    return false unless other_user.household.present?
+    # Compare IDs directly to avoid loading household objects
+    my_household_id = household_membership&.household_id
+    return false unless my_household_id
 
-    household == other_user.household
+    my_household_id == other_user.household_membership&.household_id
   end
 
   def any_savings_enabled?

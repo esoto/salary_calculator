@@ -25,7 +25,7 @@ class BudgetsController < ApplicationController
   end
 
   def show
-    @income_sources = @budget.user.income_sources.active
+    @income_sources = @budget.all_income_sources
     @salary_entry = @budget.user.salary_entries.find_by(year: @budget.year, month: @budget.month)
   end
 

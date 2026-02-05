@@ -105,10 +105,10 @@
     <% end %>
 
     <div class="border-t pt-6 mt-6">
-      <p class="text-sm text-gray-500 mb-2">Net Pay (Monthly Salary - Savings)</p>
+      <p class="text-sm text-gray-500 mb-2">Net Pay (Gross Salary<%= " - Bank Fee" if @salary_entry.bank_fee > 0 %> - Savings)</p>
       <p class="text-4xl font-bold text-blue-600"><%= format_currency(@salary_entry.net_pay) %></p>
       <div class="mt-2 text-sm text-gray-500">
-        <span><%= format_currency(@salary_entry.monthly_salary) %> - <%= format_currency(@salary_entry.monthly_savings_deduction) %></span>
+        <span><%= format_currency(@salary_entry.gross_salary) %><%= " - #{format_currency(@salary_entry.bank_fee)}" if @salary_entry.bank_fee > 0 %> - <%= format_currency(@salary_entry.monthly_savings_deduction) %></span>
       </div>
     </div>
 
