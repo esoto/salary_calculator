@@ -19,9 +19,11 @@ def accessible_by?(check_user)
 end
 
 def editable_by?(check_user)
-  # Linked income (to salary entries) - only linked user can edit
+  # Owner always has edit control over their income sources
+  return true if owned_by?(check_user)
+  # Linked income (to salary entries) - linked user can also edit
   return linked_user_id == check_user.id if linked_user_id.present?
-  # Otherwise same as accessible
+  # Otherwise same as accessible (household members can edit if shared)
   accessible_by?(check_user)
 end
 
@@ -35,8 +37,12 @@ end
 `IncomeSourcesController` needs:
 1. Authorization checks using `accessible_by?` / `editable_by?`
 2. Index shows household income sources when user has shared budgets
-3. Create action sets `user_id` to current user (owner creates)
+3. Create action allows selecting owner from household members (not just current user)
 4. Edit/Update/Destroy check `editable_by?`
+
+### Budget Integration
+
+When a budget has `shared_with_household: true`, the `total_income_usd` calculation includes income sources from all household members, not just the budget owner.
 
 ### View Changes
 
