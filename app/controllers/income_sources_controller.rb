@@ -65,8 +65,9 @@ class IncomeSourcesController < ApplicationController
     return [] if sharing_member_ids.empty?
 
     # Fetch income sources with eager loading to avoid N+1 in view
+    # Include monthly_budgets for editable_by? check in view
     IncomeSource.where(user_id: sharing_member_ids)
-      .includes(:user, :linked_user)
+      .includes(:linked_user, user: :monthly_budgets)
       .to_a
   end
 
