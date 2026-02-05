@@ -119,6 +119,17 @@
       </div>
     </div>
 
+    <!-- Payment -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Payment</h2>
+
+      <div class="flex items-center">
+        <%= form.check_box :bank_fee_enabled, class: "h-4 w-4 text-blue-600 rounded border-gray-300" %>
+        <%= form.label :bank_fee_enabled, "Deduct $40 bank transfer fee", class: "ml-2 text-sm font-medium text-gray-700" %>
+      </div>
+      <p class="text-xs text-gray-500 mt-1 ml-6">For international transfers (e.g., Costa Rica)</p>
+    </div>
+
     <div class="flex gap-4">
       <%= form.submit "Save Settings", class: "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer" %>
       <%= link_to "Cancel", dashboard_path, class: "bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg" %>

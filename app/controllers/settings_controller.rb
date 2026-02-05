@@ -33,7 +33,8 @@ class SettingsController < ApplicationController
       :hours_per_day,
       :aguinaldo_enabled,
       :vacation_enabled,
-      :holiday_enabled
+      :holiday_enabled,
+      :bank_fee_enabled
     )
   end
 end

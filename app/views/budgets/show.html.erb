@@ -65,7 +65,7 @@
       <h3 class="text-lg font-semibold text-gray-800 mb-3">Income Sources</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <% @income_sources.each do |source| %>
-          <div class="border border-gray-200 rounded-lg p-3">
+          <div class="border <%= source.owned_by?(@budget.user) ? 'border-gray-200' : 'border-purple-200 bg-purple-50' %> rounded-lg p-3">
             <div class="flex justify-between items-center">
               <span class="font-medium"><%= source.name %></span>
               <span class="text-green-600 font-medium">
@@ -78,6 +78,8 @@
             </div>
             <% if source.linked_user %>
               <p class="text-sm text-gray-500">From <%= source.linked_user.name %>'s salary</p>
+            <% elsif !source.owned_by?(@budget.user) %>
+              <p class="text-sm text-purple-600"><%= source.user.name %>'s income</p>
             <% else %>
               <p class="text-sm text-gray-500">Fixed income</p>
             <% end %>
