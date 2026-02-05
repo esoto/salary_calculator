@@ -145,8 +145,8 @@ RSpec.describe IncomeSource, type: :model do
           create(:monthly_budget, user: owner, shared_with_household: true)
         end
 
-        it "returns false for owner (not the linked user)" do
-          expect(linked_income.editable_by?(owner)).to be false
+        it "returns true for owner (owner always has edit control)" do
+          expect(linked_income.editable_by?(owner)).to be true
         end
 
         it "returns true for linked user" do

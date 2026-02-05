@@ -53,17 +53,32 @@ class MonthlyBudget < ApplicationRecord
     budget_items.sum(&:amount_in_usd)
   end
 
+  EXPENSE_CATEGORIES = %w[fixed guilt_free].freeze
+  SAVING_CATEGORIES = %w[savings investments].freeze
+
   def category_status(category)
     percentage = category_percentage(category)
     target = CATEGORY_TARGETS[category]
     return :ok unless target
 
-    if percentage < target[:min]
-      percentage >= target[:min] - 5 ? :warning : :low
-    elsif percentage > target[:max]
-      percentage <= target[:max] + 5 ? :warning : :high
+    if EXPENSE_CATEGORIES.include?(category)
+      # For expenses: under target is good, over target is bad
+      if percentage <= target[:max]
+        :ok
+      elsif percentage <= target[:max] + 10
+        :warning
+      else
+        :high
+      end
     else
-      :ok
+      # For savings/investments: under target is bad, over target is good
+      if percentage >= target[:min]
+        :ok
+      elsif percentage > target[:min] - 5
+        :warning
+      else
+        :low
+      end
     end
   end
 

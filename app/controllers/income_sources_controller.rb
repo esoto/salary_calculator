@@ -54,9 +54,20 @@ class IncomeSourcesController < ApplicationController
   def household_income_sources
     return [] unless current_user.household
 
-    current_user.household.members
+    # Get ids of members who have shared budgets (avoids N+1 in accessible_by? check)
+    sharing_member_ids = current_user.household.members
+      .joins(:monthly_budgets)
+      .where(monthly_budgets: { shared_with_household: true })
       .where.not(id: current_user.id)
-      .flat_map { |member| member.income_sources.select { |is| is.accessible_by?(current_user) } }
+      .distinct
+      .pluck(:id)
+
+    return [] if sharing_member_ids.empty?
+
+    # Fetch income sources with eager loading to avoid N+1 in view
+    IncomeSource.where(user_id: sharing_member_ids)
+      .includes(:user, :linked_user)
+      .to_a
   end
 
   def income_source_params
