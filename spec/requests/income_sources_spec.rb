@@ -188,5 +188,41 @@ RSpec.describe "IncomeSources", type: :request do
         expect(user.income_sources.find_by(name: "Stranger Income")).to be_present
       end
     end
+
+    context "linked income source authorization" do
+      let!(:linked_source) { create(:income_source, user: partner, linked_user: user, income_type: "hourly") }
+
+      it "linked user can edit income source linked to them" do
+        patch income_source_path(linked_source), params: { income_source: { name: "Updated Name" } }
+        expect(response).to redirect_to(income_sources_path)
+        expect(linked_source.reload.name).to eq("Updated Name")
+      end
+
+      it "linked user can delete income source linked to them" do
+        expect {
+          delete income_source_path(linked_source)
+        }.to change(IncomeSource, :count).by(-1)
+      end
+    end
+
+    context "owner retains control when sharing" do
+      before do
+        create(:monthly_budget, user: user, shared_with_household: true)
+      end
+
+      let!(:my_source) { create(:income_source, user: user, name: "My Salary") }
+
+      it "owner can still update their own shared income source" do
+        patch income_source_path(my_source), params: { income_source: { amount: 5000 } }
+        expect(response).to redirect_to(income_sources_path)
+        expect(my_source.reload.amount).to eq(5000)
+      end
+
+      it "owner can still delete their own shared income source" do
+        expect {
+          delete income_source_path(my_source)
+        }.to change(IncomeSource, :count).by(-1)
+      end
+    end
   end
 end

@@ -14,6 +14,9 @@ Income sources follow the budget's sharing status:
 # IncomeSource model
 def accessible_by?(check_user)
   return true if user_id == check_user.id
+  # Linked users can access income sources that use their salary data
+  return true if linked_user_id == check_user.id
+  # Accessible if owner has shared budget and users share a household
   user.monthly_budgets.where(shared_with_household: true).exists? &&
     check_user.shares_household_with?(user)
 end

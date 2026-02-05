@@ -33,6 +33,9 @@ class IncomeSource < ApplicationRecord
   def accessible_by?(check_user)
     return true if owned_by?(check_user)
 
+    # Linked users can access income sources that use their salary data
+    return true if linked_user_id == check_user.id
+
     # Accessible if owner has any shared budget and users share a household
     user.monthly_budgets.where(shared_with_household: true).exists? &&
       check_user.shares_household_with?(user)
