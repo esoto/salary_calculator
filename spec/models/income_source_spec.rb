@@ -3,7 +3,6 @@ require 'rails_helper'
 RSpec.describe IncomeSource, type: :model do
   describe "associations" do
     it { should belong_to(:user) }
-    it { should belong_to(:monthly_budget).optional }
     it { should belong_to(:linked_user).class_name("User").optional }
   end
 
@@ -67,8 +66,7 @@ RSpec.describe IncomeSource, type: :model do
     let(:household_member) { create(:user) }
     let(:stranger) { create(:user) }
     let(:household) { create(:household) }
-    let(:budget) { create(:monthly_budget, user: owner) }
-    let(:income_source) { create(:income_source, user: owner, monthly_budget: budget) }
+    let(:income_source) { create(:income_source, user: owner) }
 
     before do
       create(:household_membership, household: household, user: owner)

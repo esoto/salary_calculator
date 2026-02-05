@@ -1,6 +1,5 @@
 class IncomeSource < ApplicationRecord
   belongs_to :user
-  belongs_to :monthly_budget, optional: true
   belongs_to :linked_user, class_name: "User", optional: true
 
   enum :currency, { crc: "CRC", usd: "USD" }, validate: true
