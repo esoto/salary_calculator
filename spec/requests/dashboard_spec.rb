@@ -105,10 +105,9 @@ RSpec.describe "Dashboard", type: :request do
   end
 
   describe "GET / (root)" do
-    it "shows dashboard" do
+    it "redirects authenticated users to dashboard" do
       get root_path
-      expect(response).to have_http_status(:success)
-      expect(response.body).to include("Dashboard")
+      expect(response).to redirect_to(dashboard_path)
     end
   end
 

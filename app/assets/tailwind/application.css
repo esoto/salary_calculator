@@ -1,9 +1,94 @@
 @import "tailwindcss";
 
+@theme {
+  --font-family-display: 'Newsreader', serif;
+  --font-family-body: 'Figtree', sans-serif;
+
+  --color-gold-300: #e8d5a3;
+  --color-gold-500: #c9a84c;
+  --color-gold-600: #b8943f;
+
+  --color-navy-950: #070b14;
+  --color-navy-900: #0a0f1a;
+  --color-navy-800: #0c1222;
+  --color-navy-600: #1a1f3a;
+
+  --color-cream: #faf8f3;
+  --color-warm-gray: #e2e0db;
+}
+
 dialog::backdrop {
   background-color: rgb(0 0 0 / 0.5);
 }
 
 dialog[open] {
   margin: auto;
+}
+
+/* Landing page entrance animations */
+@keyframes landing-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-fade-in {
+  animation: landing-fade-in 0.8s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-fade-in {
+    animation: none;
+  }
+}
+
+/* Landing page gradient utilities */
+.bg-orb-gold {
+  background: radial-gradient(circle, var(--color-gold-500) 0%, transparent 70%);
+}
+
+.bg-orb-blue {
+  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+}
+
+.bg-orb-gold-subtle {
+  background: radial-gradient(ellipse at center, rgb(201 168 76 / 0.06), transparent 70%);
+}
+
+.bg-gold-btn {
+  background: linear-gradient(135deg, var(--color-gold-500), var(--color-gold-600));
+}
+
+.bg-step-circle {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+}
+
+.bg-cta-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, var(--color-navy-600) 50%, #0f172a 100%);
+}
+
+.bg-border-gold-fade {
+  background: linear-gradient(90deg, transparent, rgb(201 168 76 / 0.25), transparent);
+}
+
+.bg-connecting-line {
+  background: linear-gradient(90deg, transparent, var(--color-warm-gray) 15%, var(--color-warm-gray) 85%, transparent);
+}
+
+.landing-text-gradient {
+  background: linear-gradient(135deg, var(--color-gold-500) 0%, var(--color-gold-300) 50%, var(--color-gold-500) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-grid-pattern {
+  background-image: linear-gradient(rgba(255 255 255 / 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255 255 255 / 0.1) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
