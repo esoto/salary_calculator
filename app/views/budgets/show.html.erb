@@ -152,26 +152,22 @@
 
   <% if @budget.owned_by?(current_user) %>
     <!-- Share Modal -->
-    <dialog id="share-modal" class="rounded-lg shadow-xl p-0">
+    <dialog id="share-modal" class="rounded-lg shadow-xl p-0"
+            data-controller="dialog"
+            data-action="close->dialog#resetForm">
       <div class="p-6 w-96">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold">Share Budget</h2>
-          <button onclick="document.getElementById('share-modal').close()" class="text-gray-400 hover:text-gray-600">✕</button>
+          <button data-action="click->dialog#close" type="button" class="text-gray-400 hover:text-gray-600">✕</button>
         </div>
-        <div id="share-form-container">
+        <div id="share-form-container" data-dialog-target="formContainer">
           <%= render "budget_shares/form", budget: @budget, share: @new_share %>
         </div>
       </div>
+      <template data-dialog-target="formTemplate">
+        <%= render "budget_shares/form", budget: @budget, share: @new_share %>
+      </template>
     </dialog>
-    <template id="share-form-template">
-      <%= render "budget_shares/form", budget: @budget, share: @new_share %>
-    </template>
-    <script>
-      document.getElementById('share-modal').addEventListener('close', function() {
-        document.getElementById('share-form-container').innerHTML =
-          document.getElementById('share-form-template').innerHTML;
-      });
-    </script>
 
     <!-- Existing Shares -->
     <div class="<%= 'bg-white rounded-lg shadow mt-6 p-6' if @shares&.any? %>" id="shares-list">
