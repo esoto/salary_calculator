@@ -49,14 +49,23 @@ RSpec.describe IncomeSource, type: :model do
     context "with hourly income type linked to user" do
       let(:linked_user) { create(:user) }
       let(:source) { create(:income_source, user: user, linked_user: linked_user, income_type: "hourly") }
+      # Salary entry for January 2026
       let!(:salary_entry) { create(:salary_entry, user: linked_user, year: 2026, month: 1, hours_worked: 160, hourly_rate: 50) }
 
-      it "returns net pay from salary entry" do
-        expect(source.amount_for_month(2026, 1)).to be_within(0.01).of(6400)
+      it "returns previous month's net pay (Feb looks at Jan)" do
+        # February 2026 should use January 2026's salary entry
+        expect(source.amount_for_month(2026, 2)).to be_within(0.01).of(6400)
       end
 
-      it "returns 0 when no salary entry exists" do
-        expect(source.amount_for_month(2026, 2)).to eq(0)
+      it "returns 0 when previous month has no salary entry" do
+        # January 2026 looks at December 2025, which doesn't exist
+        expect(source.amount_for_month(2026, 1)).to eq(0)
+      end
+
+      it "handles year boundary (Jan looks at previous Dec)" do
+        dec_entry = create(:salary_entry, user: linked_user, year: 2025, month: 12, hours_worked: 140, hourly_rate: 50)
+        # January 2026 should use December 2025's salary entry
+        expect(source.amount_for_month(2026, 1)).to be_within(0.01).of(dec_entry.net_pay)
       end
     end
   end

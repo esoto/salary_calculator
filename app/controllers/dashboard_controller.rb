@@ -45,9 +45,9 @@ class DashboardController < ApplicationController
     @holiday_days_taken = @ytd_entries.sum(:holiday_days_taken)
     @holiday_days_available = @holiday_days_earned - @holiday_days_taken
 
-    # Total savings and net pay (YTD)
+    # Total savings (uses full aguinaldo period) and net pay (YTD)
     ytd_aguinaldo = @ytd_entries.sum(&:aguinaldo_savings)
-    @total_savings = ytd_aguinaldo + @vacation_balance + @holiday_balance
+    @total_savings = @aguinaldo_savings + @vacation_balance + @holiday_balance
     @monthly_savings_deduction = ytd_aguinaldo + @vacation_savings + @holiday_savings
     @net_pay = @total_earnings - @monthly_savings_deduction
 
