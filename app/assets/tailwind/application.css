@@ -41,6 +41,12 @@ dialog[open] {
   animation: landing-fade-in 0.8s ease-out both;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .landing-fade-in {
+    animation: none;
+  }
+}
+
 /* Landing page gradient utilities */
 .bg-orb-gold {
   background: radial-gradient(circle, var(--color-gold-500) 0%, transparent 70%);
