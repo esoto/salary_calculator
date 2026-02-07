@@ -32,9 +32,10 @@ RSpec.describe "SharedBudgets", type: :request do
     end
 
     context "with invalid token" do
-      it "returns 404" do
+      it "renders not found view" do
         get shared_budget_path("invalid-token")
         expect(response).to have_http_status(:not_found)
+        expect(response.body).to include("Link not found")
       end
     end
   end

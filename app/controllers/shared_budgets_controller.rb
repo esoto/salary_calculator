@@ -8,7 +8,7 @@ class SharedBudgetsController < ApplicationController
                         .find_by(token: params[:token])
 
     if @share.nil?
-      raise ActiveRecord::RecordNotFound
+      render :not_found, status: :not_found
     elsif @share.expired?
       render :expired
     else

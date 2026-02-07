@@ -152,26 +152,37 @@
 
   <% if @budget.owned_by?(current_user) %>
     <!-- Share Modal -->
-    <dialog id="share-modal" class="rounded-lg shadow-xl p-0 backdrop:bg-black/50">
+    <dialog id="share-modal" class="rounded-lg shadow-xl p-0">
       <div class="p-6 w-96">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-xl font-bold">Share Budget</h2>
           <button onclick="document.getElementById('share-modal').close()" class="text-gray-400 hover:text-gray-600">✕</button>
         </div>
-        <%= render "budget_shares/form", budget: @budget, share: @new_share %>
-      </div>
-    </dialog>
-
-    <!-- Existing Shares -->
-    <% if @shares&.any? %>
-      <div class="bg-white rounded-lg shadow mt-6 p-4" id="shares-list">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">Shared Links</h3>
-        <div class="divide-y divide-gray-100">
-          <% @shares.each do |share| %>
-            <%= render "budget_shares/share", share: share %>
-          <% end %>
+        <div id="share-form-container">
+          <%= render "budget_shares/form", budget: @budget, share: @new_share %>
         </div>
       </div>
-    <% end %>
+    </dialog>
+    <template id="share-form-template">
+      <%= render "budget_shares/form", budget: @budget, share: @new_share %>
+    </template>
+    <script>
+      document.getElementById('share-modal').addEventListener('close', function() {
+        document.getElementById('share-form-container').innerHTML =
+          document.getElementById('share-form-template').innerHTML;
+      });
+    </script>
+
+    <!-- Existing Shares -->
+    <div class="<%= 'bg-white rounded-lg shadow mt-6 p-6' if @shares&.any? %>" id="shares-list">
+      <% if @shares&.any? %>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Shared Links</h3>
+      <% end %>
+      <div class="space-y-3" id="shares-items">
+        <% @shares&.each do |share| %>
+          <%= render "budget_shares/share", share: share %>
+        <% end %>
+      </div>
+    </div>
   <% end %>
 </div>
