@@ -50,7 +50,7 @@ RSpec.describe BudgetShare, type: :model do
 
     it "returns default when name is blank" do
       share = create(:budget_share, monthly_budget: budget, name: nil)
-      expect(share.display_name).to eq("Share link ##{share.id}")
+      expect(share.display_name).to eq("Share link from #{share.created_at.to_date}")
     end
   end
 

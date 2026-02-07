@@ -12,7 +12,7 @@ class BudgetShare < ApplicationRecord
   end
 
   def display_name
-    name.presence || "Share link ##{id}"
+    name.presence || "Share link from #{created_at&.to_date}"
   end
 
   private

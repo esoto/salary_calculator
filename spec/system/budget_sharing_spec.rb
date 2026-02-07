@@ -296,8 +296,8 @@ RSpec.describe "Budget Sharing", type: :system do
     context "without a custom name" do
       let!(:share) { create(:budget_share, monthly_budget: budget, name: nil, show_budget: true) }
 
-      it "displays the default name with ID" do
-        expect(share.display_name).to eq("Share link ##{share.id}")
+      it "displays the default name with date" do
+        expect(share.display_name).to eq("Share link from #{share.created_at.to_date}")
       end
     end
   end

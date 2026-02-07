@@ -1,3 +1,5 @@
+<% items = budget.budget_items.select { |i| i.category == category }.sort_by { |i| [i.position || 999, i.created_at] } %>
+
 <div class="bg-white rounded-lg shadow">
   <div class="p-4 border-b border-gray-200">
     <div class="flex justify-between items-start">
@@ -16,7 +18,7 @@
   </div>
 
   <div class="p-4">
-    <% budget.budget_items.where(category: category).order(:position).each do |item| %>
+    <% items.each do |item| %>
       <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
         <span class="text-sm <%= item.paid? ? 'text-gray-400 line-through' : 'text-gray-700' %>">
           <%= item.name %>
@@ -27,7 +29,7 @@
       </div>
     <% end %>
 
-    <% if budget.budget_items.where(category: category).empty? %>
+    <% if items.empty? %>
       <p class="text-sm text-gray-400 text-center py-2">No items</p>
     <% end %>
   </div>

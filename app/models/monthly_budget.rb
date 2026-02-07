@@ -58,7 +58,7 @@ class MonthlyBudget < ApplicationRecord
   end
 
   def category_total_usd(category)
-    budget_items.where(category: category).sum(&:amount_in_usd)
+    budget_items.select { |i| i.category == category }.sum(&:amount_in_usd)
   end
 
   def category_percentage(category)

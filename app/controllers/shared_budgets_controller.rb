@@ -4,7 +4,8 @@ class SharedBudgetsController < ApplicationController
   skip_before_action :require_authentication
 
   def show
-    @share = BudgetShare.find_by(token: params[:token])
+    @share = BudgetShare.includes(monthly_budget: [:user, :budget_items])
+                        .find_by(token: params[:token])
 
     if @share.nil?
       raise ActiveRecord::RecordNotFound
