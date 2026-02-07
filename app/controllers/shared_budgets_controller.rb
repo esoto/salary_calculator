@@ -13,7 +13,7 @@ class SharedBudgetsController < ApplicationController
       render :expired
     else
       @budget = @share.monthly_budget
-      @income_sources = @budget.user.income_sources.active if @share.show_income_sources
+      @income_sources = @budget.all_income_sources if @share.show_income_sources
       @salary_entry = @budget.user.salary_entries.find_by(year: @budget.year, month: @budget.month) if @share.show_personal_savings
     end
   end

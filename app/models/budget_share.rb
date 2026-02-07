@@ -5,10 +5,10 @@ class BudgetShare < ApplicationRecord
 
   before_validation :generate_token, on: :create
 
-  scope :active, -> { where("expires_at IS NULL OR expires_at > ?", Time.current) }
+  scope :active, -> { where("expires_at IS NULL OR expires_at >= ?", Date.current) }
 
   def expired?
-    expires_at.present? && expires_at <= Time.current
+    expires_at.present? && expires_at < Date.current
   end
 
   def display_name
