@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get "shared/budgets/:token", to: "shared_budgets#show", as: :shared_budget
 
   get "dashboard", to: "dashboard#show"
-  root "dashboard#show"
+  root "pages#home"
 
   resources :salary_entries do
     collection do

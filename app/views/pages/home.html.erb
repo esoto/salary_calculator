@@ -1,0 +1,292 @@
+<%# ═══════════════════════════════════════════════════════════════════
+    HERO SECTION — Full viewport, dark navy with floating gradient orbs
+    ═══════════════════════════════════════════════════════════════════ %>
+<section class="relative min-h-screen flex flex-col overflow-hidden">
+  <%# Background gradient orbs %>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 blur-3xl"
+         style="background: radial-gradient(circle, #c9a84c 0%, transparent 70%);"></div>
+    <div class="absolute top-1/3 -left-32 w-80 h-80 rounded-full opacity-15 blur-3xl"
+         style="background: radial-gradient(circle, #3b82f6 0%, transparent 70%);"></div>
+    <div class="absolute -bottom-20 right-1/4 w-72 h-72 rounded-full opacity-10 blur-3xl"
+         style="background: radial-gradient(circle, #c9a84c 0%, transparent 70%);"></div>
+  </div>
+
+  <%# Subtle grid pattern %>
+  <div class="absolute inset-0 opacity-[0.03]"
+       style="background-image: linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px); background-size: 64px 64px;"></div>
+
+  <%# Navigation %>
+  <nav class="relative z-10 w-full">
+    <div class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
+      <span class="text-xl font-semibold text-white tracking-tight" style="font-family: 'Newsreader', serif;">
+        Salary Calculator
+      </span>
+      <div class="flex items-center gap-3">
+        <%= link_to "Log in", new_session_path,
+            class: "text-slate-300 hover:text-white transition-colors text-sm font-medium px-4 py-2" %>
+        <%= link_to "Sign up", new_registration_path,
+            class: "text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-300 hover:shadow-lg",
+            style: "background: linear-gradient(135deg, #c9a84c, #b8943f); color: #0a0f1a;" %>
+      </div>
+    </div>
+  </nav>
+
+  <%# Hero content %>
+  <div class="relative z-10 flex-1 flex items-center">
+    <div class="max-w-6xl mx-auto px-6 w-full">
+      <div class="max-w-3xl">
+        <%# Badge %>
+        <div class="landing-fade-in mb-8">
+          <span class="inline-flex items-center gap-2 text-xs font-medium tracking-widest uppercase px-4 py-2 rounded-full border border-slate-700/60 text-slate-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Personal Finance Made Simple
+          </span>
+        </div>
+
+        <%# Heading %>
+        <h1 class="landing-fade-in text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight mb-8"
+            style="font-family: 'Newsreader', serif; animation-delay: 100ms;">
+          <span class="text-white">Your salary,</span>
+          <br>
+          <span style="background: linear-gradient(135deg, #c9a84c 0%, #e8d5a3 50%, #c9a84c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+            simplified.
+          </span>
+        </h1>
+
+        <%# Subtitle %>
+        <p class="landing-fade-in text-lg sm:text-xl text-slate-400 leading-relaxed max-w-xl mb-10"
+           style="animation-delay: 200ms;">
+          Track earnings, build budgets, and see exactly where every dollar goes.
+          Multi-currency support and household sharing included.
+        </p>
+
+        <%# CTA buttons %>
+        <div class="landing-fade-in flex flex-wrap gap-4" style="animation-delay: 300ms;">
+          <%= link_to new_registration_path,
+              class: "group inline-flex items-center gap-2 text-base font-semibold px-7 py-3.5 rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-amber-900/20 hover:-translate-y-0.5",
+              style: "background: linear-gradient(135deg, #c9a84c, #b8943f); color: #0a0f1a;" do %>
+            Get Started Free
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+          <% end %>
+
+          <a href="#features"
+             class="inline-flex items-center gap-2 text-base font-medium text-slate-300 hover:text-white px-7 py-3.5 rounded-full border border-slate-700/60 hover:border-slate-600 transition-all duration-300">
+            See How It Works
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# Scroll indicator %>
+  <div class="relative z-10 pb-10 flex justify-center">
+    <a href="#features" class="landing-fade-in text-slate-500 hover:text-slate-300 transition-colors animate-bounce" style="animation-delay: 600ms;">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+      </svg>
+    </a>
+  </div>
+</section>
+
+
+<%# ═══════════════════════════════════════════════════════════════════
+    FEATURES SECTION — Warm cream background with feature cards
+    ═══════════════════════════════════════════════════════════════════ %>
+<section id="features" class="relative py-24 sm:py-32" style="background: #faf8f3;">
+  <%# Subtle top border gradient %>
+  <div class="absolute top-0 inset-x-0 h-px" style="background: linear-gradient(90deg, transparent, #c9a84c40, transparent);"></div>
+
+  <div class="max-w-6xl mx-auto px-6">
+    <%# Section header %>
+    <div class="text-center mb-16">
+      <p class="text-sm font-semibold tracking-widest uppercase mb-4" style="color: #b8943f;">Features</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight" style="font-family: 'Newsreader', serif;">
+        Everything you need to master<br class="hidden sm:block"> your finances
+      </h2>
+    </div>
+
+    <%# Feature cards %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <%# Salary Tracking %>
+      <div class="group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 border border-slate-100">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe);">
+          <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-3" style="font-family: 'Newsreader', serif;">Salary & Earnings</h3>
+        <p class="text-slate-600 leading-relaxed">
+          Log hours and rates each month. See your gross pay, net pay, and automatic savings accruals for aguinaldo, vacation, and holiday pay.
+        </p>
+      </div>
+
+      <%# Smart Budgets %>
+      <div class="group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 border border-slate-100">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #fef3c7, #fde68a);">
+          <svg class="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-3" style="font-family: 'Newsreader', serif;">Smart Budgets</h3>
+        <p class="text-slate-600 leading-relaxed">
+          Categorize spending into fixed, guilt-free, savings, and investments. Track budgets against actual spending with multi-currency support.
+        </p>
+      </div>
+
+      <%# Household Sharing %>
+      <div class="group relative bg-white rounded-2xl p-8 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 border border-slate-100">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #d1fae5, #a7f3d0);">
+          <svg class="w-6 h-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-3" style="font-family: 'Newsreader', serif;">Household Sharing</h3>
+        <p class="text-slate-600 leading-relaxed">
+          Combine income sources with household members. Share budget views via secure links for complete financial visibility.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<%# ═══════════════════════════════════════════════════════════════════
+    HOW IT WORKS — Three numbered steps on white background
+    ═══════════════════════════════════════════════════════════════════ %>
+<section class="relative py-24 sm:py-32 bg-white">
+  <div class="max-w-6xl mx-auto px-6">
+    <%# Section header %>
+    <div class="text-center mb-20">
+      <p class="text-sm font-semibold tracking-widest uppercase mb-4" style="color: #b8943f;">How It Works</p>
+      <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight" style="font-family: 'Newsreader', serif;">
+        Three steps to financial clarity
+      </h2>
+    </div>
+
+    <%# Steps %>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 relative">
+      <%# Connecting line (desktop only) %>
+      <div class="hidden md:block absolute top-10 left-1/6 right-1/6 h-px" style="background: linear-gradient(90deg, transparent, #e2e0db 15%, #e2e0db 85%, transparent);"></div>
+
+      <%# Step 1 %>
+      <div class="text-center relative">
+        <div class="relative z-10 w-20 h-20 rounded-full mx-auto mb-8 flex items-center justify-center shadow-lg"
+             style="background: linear-gradient(135deg, #0f172a, #1e293b);">
+          <span class="text-2xl font-bold" style="font-family: 'Newsreader', serif; color: #c9a84c;">1</span>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 mb-3" style="font-family: 'Newsreader', serif;">Log your salary</h3>
+        <p class="text-slate-500 leading-relaxed">
+          Enter your hours and hourly rate each month. We calculate gross pay, savings accruals, and net pay automatically.
+        </p>
+      </div>
+
+      <%# Step 2 %>
+      <div class="text-center relative">
+        <div class="relative z-10 w-20 h-20 rounded-full mx-auto mb-8 flex items-center justify-center shadow-lg"
+             style="background: linear-gradient(135deg, #0f172a, #1e293b);">
+          <span class="text-2xl font-bold" style="font-family: 'Newsreader', serif; color: #c9a84c;">2</span>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 mb-3" style="font-family: 'Newsreader', serif;">Set your budget</h3>
+        <p class="text-slate-500 leading-relaxed">
+          Allocate income across categories — fixed expenses, guilt-free spending, savings, and investments. Set targets and track actuals.
+        </p>
+      </div>
+
+      <%# Step 3 %>
+      <div class="text-center relative">
+        <div class="relative z-10 w-20 h-20 rounded-full mx-auto mb-8 flex items-center justify-center shadow-lg"
+             style="background: linear-gradient(135deg, #0f172a, #1e293b);">
+          <span class="text-2xl font-bold" style="font-family: 'Newsreader', serif; color: #c9a84c;">3</span>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 mb-3" style="font-family: 'Newsreader', serif;">Stay on track</h3>
+        <p class="text-slate-500 leading-relaxed">
+          Monitor spending, watch your savings grow, and share progress with your household. Year-over-year insights keep you improving.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<%# ═══════════════════════════════════════════════════════════════════
+    STATS BANNER — Dark section with key metrics
+    ═══════════════════════════════════════════════════════════════════ %>
+<section class="relative py-16 overflow-hidden" style="background: #0c1222;">
+  <%# Subtle gradient accent %>
+  <div class="absolute inset-0 opacity-30"
+       style="background: radial-gradient(ellipse at center, #c9a84c10, transparent 70%);"></div>
+
+  <div class="relative max-w-6xl mx-auto px-6">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <p class="text-3xl sm:text-4xl font-bold text-white mb-1" style="font-family: 'Newsreader', serif;">2</p>
+        <p class="text-sm text-slate-400 font-medium">Currencies Supported</p>
+      </div>
+      <div>
+        <p class="text-3xl sm:text-4xl font-bold text-white mb-1" style="font-family: 'Newsreader', serif;">4</p>
+        <p class="text-sm text-slate-400 font-medium">Budget Categories</p>
+      </div>
+      <div>
+        <p class="text-3xl sm:text-4xl font-bold text-white mb-1" style="font-family: 'Newsreader', serif;">3</p>
+        <p class="text-sm text-slate-400 font-medium">Savings Types</p>
+      </div>
+      <div>
+        <p class="text-3xl sm:text-4xl font-bold text-white mb-1" style="font-family: 'Newsreader', serif;">&infin;</p>
+        <p class="text-sm text-slate-400 font-medium">Income Sources</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<%# ═══════════════════════════════════════════════════════════════════
+    FINAL CTA SECTION — Gradient background with sign-up call
+    ═══════════════════════════════════════════════════════════════════ %>
+<section class="relative py-24 sm:py-32 overflow-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1a1f3a 50%, #0f172a 100%);">
+  <%# Decorative orb %>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 blur-3xl pointer-events-none"
+       style="background: radial-gradient(circle, #c9a84c, transparent 70%);"></div>
+
+  <div class="relative max-w-2xl mx-auto px-6 text-center">
+    <h2 class="text-3xl sm:text-5xl font-bold text-white tracking-tight mb-6" style="font-family: 'Newsreader', serif;">
+      Ready to take control?
+    </h2>
+    <p class="text-lg text-slate-400 mb-10 leading-relaxed">
+      Start tracking your salary and building smarter budgets today. It takes less than a minute to set up.
+    </p>
+    <%= link_to new_registration_path,
+        class: "group inline-flex items-center gap-2 text-base font-semibold px-8 py-4 rounded-full transition-all duration-300 hover:shadow-xl hover:shadow-amber-900/20 hover:-translate-y-0.5",
+        style: "background: linear-gradient(135deg, #c9a84c, #b8943f); color: #0a0f1a;" do %>
+      Create Your Free Account
+      <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+      </svg>
+    <% end %>
+  </div>
+</section>
+
+
+<%# ═══════════════════════════════════════════════════════════════════
+    FOOTER — Minimal dark footer
+    ═══════════════════════════════════════════════════════════════════ %>
+<footer class="py-12" style="background: #070b14;">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-6">
+        <span class="text-lg font-semibold text-slate-300" style="font-family: 'Newsreader', serif;">
+          Salary Calculator
+        </span>
+      </div>
+      <div class="flex items-center gap-6 text-sm text-slate-500">
+        <%= link_to "Log in", new_session_path, class: "hover:text-slate-300 transition-colors" %>
+        <%= link_to "Sign up", new_registration_path, class: "hover:text-slate-300 transition-colors" %>
+      </div>
+    </div>
+    <div class="mt-8 pt-8 border-t border-slate-800/50 text-center">
+      <p class="text-sm text-slate-600">&copy; <%= Date.current.year %> Salary Calculator</p>
+    </div>
+  </div>
+</footer>
