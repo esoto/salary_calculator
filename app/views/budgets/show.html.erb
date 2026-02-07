@@ -15,6 +15,13 @@
     <div class="flex gap-3">
       <%= link_to "Edit Settings", edit_budget_path(@budget),
           class: "bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg" %>
+      <% if @budget.owned_by?(current_user) %>
+        <button type="button"
+                onclick="document.getElementById('share-modal').showModal()"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+          Share
+        </button>
+      <% end %>
       <%= link_to "Back to Budgets", budgets_path(year: @budget.year),
           class: "text-gray-600 hover:text-gray-800" %>
     </div>
@@ -141,5 +148,37 @@
         </ul>
       </div>
     </details>
+  <% end %>
+
+  <% if @budget.owned_by?(current_user) %>
+    <!-- Share Modal -->
+    <dialog id="share-modal" class="rounded-lg shadow-xl p-0"
+            data-controller="dialog"
+            data-action="close->dialog#resetForm">
+      <div class="p-6 w-96">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Share Budget</h2>
+          <button data-action="click->dialog#close" type="button" class="text-gray-400 hover:text-gray-600">✕</button>
+        </div>
+        <div id="share-form-container" data-dialog-target="formContainer">
+          <%= render "budget_shares/form", budget: @budget, share: @new_share %>
+        </div>
+      </div>
+      <template data-dialog-target="formTemplate">
+        <%= render "budget_shares/form", budget: @budget, share: @new_share %>
+      </template>
+    </dialog>
+
+    <!-- Existing Shares -->
+    <div class="<%= 'bg-white rounded-lg shadow mt-6 p-6' if @shares&.any? %>" id="shares-list">
+      <% if @shares&.any? %>
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">Shared Links</h3>
+      <% end %>
+      <div class="space-y-3" id="shares-items">
+        <% @shares&.each do |share| %>
+          <%= render "budget_shares/share", share: share %>
+        <% end %>
+      </div>
+    </div>
   <% end %>
 </div>

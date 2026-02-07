@@ -1,0 +1,36 @@
+<% items = budget.budget_items.select { |i| i.category == category }.sort_by { |i| [i.position || 999, i.created_at] } %>
+
+<div class="bg-white rounded-lg shadow">
+  <div class="p-4 border-b border-gray-200">
+    <div class="flex justify-between items-start">
+      <div>
+        <h3 class="font-semibold text-gray-800"><%= category_display_name(category) %></h3>
+        <p class="text-xs text-gray-500">Target: <%= category_target_range(category) %></p>
+      </div>
+      <div class="text-right">
+        <% status = budget.category_status(category) %>
+        <span class="text-sm font-medium <%= category_status_color(status) %>">
+          <%= category_status_icon(status) %> <%= budget.category_percentage(category) %>%
+        </span>
+        <p class="text-sm font-medium"><%= format_usd(budget.category_total_usd(category)) %></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-4">
+    <% items.each do |item| %>
+      <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+        <span class="text-sm <%= item.paid? ? 'text-gray-400 line-through' : 'text-gray-700' %>">
+          <%= item.name %>
+        </span>
+        <span class="text-sm font-medium">
+          <%= item.usd? ? format_usd(item.amount) : format_crc(item.amount) %>
+        </span>
+      </div>
+    <% end %>
+
+    <% if items.empty? %>
+      <p class="text-sm text-gray-400 text-center py-2">No items</p>
+    <% end %>
+  </div>
+</div>

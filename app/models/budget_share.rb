@@ -1,0 +1,23 @@
+class BudgetShare < ApplicationRecord
+  belongs_to :monthly_budget
+
+  validates :token, presence: true, uniqueness: true
+
+  before_validation :generate_token, on: :create
+
+  scope :active, -> { where("expires_at IS NULL OR expires_at >= ?", Date.current) }
+
+  def expired?
+    expires_at.present? && expires_at < Date.current
+  end
+
+  def display_name
+    name.presence || "Share link from #{created_at&.to_date}"
+  end
+
+  private
+
+  def generate_token
+    self.token ||= SecureRandom.urlsafe_base64(32)
+  end
+end

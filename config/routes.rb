@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :registrations, only: [ :new, :create ]
 
+  get "shared/budgets/:token", to: "shared_budgets#show", as: :shared_budget
+
   get "dashboard", to: "dashboard#show"
   root "dashboard#show"
 
@@ -19,6 +21,7 @@ Rails.application.routes.draw do
         patch :toggle_paid
       end
     end
+    resources :budget_shares, only: [ :create, :destroy ]
   end
 
   resources :income_sources, only: [ :index, :create, :update, :destroy ]

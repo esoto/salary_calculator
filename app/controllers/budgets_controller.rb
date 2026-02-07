@@ -25,6 +25,8 @@ class BudgetsController < ApplicationController
   end
 
   def show
+    @shares = @budget.budget_shares.order(created_at: :desc) if @budget.owned_by?(current_user)
+    @new_share = @budget.budget_shares.build if @budget.owned_by?(current_user)
     @income_sources = @budget.all_income_sources
     @salary_entry = @budget.user.salary_entries.find_by(year: @budget.year, month: @budget.month)
   end

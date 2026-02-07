@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_040818) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_07_051316) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -30,7 +30,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_040818) do
 
   create_table "budget_shares", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "expires_at"
+    t.date "expires_at"
     t.bigint "monthly_budget_id", null: false
     t.string "name"
     t.boolean "show_budget", default: true, null: false

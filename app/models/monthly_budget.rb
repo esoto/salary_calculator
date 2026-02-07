@@ -5,6 +5,7 @@ class MonthlyBudget < ApplicationRecord
 
   belongs_to :user
   has_many :budget_items, dependent: :destroy
+  has_many :budget_shares, dependent: :destroy
 
   validates :year, presence: true,
                    numericality: { only_integer: true, greater_than_or_equal_to: 2020, less_than_or_equal_to: 2100 }
@@ -57,7 +58,7 @@ class MonthlyBudget < ApplicationRecord
   end
 
   def category_total_usd(category)
-    budget_items.where(category: category).sum(&:amount_in_usd)
+    budget_items.select { |i| i.category == category }.sum(&:amount_in_usd)
   end
 
   def category_percentage(category)
