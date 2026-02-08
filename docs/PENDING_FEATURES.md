@@ -2,26 +2,7 @@
 
 This document tracks features that have been identified but not yet implemented.
 
-**Last Updated:** 2026-02-03
-
----
-
-## Dashboard Enhancements
-
-### Charts/Graphs for Trends
-**Priority:** Low
-**Complexity:** High
-
-**Description:** Add visualizations to show earnings, savings, and time off trends over time.
-
-**Requirements:**
-- Line chart for monthly earnings over time
-- Stacked bar chart for savings breakdown
-- Time off usage visualization
-- Year-over-year comparison charts
-- Choose charting library (e.g., Chart.js, Recharts)
-
-**Impact:** Improved data insights and user engagement
+**Last Updated:** 2026-02-06
 
 ---
 
@@ -81,22 +62,6 @@ This document tracks features that have been identified but not yet implemented.
 ---
 
 ## Budget Sharing Enhancements
-
-### Share via Link/Token
-**Priority:** Low
-**Complexity:** Medium
-
-**Description:** Generate shareable links with access tokens for external users to view budgets without needing an account.
-
-**Requirements:**
-- Generate secure, expiring tokens for budget access
-- Public view page for shared budgets
-- Token management UI (revoke, regenerate)
-- Optional password protection
-
-**Impact:** Share budgets with accountants, family members outside the app
-
----
 
 ### Invite by Email
 **Priority:** Low
@@ -162,26 +127,15 @@ This document tracks features that have been identified but not yet implemented.
 
 ---
 
-### Recurring Items
-**Priority:** Medium
-**Complexity:** Medium
-
-**Description:** Mark budget items as recurring so they automatically copy to new months.
-
-**Requirements:**
-- Add recurring flag to budget_items
-- Auto-populate recurring items when creating new budget
-- UI to toggle recurring status
-- Option to skip specific months
-
-**Impact:** Reduce manual entry for fixed expenses
-
----
-
 ## Completed Features
 
 These features have been implemented and merged:
 
+- ✅ **Auth Pages Redesign** (PR #37) - Sign-in, sign-up, and password reset pages restyled with Midnight Ledger aesthetic
+- ✅ **Landing Page** (PR #36) - Public home page for unauthenticated visitors with feature overview and CTAs
+- ✅ **Share via Link** (PR #34) - Shareable budget links with secure tokens for external viewers
+- ✅ **Household Income Sharing** (PR #35) - Combined income display for household members
+- ✅ **Recurring Budget Items** (PR #24-27) - Items automatically copy from previous budget on creation
 - ✅ **Household Budget Planning** (PRs #24-27) - Monthly budget planning with dual currency support (CRC/USD), four expense categories with target percentages, household sharing, and Turbo Stream inline editing
 - ✅ **Household/Shared View** (PR #20) - Create or join a household to view combined earnings with a partner
 - ✅ **User Profile Editing** (PR #19) - Edit name, email, and password from Settings page
