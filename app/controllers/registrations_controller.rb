@@ -2,6 +2,7 @@
 
 class RegistrationsController < ApplicationController
   allow_unauthenticated_access
+  layout "landing", only: %i[new create]
 
   def new
     @user = User.new

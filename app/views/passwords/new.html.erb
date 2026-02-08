@@ -1,17 +1,56 @@
-<div class="mx-auto md:w-2/3 w-full">
-  <% if alert = flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
-  <% end %>
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+  <%# Background gradient orbs %>
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full opacity-20 blur-3xl bg-orb-gold"></div>
+    <div class="absolute bottom-1/4 -left-32 w-80 h-80 rounded-full opacity-15 blur-3xl bg-orb-blue"></div>
+  </div>
 
-  <h1 class="font-bold text-4xl">Forgot your password?</h1>
+  <%# Subtle grid pattern %>
+  <div class="absolute inset-0 opacity-[0.03] landing-grid-pattern"></div>
 
-  <%= form_with url: passwords_path, class: "contents" do |form| %>
-    <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-solid focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
+  <div class="relative z-10 w-full max-w-md mx-auto px-6 py-12">
+    <%# Logo / Brand %>
+    <div class="text-center mb-10">
+      <%= link_to root_path, class: "inline-block" do %>
+        <span class="text-2xl font-semibold text-white tracking-tight font-display">Salary Calculator</span>
+      <% end %>
     </div>
 
-    <div class="inline">
-      <%= form.submit "Email reset instructions", class: "w-full sm:w-auto text-center rounded-lg px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%# Card %>
+    <div class="rounded-2xl border border-slate-700/60 bg-navy-800/50 backdrop-blur-sm p-8 shadow-2xl">
+      <h1 class="text-2xl font-bold text-white mb-2 font-display">Forgot your password?</h1>
+      <p class="text-slate-400 text-sm mb-8">Enter your email and we'll send reset instructions</p>
+
+      <% if alert = flash[:alert] %>
+        <div class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <%= alert %>
+        </div>
+      <% end %>
+
+      <%= form_with url: passwords_path, class: "space-y-5" do |form| %>
+        <div>
+          <%= form.label :email_address, "Email", class: "block text-sm font-medium text-slate-300 mb-1.5" %>
+          <%= form.email_field :email_address,
+              class: "w-full rounded-lg border border-slate-600/80 bg-navy-900/80 px-4 py-2.5 text-white placeholder-slate-500 focus:border-gold-500 focus:ring-1 focus:ring-gold-500 focus:outline-none transition-colors",
+              required: true,
+              autofocus: true,
+              autocomplete: "email",
+              value: params[:email_address],
+              placeholder: "you@example.com" %>
+        </div>
+
+        <div class="pt-1">
+          <%= form.submit "Email reset instructions",
+              class: "w-full appearance-none rounded-full py-3 text-base font-semibold transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-amber-900/20 hover:-translate-y-0.5 bg-gold-btn text-navy-900" %>
+        </div>
+      <% end %>
     </div>
-  <% end %>
-</div>
+
+    <%# Back to login link %>
+    <p class="text-center text-sm text-slate-400 mt-8">
+      Remember your password?
+      <%= link_to "Back to log in", new_session_path,
+          class: "text-gold-500 hover:text-gold-300 font-medium transition-colors" %>
+    </p>
+  </div>
+</section>

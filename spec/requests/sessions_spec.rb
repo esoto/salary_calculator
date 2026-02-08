@@ -9,11 +9,39 @@ RSpec.describe "Sessions", type: :request do
       expect(response).to have_http_status(:success)
     end
 
-    it "displays forgot password link" do
+    it "uses the landing layout" do
       get new_session_path
-      expect(response).to have_http_status(:success)
+      expect(response.body).to include("Newsreader")
+      expect(response.body).not_to include("bg-gray-100 min-h-screen")
+    end
+
+    it "displays the sign-in form" do
+      get new_session_path
+      expect(response.body).to include("Welcome back")
       expect(response.body).to include("Forgot password?")
       expect(response.body).to include(new_password_path)
+    end
+
+    it "includes link to sign up" do
+      get new_session_path
+      expect(response.body).to include("Create one for free")
+      expect(response.body).to include(new_registration_path)
+    end
+  end
+
+  describe "POST /session" do
+    let(:user) { create(:user) }
+
+    it "redirects with alert on invalid credentials" do
+      post session_path, params: { email_address: user.email_address, password: "wrong" }
+      expect(response).to redirect_to(new_session_path)
+      follow_redirect!
+      expect(response.body).to include("Try another email address or password.")
+    end
+
+    it "redirects to dashboard on valid credentials" do
+      post session_path, params: { email_address: user.email_address, password: "password123" }
+      expect(response).to redirect_to(dashboard_url)
     end
   end
 end

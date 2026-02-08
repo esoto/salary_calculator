@@ -8,6 +8,24 @@ RSpec.describe "Registrations", type: :request do
       get new_registration_path
       expect(response).to have_http_status(:success)
     end
+
+    it "uses the landing layout" do
+      get new_registration_path
+      expect(response.body).to include("Newsreader")
+      expect(response.body).not_to include("bg-gray-100 min-h-screen")
+    end
+
+    it "displays the sign-up form" do
+      get new_registration_path
+      expect(response.body).to include("Create your account")
+      expect(response.body).to include("Hourly rate")
+    end
+
+    it "includes link to log in" do
+      get new_registration_path
+      expect(response.body).to include("Already have an account?")
+      expect(response.body).to include(new_session_path)
+    end
   end
 
   describe "POST /registrations" do
@@ -44,6 +62,12 @@ RSpec.describe "Registrations", type: :request do
       it "renders new template with unprocessable entity status" do
         post registrations_path, params: { user: valid_params[:user].except(:name) }
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "uses the landing layout for validation errors" do
+        post registrations_path, params: { user: valid_params[:user].except(:name) }
+        expect(response.body).to include("Newsreader")
+        expect(response.body).to include("prevented signup")
       end
 
       it "does not create user with mismatched passwords" do
