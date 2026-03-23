@@ -34,6 +34,11 @@ RSpec.describe "Settings", type: :request do
       expect(response.body).to include('text-blue-600 font-semibold')
     end
 
+    it "renders Cancel button with border style instead of gray fill" do
+      get settings_path
+      expect(response.body).to include('border border-gray-300 hover:bg-gray-50 text-gray-700')
+    end
+
     it "displays current user settings" do
       get settings_path
       expect(response.body).to include("18") # default vacation days
