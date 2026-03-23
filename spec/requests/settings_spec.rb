@@ -29,6 +29,11 @@ RSpec.describe "Settings", type: :request do
       expect(response.body).to include("Figtree")
     end
 
+    it "highlights the active nav link for the current page" do
+      get settings_path
+      expect(response.body).to include('text-blue-600 font-semibold')
+    end
+
     it "displays current user settings" do
       get settings_path
       expect(response.body).to include("18") # default vacation days
