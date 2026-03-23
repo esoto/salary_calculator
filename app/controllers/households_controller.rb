@@ -50,7 +50,7 @@ class HouseholdsController < ApplicationController
   private
 
   def set_household
-    @household = Household.find(params[:id])
+    @household = current_user.household
   end
 
   def household_params
@@ -64,7 +64,7 @@ class HouseholdsController < ApplicationController
   end
 
   def require_membership
-    unless current_user.household == @household
+    unless @household.present? && current_user.household == @household
       redirect_to settings_path, alert: "You are not a member of this household."
     end
   end
