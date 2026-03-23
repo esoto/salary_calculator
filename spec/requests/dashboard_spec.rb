@@ -31,6 +31,11 @@ RSpec.describe "Dashboard", type: :request do
       end
     end
 
+    it "uses a flexible grid for summary cards" do
+      get dashboard_path
+      expect(response.body).to include("grid-cols-2 sm:grid-cols-3 lg:grid-cols-5")
+    end
+
     context 'when year parameter provided' do
       before do
         # Create entries for 2024
