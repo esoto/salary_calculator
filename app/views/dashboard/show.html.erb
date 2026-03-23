@@ -2,8 +2,8 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
   <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-      <p class="text-gray-600">Welcome back, <%= current_user.name %></p>
+      <h1 class="text-3xl font-bold text-cream font-display">Dashboard</h1>
+      <p class="text-warm-gray">Welcome back, <%= current_user.name %></p>
     </div>
 
     <div class="flex flex-col md:flex-row gap-3">
@@ -11,18 +11,18 @@
         <%= form_with url: dashboard_path, method: :get, local: true,
                       data: { turbo_frame: "_top" },
                       class: "flex items-center gap-2" do |form| %>
-          <label for="year" class="text-sm font-medium text-gray-700">Year:</label>
+          <label for="year" class="text-sm font-medium text-warm-gray">Year:</label>
           <%= form.select :year,
                           options_for_select(@available_years, @selected_year),
                           {},
                           id: "year",
-                          class: "border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500",
+                          class: "border border-navy-600 bg-navy-900 text-cream rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gold-500",
                           onchange: "this.form.requestSubmit()" %>
         <% end %>
       <% end %>
 
       <%= link_to "New Entry", new_salary_entry_path,
-          class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-center" %>
+          class: "bg-gold-btn text-navy-900 px-4 py-2 rounded-lg text-center font-semibold hover:shadow-lg hover:shadow-amber-900/20" %>
     </div>
   </div>
 
@@ -30,40 +30,40 @@
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 mb-6">
     <% if @user.aguinaldo_enabled %>
       <!-- Aguinaldo Card -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Aguinaldo <%= @current_year %></h3>
-        <p class="text-2xl font-bold text-gray-900 mt-2"><%= format_currency(@aguinaldo_savings) %></p>
-        <p class="text-sm text-gray-500 mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
+      <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+        <h3 class="text-sm font-medium text-muted-light uppercase">Aguinaldo <%= @current_year %></h3>
+        <p class="text-2xl font-bold text-cream mt-2"><%= format_currency(@aguinaldo_savings) %></p>
+        <p class="text-sm text-muted-light mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
       </div>
     <% end %>
 
     <!-- Total Earnings Card -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Total Earnings</h3>
-      <p class="text-2xl font-bold text-gray-900 mt-2"><%= format_currency(@total_earnings) %></p>
-      <p class="text-sm text-gray-500 mt-1">YTD <%= @current_year %></p>
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+      <h3 class="text-sm font-medium text-muted-light uppercase">Total Earnings</h3>
+      <p class="text-2xl font-bold text-cream mt-2"><%= format_currency(@total_earnings) %></p>
+      <p class="text-sm text-muted-light mt-1">YTD <%= @current_year %></p>
     </div>
 
     <!-- Net Pay Card -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Net Pay</h3>
-      <p class="text-2xl font-bold text-blue-600 mt-2"><%= format_currency(@net_pay) %></p>
-      <p class="text-sm text-gray-500 mt-1">YTD <%= @current_year %></p>
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+      <h3 class="text-sm font-medium text-muted-light uppercase">Net Pay</h3>
+      <p class="text-2xl font-bold text-gold-500 mt-2"><%= format_currency(@net_pay) %></p>
+      <p class="text-sm text-muted-light mt-1">YTD <%= @current_year %></p>
     </div>
 
     <!-- Months Logged Card -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h3 class="text-sm font-medium text-gray-500 uppercase">Months Logged</h3>
-      <p class="text-2xl font-bold text-gray-900 mt-2"><%= @months_logged %> of 12</p>
-      <p class="text-sm text-gray-500 mt-1"><%= @current_year %></p>
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+      <h3 class="text-sm font-medium text-muted-light uppercase">Months Logged</h3>
+      <p class="text-2xl font-bold text-cream mt-2"><%= @months_logged %> of 12</p>
+      <p class="text-sm text-muted-light mt-1"><%= @current_year %></p>
     </div>
 
     <% if @user.any_savings_enabled? %>
       <!-- Total Savings Card -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Total Savings</h3>
-        <p class="text-2xl font-bold text-green-600 mt-2"><%= format_currency(@total_savings) %></p>
-        <p class="text-sm text-gray-500 mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
+      <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+        <h3 class="text-sm font-medium text-muted-light uppercase">Total Savings</h3>
+        <p class="text-2xl font-bold text-success-500 mt-2"><%= format_currency(@total_savings) %></p>
+        <p class="text-sm text-muted-light mt-1">Dec '<%= (@current_year - 1) % 100 %> - Nov '<%= @current_year % 100 %></p>
       </div>
     <% end %>
   </div>
@@ -72,41 +72,41 @@
   <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
     <% if @user.vacation_enabled %>
       <!-- Vacation Savings -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation $</h3>
-        <p class="text-xl font-bold text-green-600 mt-2"><%= format_currency(@vacation_balance) %></p>
-        <p class="text-sm text-gray-500 mt-1">balance</p>
+      <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+        <h3 class="text-sm font-medium text-muted-light uppercase">Vacation $</h3>
+        <p class="text-xl font-bold text-success-500 mt-2"><%= format_currency(@vacation_balance) %></p>
+        <p class="text-sm text-muted-light mt-1">balance</p>
       </div>
 
       <!-- Vacation Days -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Vacation Days</h3>
-        <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@vacation_days_available, precision: 1) %> available</p>
-        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@vacation_days_earned, precision: 1) %> earned</p>
+      <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+        <h3 class="text-sm font-medium text-muted-light uppercase">Vacation Days</h3>
+        <p class="text-xl font-bold text-success-500 mt-2"><%= number_with_precision(@vacation_days_available, precision: 1) %> available</p>
+        <p class="text-sm text-muted-light mt-1"><%= number_with_precision(@vacation_days_earned, precision: 1) %> earned</p>
       </div>
     <% end %>
 
     <% if @user.holiday_enabled %>
       <!-- Holiday Savings -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday $</h3>
-        <p class="text-xl font-bold text-green-600 mt-2"><%= format_currency(@holiday_balance) %></p>
-        <p class="text-sm text-gray-500 mt-1">balance</p>
+      <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+        <h3 class="text-sm font-medium text-muted-light uppercase">Holiday $</h3>
+        <p class="text-xl font-bold text-success-500 mt-2"><%= format_currency(@holiday_balance) %></p>
+        <p class="text-sm text-muted-light mt-1">balance</p>
       </div>
 
       <!-- Holiday Days -->
-      <div class="bg-white rounded-lg shadow p-6">
-        <h3 class="text-sm font-medium text-gray-500 uppercase">Holiday Days</h3>
-        <p class="text-xl font-bold text-green-600 mt-2"><%= number_with_precision(@holiday_days_available, precision: 1) %> available</p>
-        <p class="text-sm text-gray-500 mt-1"><%= number_with_precision(@holiday_days_earned, precision: 1) %> earned</p>
+      <div class="bg-navy-800 rounded-lg border border-navy-600 p-6">
+        <h3 class="text-sm font-medium text-muted-light uppercase">Holiday Days</h3>
+        <p class="text-xl font-bold text-success-500 mt-2"><%= number_with_precision(@holiday_days_available, precision: 1) %> available</p>
+        <p class="text-sm text-muted-light mt-1"><%= number_with_precision(@holiday_days_earned, precision: 1) %> earned</p>
       </div>
     <% end %>
   </div>
 
   <!-- Savings Breakdown Chart -->
   <% if @ytd_entries.any? && (@user.aguinaldo_enabled || @user.vacation_enabled || @user.holiday_enabled) %>
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
-      <h2 class="text-lg font-semibold text-gray-900 mb-4">
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-6 mb-8">
+      <h2 class="text-lg font-semibold text-cream mb-4 font-display">
         Savings Breakdown <%= @selected_year %>
       </h2>
 
@@ -117,54 +117,58 @@
                        thousands: ",",
                        library: {
                          plugins: {
-                           legend: { position: 'top' }
+                           legend: { position: 'top', labels: { color: '#e2e0db' } }
+                         },
+                         scales: {
+                           x: { ticks: { color: '#718096' }, grid: { color: '#1a1f3a' } },
+                           y: { ticks: { color: '#718096' }, grid: { color: '#1a1f3a' } }
                          }
                        } %>
     </div>
   <% end %>
 
   <!-- Recent Entries -->
-  <div class="bg-white rounded-lg shadow">
-    <div class="px-6 py-4 border-b border-gray-200">
-      <h2 class="text-lg font-semibold text-gray-900">Recent Entries</h2>
+  <div class="bg-navy-800 rounded-lg border border-navy-600">
+    <div class="px-6 py-4 border-b border-navy-600">
+      <h2 class="text-lg font-semibold text-cream font-display">Recent Entries</h2>
     </div>
 
     <% if @recent_entries.any? %>
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-navy-600">
+        <thead class="bg-navy-900">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Hours</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Rate</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Salary</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Net Pay</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-muted-light uppercase">Month</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-muted-light uppercase">Hours</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-muted-light uppercase">Rate</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-muted-light uppercase">Salary</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-muted-light uppercase">Net Pay</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-navy-600">
           <% @recent_entries.each do |entry| %>
-            <tr class="hover:bg-gray-50">
+            <tr class="hover:bg-navy-900/50">
               <td class="px-6 py-4">
                 <%= link_to "#{month_name(entry.month)} #{entry.year}", entry,
-                    class: "text-blue-600 hover:text-blue-800" %>
+                    class: "text-gold-500 hover:text-gold-300" %>
               </td>
-              <td class="px-6 py-4 text-right"><%= format_hours(entry.hours_worked) %></td>
-              <td class="px-6 py-4 text-right"><%= format_currency(entry.hourly_rate) %></td>
-              <td class="px-6 py-4 text-right font-medium"><%= format_currency(entry.monthly_salary) %></td>
-              <td class="px-6 py-4 text-right font-bold text-blue-600"><%= format_currency(entry.net_pay) %></td>
+              <td class="px-6 py-4 text-right text-warm-gray"><%= format_hours(entry.hours_worked) %></td>
+              <td class="px-6 py-4 text-right text-warm-gray"><%= format_currency(entry.hourly_rate) %></td>
+              <td class="px-6 py-4 text-right font-medium text-cream"><%= format_currency(entry.monthly_salary) %></td>
+              <td class="px-6 py-4 text-right font-bold text-gold-500"><%= format_currency(entry.net_pay) %></td>
             </tr>
           <% end %>
         </tbody>
       </table>
     <% else %>
-      <div class="px-6 py-8 text-center text-gray-500">
+      <div class="px-6 py-8 text-center text-muted-light">
         <p>No entries yet.</p>
-        <%= link_to "Create your first entry", new_salary_entry_path, class: "text-blue-600 hover:text-blue-800" %>
+        <%= link_to "Create your first entry", new_salary_entry_path, class: "text-gold-500 hover:text-gold-300" %>
       </div>
     <% end %>
 
     <% if @recent_entries.any? %>
-      <div class="px-6 py-4 border-t border-gray-200">
-        <%= link_to "View all entries", salary_entries_path, class: "text-blue-600 hover:text-blue-800" %>
+      <div class="px-6 py-4 border-t border-navy-600">
+        <%= link_to "View all entries", salary_entries_path, class: "text-gold-500 hover:text-gold-300" %>
       </div>
     <% end %>
   </div>

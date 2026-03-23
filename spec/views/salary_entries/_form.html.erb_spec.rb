@@ -66,7 +66,7 @@ RSpec.describe "salary_entries/_form", type: :view do
 
       it "does not show warning banner" do
         render partial: "salary_entries/form", locals: { salary_entry: salary_entry }
-        expect(rendered).not_to have_css(".bg-amber-50")
+        expect(rendered).not_to include("bg-amber-900")
         expect(rendered).not_to have_content("Vacation days warning")
       end
     end
@@ -79,7 +79,7 @@ RSpec.describe "salary_entries/_form", type: :view do
 
       it "shows warning banner with correct message" do
         render partial: "salary_entries/form", locals: { salary_entry: salary_entry }
-        expect(rendered).to have_css(".bg-amber-50")
+        expect(rendered).to include("bg-amber-900")
         expect(rendered).to have_content("Vacation days warning")
         expect(rendered).to have_content("You're taking 2.5")
         expect(rendered).to have_content("more days than earned")
