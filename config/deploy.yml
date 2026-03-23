@@ -2,7 +2,7 @@
 service: salary-calculator
 
 # Name of the container image.
-image: esoto/salary-calculator
+image: ghcr.io/esoto/salary-calculator
 
 # Deploy to these servers.
 servers:
@@ -14,8 +14,9 @@ proxy:
   ssl: true
   host: salary-calc.estebansoto.dev
 
-# Docker Hub
+# GitHub Container Registry
 registry:
+  server: ghcr.io
   username: esoto
   password:
     - KAMAL_REGISTRY_PASSWORD
