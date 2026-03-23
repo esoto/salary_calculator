@@ -48,5 +48,23 @@ RSpec.describe "Sessions", type: :request do
       post session_path, params: { email_address: user.email_address, password: "password123" }
       expect(response).to redirect_to(dashboard_url)
     end
+
+    it "shows welcome flash after successful login" do
+      post session_path, params: { email_address: user.email_address, password: "password123" }
+      expect(flash[:notice]).to include("Welcome")
+    end
+  end
+
+  describe "DELETE /session" do
+    let(:user) { create(:user) }
+
+    before do
+      post session_path, params: { email_address: user.email_address, password: "password123" }
+    end
+
+    it "shows confirmation flash after logout" do
+      delete session_path
+      expect(flash[:notice]).to include("logged out")
+    end
   end
 end
