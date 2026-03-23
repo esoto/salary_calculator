@@ -84,7 +84,7 @@ RSpec.describe 'dashboard/show.html.erb', type: :view do
 
       it 'renders the chart section' do
         render
-        expect(rendered).to have_selector('.bg-white.rounded-lg.shadow')
+        expect(rendered).to have_selector('.bg-navy-800.rounded-lg')
         expect(rendered).to match(/Savings Breakdown/)
       end
 
