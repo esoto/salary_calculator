@@ -2,7 +2,7 @@
 service: salary-calculator
 
 # Name of the container image.
-image: ghcr.io/esoto/salary-calculator
+image: esoto/salary-calculator
 
 # Deploy to these servers.
 servers:
