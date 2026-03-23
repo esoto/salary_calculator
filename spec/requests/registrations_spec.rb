@@ -59,9 +59,9 @@ RSpec.describe "Registrations", type: :request do
       }.to change(User, :count).by(1)
     end
 
-    it "logs in the user and redirects to salary entries" do
+    it "logs in the user and redirects to dashboard" do
       post registrations_path, params: valid_params
-      expect(response).to redirect_to(salary_entries_path)
+      expect(response).to redirect_to(dashboard_path)
     end
 
     context "with invalid params" do
