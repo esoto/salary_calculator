@@ -12,7 +12,7 @@ servers:
 # SSL via Let's Encrypt + kamal-proxy
 proxy:
   ssl: true
-  host: salary-calculator.estebansoto.dev
+  host: salary-calc.estebansoto.dev
 
 # Docker Hub
 registry:

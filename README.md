@@ -17,10 +17,13 @@ A Ruby on Rails application for tracking freelance earnings, calculating savings
 
 - **Ruby** 3.4.1
 - **Rails** 8.1
-- **PostgreSQL** - Database
-- **TailwindCSS** - Styling
+- **PostgreSQL** 17 - Database
+- **TailwindCSS** 4 - Styling
 - **Hotwire (Turbo + Stimulus)** - Frontend interactivity
 - **Chartkick** - Charts and graphs
+- **Solid Queue** - Background jobs (in-process via Puma)
+- **Solid Cache** - Caching
+- **Solid Cable** - WebSockets
 - **RSpec** - Testing framework
 
 ## Getting Started
@@ -70,6 +73,31 @@ bundle exec rubocop
 # Run Brakeman security scanner
 bundle exec brakeman
 ```
+
+## Deployment
+
+Deployed on a Hetzner VPS via [Kamal](https://kamal-deploy.org/) with Docker Hub.
+
+- **URL**: https://salary-calc.estebansoto.dev
+- **Server**: Hetzner CX23 (shared with [personal blog](https://blog.estebansoto.dev))
+- **Database**: Shared PostgreSQL 17 container
+- **SSL**: Let's Encrypt via kamal-proxy (auto-renewal)
+- **Monitoring**: UptimeRobot
+
+### Deploy
+
+```bash
+kamal deploy              # Deploy latest commit
+kamal rollback            # Rollback to previous version
+kamal app logs -f         # Tail production logs
+kamal console             # Rails console on server
+kamal shell               # Bash on server
+```
+
+### Configuration
+
+- `config/deploy.yml` - Kamal deployment config
+- `.kamal/secrets` - Production secrets (gitignored)
 
 ## Documentation
 
