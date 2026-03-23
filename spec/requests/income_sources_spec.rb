@@ -18,6 +18,11 @@ RSpec.describe "IncomeSources", type: :request do
       get income_sources_path
       expect(response.body).to include("Main Salary")
     end
+
+    it "has income-source Stimulus controller for type toggle" do
+      get income_sources_path
+      expect(response.body).to include('data-controller="income-source"')
+    end
   end
 
   describe "POST /income_sources" do
