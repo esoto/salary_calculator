@@ -205,6 +205,19 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "password length validation" do
+    it "is invalid with a password shorter than 10 characters" do
+      user = build(:user, password: "short", password_confirmation: "short")
+      expect(user).not_to be_valid
+      expect(user.errors[:password]).to include("is too short (minimum is 10 characters)")
+    end
+
+    it "is valid with a password of 10 or more characters" do
+      user = build(:user, password: "longpassword", password_confirmation: "longpassword")
+      expect(user).to be_valid
+    end
+  end
+
   describe "password change validation" do
     let(:user) { create(:user, password: "oldpassword123") }
 
