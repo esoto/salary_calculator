@@ -50,6 +50,16 @@ RSpec.describe "SalaryEntries", type: :request do
       get salary_entry_path(entry)
       expect(response).to have_http_status(:not_found)
     end
+
+    it "displays user's configured vacation and holiday days in savings labels" do
+      user.update!(vacation_days_per_year: 20, holiday_days_per_year: 12, vacation_enabled: true, holiday_enabled: true)
+      entry = create(:salary_entry, user: user)
+      get salary_entry_path(entry)
+      expect(response.body).to include("Vacation (20 days)")
+      expect(response.body).to include("Holidays (12 days)")
+      expect(response.body).not_to include("Vacation (18 days)")
+      expect(response.body).not_to include("Holidays (10 days)")
+    end
   end
 
   describe "GET /salary_entries/new" do
@@ -159,6 +169,16 @@ RSpec.describe "SalaryEntries", type: :request do
     it "returns success" do
       get summary_salary_entries_path(year: 2025)
       expect(response).to have_http_status(:success)
+    end
+
+    it "displays user's configured vacation and holiday days in savings labels" do
+      user.update!(vacation_days_per_year: 25, holiday_days_per_year: 15, vacation_enabled: true, holiday_enabled: true)
+      create(:salary_entry, user: user)
+      get summary_salary_entries_path(year: Date.current.year)
+      expect(response.body).to include("Vacation (25 days)")
+      expect(response.body).to include("Holidays (15 days)")
+      expect(response.body).not_to include("Vacation (18 days)")
+      expect(response.body).not_to include("Holidays (10 days)")
     end
   end
 
