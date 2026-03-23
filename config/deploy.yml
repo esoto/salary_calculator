@@ -47,3 +47,7 @@ asset_path: /rails/public/assets
 # Build for amd64 (Hetzner server architecture)
 builder:
   arch: amd64
+
+# Use deploy user instead of root
+ssh:
+  user: deploy
