@@ -77,11 +77,17 @@ RSpec.describe "Budgets", type: :request do
   end
 
   describe "GET /budgets/:id/edit" do
-    let(:budget) { create(:monthly_budget, user: user) }
+    let(:budget) { create(:monthly_budget, user: user, exchange_rate: 503) }
 
     it "returns success" do
       get edit_budget_path(budget)
       expect(response).to have_http_status(:success)
+    end
+
+    it "displays exchange rate without trailing .0" do
+      get edit_budget_path(budget)
+      expect(response.body).to include('value="503"')
+      expect(response.body).not_to include('value="503.0"')
     end
   end
 
