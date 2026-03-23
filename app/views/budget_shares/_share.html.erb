@@ -1,8 +1,8 @@
-<div class="border border-gray-200 rounded-lg p-4" id="<%= dom_id(share) %>">
+<div class="border border-navy-600 rounded-lg p-4 bg-navy-900" id="<%= dom_id(share) %>">
   <div class="flex items-start justify-between mb-2">
     <div>
-      <p class="font-medium text-gray-800"><%= share.display_name %></p>
-      <p class="text-sm text-gray-500">
+      <p class="font-medium text-cream"><%= share.display_name %></p>
+      <p class="text-sm text-warm-gray">
         Created <%= time_ago_in_words(share.created_at) %> ago
         <% if share.expires_at %>
           · Expires <%= share.expires_at.strftime("%b %d, %Y") %>
@@ -10,15 +10,15 @@
       </p>
     </div>
     <%= button_to "Revoke", budget_budget_share_path(share.monthly_budget, share), method: :delete,
-        class: "text-red-500 hover:text-red-700 text-sm font-medium",
+        class: "text-error-500 hover:text-error-400 text-sm font-medium",
         data: { turbo_confirm: "Revoke this share link?" } %>
   </div>
   <div class="flex items-center gap-2" data-controller="clipboard">
     <input type="text" readonly value="<%= shared_budget_url(share.token) %>"
-           class="text-xs bg-gray-50 border border-gray-200 px-2 py-1 rounded flex-1 truncate text-gray-600"
+           class="text-xs bg-navy-800 border border-navy-600 px-2 py-1 rounded flex-1 truncate text-warm-gray"
            data-clipboard-target="source" />
     <button data-action="click->clipboard#copy"
-            class="text-xs text-blue-600 hover:text-blue-800 font-medium whitespace-nowrap">
+            class="text-xs text-gold-500 hover:text-gold-300 font-medium whitespace-nowrap">
       Copy
     </button>
   </div>

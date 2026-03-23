@@ -36,7 +36,7 @@ RSpec.describe "Settings", type: :request do
 
     it "renders Cancel button with border style instead of gray fill" do
       get settings_path
-      expect(response.body).to include('border border-gray-300 hover:bg-gray-50 text-gray-700')
+      expect(response.body).to include('border border-navy-600 hover:bg-navy-900 text-warm-gray')
     end
 
     it "displays current user settings" do

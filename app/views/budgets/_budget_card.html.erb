@@ -1,12 +1,12 @@
 <%= link_to budget_path(budget), class: "block" do %>
-  <div class="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+  <div class="bg-navy-800 rounded-lg border border-navy-600 p-4 hover:border-gold-500/30 transition-colors">
     <div class="flex justify-between items-start mb-3">
       <div>
         <% if show_owner %>
-          <p class="text-sm text-gray-500"><%= budget.user.name %>'s Budget</p>
+          <p class="text-sm text-warm-gray"><%= budget.user.name %>'s Budget</p>
         <% end %>
         <div class="flex items-center gap-2">
-          <h3 class="text-lg font-semibold text-gray-900">
+          <h3 class="text-lg font-semibold text-cream">
             <%= Date::MONTHNAMES[budget.month] %> <%= budget.year %>
           </h3>
           <% if budget.shared_with_household? %>
@@ -14,17 +14,17 @@
           <% end %>
         </div>
       </div>
-      <span class="text-sm text-gray-500">₡<%= number_with_delimiter(budget.exchange_rate.to_i) %>/$1</span>
+      <span class="text-sm text-warm-gray">₡<%= number_with_delimiter(budget.exchange_rate.to_i) %>/$1</span>
     </div>
 
     <div class="grid grid-cols-2 gap-2 text-sm">
       <div>
-        <span class="text-gray-500">Income:</span>
-        <span class="font-medium"><%= format_usd(budget.total_income_usd) %></span>
+        <span class="text-warm-gray">Income:</span>
+        <span class="font-medium text-cream"><%= format_usd(budget.total_income_usd) %></span>
       </div>
       <div>
-        <span class="text-gray-500">Expenses:</span>
-        <span class="font-medium"><%= format_usd(budget.total_expenses_usd) %></span>
+        <span class="text-warm-gray">Expenses:</span>
+        <span class="font-medium text-cream"><%= format_usd(budget.total_expenses_usd) %></span>
       </div>
     </div>
 

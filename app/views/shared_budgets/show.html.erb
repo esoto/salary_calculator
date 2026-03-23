@@ -1,35 +1,35 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
   <!-- Header -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-    <div class="flex items-center gap-2 text-blue-800">
+  <div class="bg-navy-800 border border-gold-500/30 rounded-lg p-4 mb-6">
+    <div class="flex items-center gap-2 text-gold-500">
       <span class="text-xl">🔗</span>
       <span class="font-medium">Shared Budget</span>
     </div>
-    <p class="text-blue-700 mt-1">
+    <p class="text-warm-gray mt-1">
       <%= Date::MONTHNAMES[@budget.month] %> <%= @budget.year %> • Shared by <%= @budget.user.name %>
     </p>
   </div>
 
   <% if @share.show_budget %>
     <!-- Summary Bar -->
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-4 mb-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
         <div>
-          <span class="text-gray-500">Exchange Rate:</span>
-          <span class="font-medium">₡<%= number_with_delimiter(@budget.exchange_rate.to_i) %>/$1</span>
+          <span class="text-warm-gray">Exchange Rate:</span>
+          <span class="font-medium text-cream">₡<%= number_with_delimiter(@budget.exchange_rate.to_i) %>/$1</span>
         </div>
         <div>
-          <span class="text-gray-500">Total Income:</span>
-          <span class="font-medium text-green-600"><%= format_usd(@budget.total_income_usd) %></span>
+          <span class="text-warm-gray">Total Income:</span>
+          <span class="font-medium text-success-500"><%= format_usd(@budget.total_income_usd) %></span>
         </div>
         <div>
-          <span class="text-gray-500">Total Expenses:</span>
-          <span class="font-medium"><%= format_usd(@budget.total_expenses_usd) %></span>
+          <span class="text-warm-gray">Total Expenses:</span>
+          <span class="font-medium text-cream"><%= format_usd(@budget.total_expenses_usd) %></span>
         </div>
         <div>
-          <span class="text-gray-500">Remaining:</span>
+          <span class="text-warm-gray">Remaining:</span>
           <% remaining = @budget.total_income_usd - @budget.total_expenses_usd %>
-          <span class="font-medium <%= remaining >= 0 ? 'text-green-600' : 'text-red-600' %>">
+          <span class="font-medium <%= remaining >= 0 ? 'text-success-500' : 'text-error-500' %>">
             <%= format_usd(remaining) %>
           </span>
         </div>
@@ -46,14 +46,14 @@
 
   <% if @share.show_income_sources && @income_sources&.any? %>
     <!-- Income Sources Section -->
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-3">Income Sources</h3>
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-4 mb-6">
+      <h3 class="text-lg font-semibold text-cream font-display mb-3">Income Sources</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <% @income_sources.each do |source| %>
-          <div class="border border-gray-200 rounded-lg p-3">
+          <div class="border border-navy-600 rounded-lg p-3 bg-navy-900">
             <div class="flex justify-between items-center">
-              <span class="font-medium"><%= source.name %></span>
-              <span class="text-green-600 font-medium">
+              <span class="font-medium text-cream"><%= source.name %></span>
+              <span class="text-success-500 font-medium">
                 <% if source.usd? %>
                   <%= format_usd(source.amount_for_month(@budget.year, @budget.month)) %>
                 <% else %>
@@ -69,41 +69,41 @@
 
   <% if @share.show_personal_savings && @salary_entry && has_any_savings?(@salary_entry) %>
     <!-- Personal Savings Section -->
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-3">Personal Savings</h3>
+    <div class="bg-navy-800 rounded-lg border border-navy-600 p-4 mb-6">
+      <h3 class="text-lg font-semibold text-cream font-display mb-3">Personal Savings</h3>
       <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
         <% if @salary_entry.user.aguinaldo_enabled %>
           <div>
-            <span class="text-gray-500">Aguinaldo:</span>
-            <span class="font-medium text-blue-600"><%= format_usd(@salary_entry.aguinaldo_savings) %></span>
+            <span class="text-warm-gray">Aguinaldo:</span>
+            <span class="font-medium text-gold-500"><%= format_usd(@salary_entry.aguinaldo_savings) %></span>
           </div>
         <% end %>
         <% if @salary_entry.user.vacation_enabled %>
           <div>
-            <span class="text-gray-500">Vacation:</span>
-            <span class="font-medium text-blue-600"><%= format_usd(@salary_entry.vacation_savings) %></span>
+            <span class="text-warm-gray">Vacation:</span>
+            <span class="font-medium text-gold-500"><%= format_usd(@salary_entry.vacation_savings) %></span>
           </div>
         <% end %>
         <% if @salary_entry.user.holiday_enabled %>
           <div>
-            <span class="text-gray-500">Holiday:</span>
-            <span class="font-medium text-blue-600"><%= format_usd(@salary_entry.holiday_savings) %></span>
+            <span class="text-warm-gray">Holiday:</span>
+            <span class="font-medium text-gold-500"><%= format_usd(@salary_entry.holiday_savings) %></span>
           </div>
         <% end %>
-        <div class="border-l border-gray-300 pl-6">
-          <span class="text-gray-500">Total:</span>
-          <span class="font-semibold text-blue-700"><%= format_usd(@salary_entry.total_savings) %></span>
+        <div class="border-l border-navy-600 pl-6">
+          <span class="text-warm-gray">Total:</span>
+          <span class="font-semibold text-gold-400"><%= format_usd(@salary_entry.total_savings) %></span>
         </div>
       </div>
     </div>
   <% end %>
 
   <!-- Footer -->
-  <div class="bg-gray-50 rounded-lg p-4 text-center text-sm text-gray-600">
+  <div class="bg-navy-800 rounded-lg border border-navy-600 p-4 text-center text-sm text-warm-gray">
     <p>This is a read-only shared view.</p>
     <p class="mt-1">
       Want to create your own budgets?
-      <%= link_to "Sign up", new_registration_path, class: "text-blue-600 hover:text-blue-800" %>
+      <%= link_to "Sign up", new_registration_path, class: "text-gold-500 hover:text-gold-300" %>
     </p>
   </div>
 </div>

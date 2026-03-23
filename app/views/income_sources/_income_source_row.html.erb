@@ -1,15 +1,15 @@
-<tr class="hover:bg-gray-50">
+<tr class="hover:bg-navy-900">
   <td class="px-6 py-4 whitespace-nowrap">
-    <span class="font-medium"><%= source.name %></span>
+    <span class="font-medium text-cream"><%= source.name %></span>
     <% if source.linked_user %>
-      <p class="text-xs text-gray-500">Linked to <%= source.linked_user.name %></p>
+      <p class="text-xs text-warm-gray">Linked to <%= source.linked_user.name %></p>
     <% end %>
     <% unless source.owned_by?(current_user) %>
-      <p class="text-xs text-purple-600">Owner: <%= source.user.name %></p>
+      <p class="text-xs text-purple-400">Owner: <%= source.user.name %></p>
     <% end %>
   </td>
-  <td class="px-6 py-4 whitespace-nowrap"><%= source.income_type.humanize %></td>
-  <td class="px-6 py-4 whitespace-nowrap text-right">
+  <td class="px-6 py-4 whitespace-nowrap text-cream"><%= source.income_type.humanize %></td>
+  <td class="px-6 py-4 whitespace-nowrap text-right text-cream">
     <% if source.fixed? && source.amount %>
       <% if source.usd? %>
         <%= format_usd(source.amount) %>
@@ -17,16 +17,16 @@
         <%= format_crc(source.amount) %>
       <% end %>
     <% elsif source.hourly? %>
-      <span class="text-gray-500 text-sm">From salary</span>
+      <span class="text-warm-gray text-sm">From salary</span>
     <% else %>
-      <span class="text-gray-400">-</span>
+      <span class="text-muted-light">-</span>
     <% end %>
   </td>
   <td class="px-6 py-4 whitespace-nowrap">
     <% if source.active? %>
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-600/20 text-success-500">Active</span>
     <% else %>
-      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Inactive</span>
+      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-navy-700 text-muted-light">Inactive</span>
     <% end %>
   </td>
   <td class="px-6 py-4 whitespace-nowrap text-right">
@@ -36,20 +36,20 @@
           <%= button_to "Deactivate", income_source_path(source),
               method: :patch,
               params: { income_source: { active: false } },
-              class: "text-gray-600 hover:text-gray-800 text-sm" %>
+              class: "text-warm-gray hover:text-cream text-sm" %>
         <% else %>
           <%= button_to "Activate", income_source_path(source),
               method: :patch,
               params: { income_source: { active: true } },
-              class: "text-green-600 hover:text-green-800 text-sm" %>
+              class: "text-success-500 hover:text-success-400 text-sm" %>
         <% end %>
         <%= button_to "Delete", income_source_path(source),
             method: :delete,
             data: { turbo_confirm: "Are you sure you want to delete this income source?" },
-            class: "text-red-600 hover:text-red-800 text-sm" %>
+            class: "text-error-500 hover:text-error-400 text-sm" %>
       </div>
     <% else %>
-      <span class="text-gray-400 text-sm">View only</span>
+      <span class="text-muted-light text-sm">View only</span>
     <% end %>
   </td>
 </tr>
