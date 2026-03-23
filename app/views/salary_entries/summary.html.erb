@@ -34,11 +34,11 @@
         <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_aguinaldo]) %></span>
       </div>
       <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-        <span class="text-gray-700">Vacation (18 days)</span>
+        <span class="text-gray-700">Vacation (<%= current_user.vacation_days_per_year %> days)</span>
         <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_vacation]) %></span>
       </div>
       <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
-        <span class="text-gray-700">Holidays (10 days)</span>
+        <span class="text-gray-700">Holidays (<%= current_user.holiday_days_per_year %> days)</span>
         <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_holidays]) %></span>
       </div>
       <div class="flex justify-between items-center p-6 bg-green-100 rounded-lg border-2 border-green-200">

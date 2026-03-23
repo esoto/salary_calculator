@@ -70,11 +70,11 @@
           <span class="font-medium text-green-600"><%= format_currency(@salary_entry.aguinaldo_savings) %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Vacation (18 days)</span>
+          <span class="text-gray-600">Vacation (<%= current_user.vacation_days_per_year %> days)</span>
           <span class="font-medium text-green-600"><%= format_currency(@salary_entry.vacation_savings) %></span>
         </div>
         <div class="flex justify-between">
-          <span class="text-gray-600">Holidays (10 days)</span>
+          <span class="text-gray-600">Holidays (<%= current_user.holiday_days_per_year %> days)</span>
           <span class="font-medium text-green-600"><%= format_currency(@salary_entry.holiday_savings) %></span>
         </div>
         <div class="flex justify-between border-t pt-4">
