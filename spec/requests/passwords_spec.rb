@@ -8,6 +8,19 @@ RSpec.describe "Passwords", type: :request do
 
   let(:user) { create(:user, email_address: 'user@example.com', password: 'password123', password_confirmation: 'password123') }
 
+  describe "rate limiting" do
+    it "applies rate limiting to create action" do
+      # rate_limit macro adds a before_action with a lambda that calls rate_limiting
+      callbacks = PasswordsController._process_action_callbacks.select do |cb|
+        cb.kind == :before && cb.filter.is_a?(Proc)
+      end
+      rate_limit_callback = callbacks.find do |cb|
+        cb.filter.source_location&.first&.include?("rate_limiting")
+      end
+      expect(rate_limit_callback).to be_present
+    end
+  end
+
   describe "GET /passwords/new" do
     it "displays password reset request form" do
       get new_password_path
