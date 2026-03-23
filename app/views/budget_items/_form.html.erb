@@ -27,7 +27,7 @@
         class: "w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
 
     <%= f.select :currency,
-        options_for_select([["USD", "usd"], ["CRC", "crc"]], budget_item.currency || "usd"),
+        options_for_select([["USD", "usd"], ["CRC", "crc"]], budget_item.currency),
         {},
         class: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
 
