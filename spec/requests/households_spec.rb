@@ -94,10 +94,22 @@ RSpec.describe "Households", type: :request do
       }.not_to change(Household, :count)
     end
 
-    it "rejects non-members" do
+    it "ignores household ID param and uses current user's household" do
       other_household = create(:household)
 
+      # Even though we pass other_household's ID, set_household should
+      # scope to current_user.household, not Household.find(params[:id])
       delete leave_household_path(other_household)
+
+      expect(response).to redirect_to(settings_path)
+      # User should have left their own household, not the other one
+      expect(user.reload.household).to be_nil
+    end
+
+    it "redirects when user has no household" do
+      membership.destroy
+
+      delete leave_household_path(household)
 
       expect(response).to redirect_to(settings_path)
       expect(flash[:alert]).to be_present
@@ -117,10 +129,21 @@ RSpec.describe "Households", type: :request do
       expect(household.reload.invite_code).not_to eq(old_code)
     end
 
-    it "rejects non-members" do
+    it "ignores household ID param and regenerates own household code" do
       other_household = create(:household)
+      old_code = household.invite_code
 
       post regenerate_code_household_path(other_household)
+
+      expect(response).to redirect_to(settings_path)
+      expect(household.reload.invite_code).not_to eq(old_code)
+      expect(other_household.reload.invite_code).to eq(other_household.invite_code)
+    end
+
+    it "redirects when user has no household" do
+      membership.destroy
+
+      post regenerate_code_household_path(household)
 
       expect(response).to redirect_to(settings_path)
       expect(flash[:alert]).to be_present
