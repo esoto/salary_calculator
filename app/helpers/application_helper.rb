@@ -12,4 +12,12 @@ module ApplicationHelper
   def budget_item_form_id(budget_item, category)
     budget_item.persisted? ? dom_id(budget_item, :form) : "item_form_#{category}"
   end
+
+  def nav_link_class(path)
+    if current_page?(path)
+      "text-blue-600 font-semibold"
+    else
+      "text-gray-600 hover:text-gray-800"
+    end
+  end
 end

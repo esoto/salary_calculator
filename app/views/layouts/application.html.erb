@@ -29,12 +29,12 @@
 
           <div class="flex items-center gap-4">
             <% if authenticated? %>
-              <%= link_to "Entries", salary_entries_path, class: "text-gray-600 hover:text-gray-800" %>
-              <%= link_to "Budgets", budgets_path, class: "text-gray-600 hover:text-gray-800" %>
+              <%= link_to "Entries", salary_entries_path, class: nav_link_class(salary_entries_path) %>
+              <%= link_to "Budgets", budgets_path, class: nav_link_class(budgets_path) %>
               <% if Current.user.household.present? %>
-                <%= link_to "Household", household_path, class: "text-gray-600 hover:text-gray-800" %>
+                <%= link_to "Household", household_path, class: nav_link_class(household_path) %>
               <% end %>
-              <%= link_to Current.user.name, settings_path, class: "text-gray-600 hover:text-gray-800" %>
+              <%= link_to Current.user.name, settings_path, class: nav_link_class(settings_path) %>
               <%= button_to "Log out", session_path, method: :delete,
                   class: "text-gray-600 hover:text-gray-800" %>
             <% else %>
