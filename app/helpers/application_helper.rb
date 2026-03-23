@@ -15,9 +15,9 @@ module ApplicationHelper
 
   def nav_link_class(path)
     if current_page?(path)
-      "text-blue-600 font-semibold"
+      "text-gold-500 font-semibold"
     else
-      "text-gray-600 hover:text-gray-800"
+      "text-warm-gray hover:text-gold-500"
     end
   end
 end
