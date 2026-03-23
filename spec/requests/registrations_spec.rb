@@ -3,6 +3,18 @@
 require 'rails_helper'
 
 RSpec.describe "Registrations", type: :request do
+  describe "rate limiting" do
+    it "applies rate limiting to create action" do
+      callbacks = RegistrationsController._process_action_callbacks.select do |cb|
+        cb.kind == :before && cb.filter.is_a?(Proc)
+      end
+      rate_limit_callback = callbacks.find do |cb|
+        cb.filter.source_location&.first&.include?("rate_limiting")
+      end
+      expect(rate_limit_callback).to be_present
+    end
+  end
+
   describe "GET /registrations/new" do
     it "returns success" do
       get new_registration_path
