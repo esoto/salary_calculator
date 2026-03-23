@@ -60,6 +60,15 @@ RSpec.describe "SalaryEntries", type: :request do
       expect(response.body).not_to include("Vacation (18 days)")
       expect(response.body).not_to include("Holidays (10 days)")
     end
+
+    it "hides disabled savings types in savings breakdown" do
+      user.update!(aguinaldo_enabled: false, vacation_enabled: false, holiday_enabled: true)
+      entry = create(:salary_entry, user: user)
+      get salary_entry_path(entry)
+      expect(response.body).not_to include("Aguinaldo")
+      expect(response.body).not_to include("Vacation")
+      expect(response.body).to include("Holidays")
+    end
   end
 
   describe "GET /salary_entries/new" do

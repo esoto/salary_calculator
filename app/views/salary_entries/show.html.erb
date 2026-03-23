@@ -62,27 +62,35 @@
       <% end %>
     </div>
 
+    <% if current_user.any_savings_enabled? %>
     <div class="border-t pt-6">
       <h2 class="text-lg font-semibold text-gray-900 mb-4">Savings Breakdown</h2>
       <div class="space-y-4">
+        <% if current_user.aguinaldo_enabled %>
         <div class="flex justify-between">
           <span class="text-gray-600">Aguinaldo (13th month)</span>
           <span class="font-medium text-green-600"><%= format_currency(@salary_entry.aguinaldo_savings) %></span>
         </div>
+        <% end %>
+        <% if current_user.vacation_enabled %>
         <div class="flex justify-between">
           <span class="text-gray-600">Vacation (<%= current_user.vacation_days_per_year %> days)</span>
           <span class="font-medium text-green-600"><%= format_currency(@salary_entry.vacation_savings) %></span>
         </div>
+        <% end %>
+        <% if current_user.holiday_enabled %>
         <div class="flex justify-between">
           <span class="text-gray-600">Holidays (<%= current_user.holiday_days_per_year %> days)</span>
           <span class="font-medium text-green-600"><%= format_currency(@salary_entry.holiday_savings) %></span>
         </div>
+        <% end %>
         <div class="flex justify-between border-t pt-4">
           <span class="font-semibold text-gray-900">Total Savings</span>
           <span class="font-bold text-green-700 text-xl"><%= format_currency(@salary_entry.monthly_savings_accrual) %></span>
         </div>
       </div>
     </div>
+    <% end %>
 
     <% if @salary_entry.vacation_days_taken > 0 || @salary_entry.holiday_days_taken > 0 %>
       <div class="border-t pt-6 mt-6">

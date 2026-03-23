@@ -29,18 +29,24 @@
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Total Savings for <%= @year %></h2>
 
     <div class="space-y-4">
+      <% if current_user.aguinaldo_enabled %>
       <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
         <span class="text-gray-700">Aguinaldo (13th month)</span>
         <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_aguinaldo]) %></span>
       </div>
+      <% end %>
+      <% if current_user.vacation_enabled %>
       <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
         <span class="text-gray-700">Vacation (<%= current_user.vacation_days_per_year %> days)</span>
         <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_vacation]) %></span>
       </div>
+      <% end %>
+      <% if current_user.holiday_enabled %>
       <div class="flex justify-between items-center p-4 bg-green-50 rounded-lg">
         <span class="text-gray-700">Holidays (<%= current_user.holiday_days_per_year %> days)</span>
         <span class="text-xl font-semibold text-green-700"><%= format_currency(@summary[:total_holidays]) %></span>
       </div>
+      <% end %>
       <div class="flex justify-between items-center p-6 bg-green-100 rounded-lg border-2 border-green-200">
         <span class="text-lg font-semibold text-gray-900">Total Savings</span>
         <span class="text-3xl font-bold text-green-800"><%= format_currency(@summary[:total_savings]) %></span>
