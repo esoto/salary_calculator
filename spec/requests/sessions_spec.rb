@@ -27,6 +27,11 @@ RSpec.describe "Sessions", type: :request do
       expect(response.body).to include("Create one for free")
       expect(response.body).to include(new_registration_path)
     end
+
+    it "disables Turbo cache to prevent credential restoration" do
+      get new_session_path
+      expect(response.body).to include('data-turbo-cache="false"')
+    end
   end
 
   describe "POST /session" do
