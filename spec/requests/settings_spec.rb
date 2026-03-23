@@ -16,6 +16,12 @@ RSpec.describe "Settings", type: :request do
       expect(response.body).to include("Settings")
     end
 
+    it "uses the modern mobile-web-app-capable meta tag" do
+      get settings_path
+      expect(response.body).to include('name="mobile-web-app-capable"')
+      expect(response.body).not_to include('name="apple-mobile-web-app-capable"')
+    end
+
     it "displays current user settings" do
       get settings_path
       expect(response.body).to include("18") # default vacation days
