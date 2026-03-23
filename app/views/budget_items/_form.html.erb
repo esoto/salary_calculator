@@ -4,7 +4,7 @@
               namespace: category,
               class: "flex flex-col gap-2" do |f| %>
   <% if budget_item.errors.any? %>
-    <div class="text-red-600 text-xs">
+    <div class="text-error-500 text-xs">
       <%= budget_item.errors.full_messages.first %>
     </div>
   <% end %>
@@ -15,7 +15,7 @@
     <%= f.text_field :name,
         placeholder: "Item name",
         required: true,
-        class: "flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+        class: "flex-1 bg-navy-900 text-cream border border-navy-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
   </div>
 
   <div class="flex gap-2">
@@ -24,14 +24,14 @@
         step: 0.01,
         min: 0,
         required: true,
-        class: "w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+        class: "w-24 bg-navy-900 text-cream border border-navy-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
 
     <%= f.select :currency,
         options_for_select([["USD", "usd"], ["CRC", "crc"]], budget_item.currency),
         {},
-        class: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+        class: "bg-navy-900 text-cream border border-navy-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
 
     <%= f.submit budget_item.persisted? ? "Update" : "+ Add",
-        class: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm cursor-pointer" %>
+        class: "bg-gold-btn text-navy-900 font-semibold px-3 py-1 rounded text-sm cursor-pointer" %>
   </div>
 <% end %>

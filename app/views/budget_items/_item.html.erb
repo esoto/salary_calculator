@@ -1,4 +1,4 @@
-<div class="p-3 hover:bg-gray-50 group" id="<%= dom_id(item) %>"
+<div class="p-3 hover:bg-navy-900/50 group" id="<%= dom_id(item) %>"
      data-controller="inline-edit"
      data-inline-edit-editing-class="hidden">
   <!-- Display mode -->
@@ -11,9 +11,9 @@
               class="text-lg leading-none"
               aria-label="<%= item.paid ? 'Mark as unpaid' : 'Mark as paid' %>">
         <% if item.paid %>
-          <span class="text-green-600" aria-hidden="true">☑</span>
+          <span class="text-success-500" aria-hidden="true">☑</span>
         <% else %>
-          <span class="text-gray-400 hover:text-gray-600" aria-hidden="true">☐</span>
+          <span class="text-muted-light hover:text-warm-gray" aria-hidden="true">☐</span>
         <% end %>
       </button>
     <% end %>
@@ -21,12 +21,12 @@
     <!-- Item name (clickable to edit) -->
     <button type="button"
             data-action="click->inline-edit#edit"
-            class="flex-1 text-left text-sm <%= item.paid ? 'text-gray-400 line-through' : 'text-gray-800 hover:text-blue-600' %>">
+            class="flex-1 text-left text-sm <%= item.paid ? 'text-muted-light line-through' : 'text-cream hover:text-gold-500' %>">
       <%= item.name %>
     </button>
 
     <!-- Amount -->
-    <span class="text-sm font-medium <%= item.paid ? 'text-gray-400' : 'text-gray-800' %>">
+    <span class="text-sm font-medium <%= item.paid ? 'text-muted-light' : 'text-cream' %>">
       <% if item.usd? %>
         <%= format_usd(item.amount) %>
       <% else %>
@@ -38,7 +38,7 @@
     <button type="button"
             data-action="click->inline-edit#edit"
             aria-label="Edit <%= item.name %>"
-            class="opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-700 text-sm transition-opacity">
+            class="opacity-0 group-hover:opacity-100 text-gold-500 hover:text-gold-300 text-sm transition-opacity">
       <span aria-hidden="true">✎</span>
     </button>
 
@@ -47,7 +47,7 @@
         method: :delete,
         data: { turbo_confirm: "Delete this item?" },
         aria: { label: "Delete #{item.name}" },
-        class: "opacity-0 group-hover:opacity-100 text-red-500 hover:text-red-700 text-sm transition-opacity" do %>
+        class: "opacity-0 group-hover:opacity-100 text-error-500 hover:text-error-400 text-sm transition-opacity" do %>
       <span aria-hidden="true">✕</span>
     <% end %>
   </div>
@@ -60,23 +60,23 @@
       <div class="flex gap-2">
         <%= f.text_field :name,
             required: true,
-            class: "flex-1 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+            class: "flex-1 bg-navy-900 text-cream border border-navy-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
       </div>
       <div class="flex gap-2">
         <%= f.number_field :amount,
             step: 0.01,
             min: 0,
             required: true,
-            class: "w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+            class: "w-24 bg-navy-900 text-cream border border-navy-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
         <%= f.select :currency,
             options_for_select([["USD", "usd"], ["CRC", "crc"]], item.currency),
             {},
-            class: "border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" %>
+            class: "bg-navy-900 text-cream border border-navy-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
         <%= f.submit "Save",
-            class: "bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm cursor-pointer" %>
+            class: "bg-gold-btn text-navy-900 font-semibold px-3 py-1 rounded text-sm cursor-pointer" %>
         <button type="button"
                 data-action="click->inline-edit#cancel"
-                class="text-gray-500 hover:text-gray-700 px-2 py-1 text-sm">
+                class="text-warm-gray hover:text-cream px-2 py-1 text-sm">
           Cancel
         </button>
       </div>
@@ -84,7 +84,7 @@
   </div>
 
   <!-- Converted amount (secondary) -->
-  <div class="ml-6 text-xs text-gray-400">
+  <div class="ml-6 text-xs text-muted-light">
     <% if item.usd? %>
       ≈ <%= format_crc(item.amount_in_crc) %>
     <% else %>
