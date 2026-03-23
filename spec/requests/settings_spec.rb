@@ -146,6 +146,15 @@ RSpec.describe "Settings", type: :request do
     end
   end
 
+  describe "flash messages" do
+    it "renders flash with dismiss controller and close button" do
+      patch settings_path, params: { user: { name: "Flash Test" } }
+      follow_redirect!
+      expect(response.body).to include('data-controller="flash"')
+      expect(response.body).to include('data-action="click->flash#dismiss"')
+    end
+  end
+
   describe "authentication" do
     it "redirects to login when not authenticated" do
       delete session_path
