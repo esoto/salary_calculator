@@ -36,6 +36,23 @@ RSpec.describe "Dashboard", type: :request do
       expect(response.body).to include("grid-cols-2 sm:grid-cols-3 lg:grid-cols-5")
     end
 
+    it "uses dark theme body background" do
+      get dashboard_path
+      expect(response.body).to include('bg-navy-950')
+    end
+
+    it "uses dark themed navbar" do
+      get dashboard_path
+      expect(response.body).to include('bg-navy-900')
+      expect(response.body).not_to include('bg-white shadow')
+    end
+
+    it "uses gold accent for active nav link" do
+      get dashboard_path
+      # Dashboard is the active page, so nav should have gold styling
+      expect(response.body).to include('text-gold-500')
+    end
+
     context 'when year parameter provided' do
       before do
         # Create entries for 2024

@@ -15,6 +15,20 @@
 
   --color-cream: #faf8f3;
   --color-warm-gray: #e2e0db;
+
+  /* Semantic status colors (harmonized with navy+gold) */
+  --color-success-500: #34d399;
+  --color-success-600: #059669;
+  --color-error-500: #f87171;
+  --color-error-600: #dc2626;
+  --color-warning-500: #fbbf24;
+  --color-warning-600: #d97706;
+  --color-info-500: #60a5fa;
+  --color-info-600: #2563eb;
+
+  /* Mid-tone for disabled/muted states */
+  --color-muted: #4a5568;
+  --color-muted-light: #718096;
 }
 
 dialog::backdrop {

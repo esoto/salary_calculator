@@ -31,7 +31,7 @@ RSpec.describe "Settings", type: :request do
 
     it "highlights the active nav link for the current page" do
       get settings_path
-      expect(response.body).to include('text-blue-600 font-semibold')
+      expect(response.body).to include('text-gold-500 font-semibold')
     end
 
     it "renders Cancel button with border style instead of gray fill" do
