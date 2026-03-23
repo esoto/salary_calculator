@@ -22,6 +22,13 @@ RSpec.describe "Settings", type: :request do
       expect(response.body).not_to include('name="apple-mobile-web-app-capable"')
     end
 
+    it "loads Google Fonts (Newsreader and Figtree)" do
+      get settings_path
+      expect(response.body).to include("fonts.googleapis.com")
+      expect(response.body).to include("Newsreader")
+      expect(response.body).to include("Figtree")
+    end
+
     it "displays current user settings" do
       get settings_path
       expect(response.body).to include("18") # default vacation days
