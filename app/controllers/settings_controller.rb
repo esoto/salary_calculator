@@ -30,6 +30,7 @@ class SettingsController < ApplicationController
       :password_confirmation,
       :vacation_days_per_year,
       :holiday_days_per_year,
+      :default_hourly_rate,
       :hours_per_day,
       :aguinaldo_enabled,
       :vacation_enabled,

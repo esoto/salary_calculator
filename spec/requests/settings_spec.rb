@@ -22,6 +22,13 @@ RSpec.describe "Settings", type: :request do
       expect(response.body).to include("10") # default holiday days
       expect(response.body).to include("8")  # default hours per day
     end
+
+    it "displays default hourly rate field" do
+      user.update!(default_hourly_rate: 75.0)
+      get settings_path
+      expect(response.body).to include("Default hourly rate")
+      expect(response.body).to include("75")
+    end
   end
 
   describe "PATCH /settings" do
@@ -43,6 +50,12 @@ RSpec.describe "Settings", type: :request do
       expect(user.holiday_days_per_year).to eq(15)
       expect(user.hours_per_day).to eq(7)
       expect(user.aguinaldo_enabled).to be false
+    end
+
+    it "updates default hourly rate" do
+      patch settings_path, params: { user: { default_hourly_rate: 85.0 } }
+      expect(response).to redirect_to(settings_path)
+      expect(user.reload.default_hourly_rate).to eq(85.0)
     end
 
     it "shows error for invalid settings" do
