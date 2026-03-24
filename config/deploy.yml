@@ -27,6 +27,7 @@ env:
     - RAILS_MASTER_KEY
     - DATABASE_URL
     - SECRET_KEY_BASE
+    - RESEND_API_KEY
   clear:
     RAILS_ENV: production
     SOLID_QUEUE_IN_PUMA: true
