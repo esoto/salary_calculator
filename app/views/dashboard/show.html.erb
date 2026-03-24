@@ -160,9 +160,12 @@
         </tbody>
       </table>
     <% else %>
-      <div class="px-6 py-8 text-center text-muted-light">
-        <p>No entries yet.</p>
-        <%= link_to "Create your first entry", new_salary_entry_path, class: "text-gold-500 hover:text-gold-300" %>
+      <div class="px-6 py-12 text-center">
+        <div class="text-3xl mb-3">📊</div>
+        <p class="text-muted-light mb-4">Track your first month of earnings to see your dashboard come alive.</p>
+        <%= link_to new_salary_entry_path, class: "inline-block bg-gold-btn text-navy-900 font-semibold px-5 py-2 rounded-lg hover:shadow-lg hover:shadow-amber-900/20" do %>
+          Create first entry &rarr;
+        <% end %>
       </div>
     <% end %>
 

@@ -51,6 +51,12 @@ RSpec.describe "SalaryEntries", type: :request do
       expect(response).to have_http_status(:not_found)
     end
 
+    it "shows an inviting empty state with guidance" do
+      get salary_entries_path(year: 2099)
+      expect(response.body).to include("Get started")
+      expect(response.body).to include("Track your first month")
+    end
+
     it "displays user's configured vacation and holiday days in savings labels" do
       user.update!(vacation_days_per_year: 20, holiday_days_per_year: 12, vacation_enabled: true, holiday_enabled: true)
       entry = create(:salary_entry, user: user)
