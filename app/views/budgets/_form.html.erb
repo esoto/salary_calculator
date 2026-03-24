@@ -46,7 +46,7 @@
   <% end %>
 
   <div class="flex justify-between items-center">
-    <%= link_to "Cancel", budgets_path(year: budget.year), class: "text-warm-gray hover:text-cream" %>
+    <%= link_to "Cancel", budgets_path(year: budget.year), class: "border border-navy-600 hover:bg-navy-900 text-warm-gray px-6 py-2 rounded-lg" %>
     <%= f.submit budget.persisted? ? "Update Budget" : "Create Budget",
         class: "bg-gold-btn text-navy-900 font-semibold px-6 py-2 rounded-lg cursor-pointer" %>
   </div>
