@@ -1,3 +1,22 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1a"/>
+      <stop offset="100%" stop-color="#0c1222"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c9a84c"/>
+      <stop offset="100%" stop-color="#b8943f"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c9a84c" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#b8943f" stop-opacity="0.3"/>
+    </linearGradient>
+  </defs>
+  <!-- Dark navy background circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bg)"/>
+  <!-- Subtle gold ring -->
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#ring)" stroke-width="3"/>
+  <!-- Gold "$" symbol -->
+  <text x="256" y="310" font-family="Georgia, serif" font-size="300" font-weight="700" fill="url(#gold)" text-anchor="middle">$</text>
 </svg>
