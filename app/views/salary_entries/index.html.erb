@@ -54,9 +54,13 @@
       </table>
     </div>
   <% else %>
-    <div class="text-center py-12 bg-navy-800 rounded-lg border border-navy-600">
-      <p class="text-warm-gray mb-4">No salary entries for <%= @year %>.</p>
-      <%= link_to "Create your first entry", new_salary_entry_path, class: "text-gold-500 hover:text-gold-300" %>
+    <div class="text-center py-16 bg-navy-800 rounded-lg border border-navy-600">
+      <div class="text-4xl mb-4">📊</div>
+      <h3 class="text-lg font-semibold text-cream mb-2">No entries for <%= @year %></h3>
+      <p class="text-muted-light mb-6">Track your first month of earnings, savings, and time off.</p>
+      <%= link_to new_salary_entry_path, class: "inline-block bg-gold-btn text-navy-900 font-semibold px-6 py-3 rounded-lg hover:shadow-lg hover:shadow-amber-900/20" do %>
+        Get started &rarr;
+      <% end %>
     </div>
   <% end %>
 </div>
