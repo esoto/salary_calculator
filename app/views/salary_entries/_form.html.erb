@@ -28,6 +28,7 @@
     <div>
       <%= form.label :hours_worked, class: "block text-sm font-medium text-cream mb-1" %>
       <%= form.number_field :hours_worked, step: 0.01, min: 0,
+          value: form.object.hours_worked&.to_f&.then { |v| v == v.to_i ? v.to_i : v },
           class: "w-full border border-navy-600 rounded-lg px-3 py-2 bg-navy-900 text-cream focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
     </div>
 
@@ -43,6 +44,7 @@
       <div>
         <%= form.label :vacation_days_taken, "Vacation days taken", class: "block text-sm font-medium text-cream mb-1" %>
         <%= form.number_field :vacation_days_taken, step: 0.5, min: 0,
+            value: form.object.vacation_days_taken&.to_f&.then { |v| v == v.to_i ? v.to_i : v },
             class: "w-full border border-navy-600 rounded-lg px-3 py-2 bg-navy-900 text-cream focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
       </div>
     <% end %>
@@ -50,6 +52,7 @@
       <div>
         <%= form.label :holiday_days_taken, "Holiday days taken", class: "block text-sm font-medium text-cream mb-1" %>
         <%= form.number_field :holiday_days_taken, step: 0.5, min: 0,
+            value: form.object.holiday_days_taken&.to_f&.then { |v| v == v.to_i ? v.to_i : v },
             class: "w-full border border-navy-600 rounded-lg px-3 py-2 bg-navy-900 text-cream focus:outline-none focus:ring-1 focus:ring-gold-500 focus:border-gold-500" %>
       </div>
     <% end %>
