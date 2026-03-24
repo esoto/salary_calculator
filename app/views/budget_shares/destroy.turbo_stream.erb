@@ -1,8 +1,8 @@
 <%= turbo_stream.replace "shares-list" do %>
   <% shares = @budget.budget_shares.order(created_at: :desc) %>
-  <div class="<%= 'bg-white rounded-lg shadow mt-6 p-6' if shares.any? %>" id="shares-list">
+  <div class="<%= 'bg-navy-800 rounded-lg border border-navy-600 mt-6 p-6' if shares.any? %>" id="shares-list">
     <% if shares.any? %>
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Shared Links</h3>
+      <h3 class="text-lg font-semibold text-cream font-display mb-4">Shared Links</h3>
     <% end %>
     <div class="space-y-3" id="shares-items">
       <% shares.each do |share| %>
