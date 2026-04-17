@@ -310,8 +310,8 @@ RSpec.describe MonthlyBudget, type: :model do
         budget.total_income_usd
       end
 
-      # Expect at most 2 queries: one for owner branch, one for household branch
-      expect(queries.size).to be <= 2
+      # Expect exactly 2 queries: one for owner branch, one for household branch
+      expect(queries.size).to eq(2)
     end
 
     it "total reflects overrides from both branches" do
