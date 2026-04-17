@@ -196,6 +196,42 @@ RSpec.describe BudgetsHelper, type: :helper do
         expect(helper.activity_description(version)).to include("paid")
       end
     end
+
+    context "for income source override changes" do
+      let(:source) { create(:income_source, user: user, name: "Salary", income_type: "fixed", amount: 1000) }
+
+      it "describes override creation" do
+        with_versioning do
+          override = create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+          version = override.versions.find_by(event: "create")
+          expect(helper.activity_description(version)).to include("adjusted")
+          expect(helper.activity_description(version)).to include("Salary")
+          expect(helper.activity_description(version)).to include("April 2026")
+        end
+      end
+
+      it "describes override amount updates" do
+        with_versioning do
+          override = create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+          override.update!(amount: 1800)
+          version = override.versions.last
+          expect(helper.activity_description(version)).to include("changed")
+          expect(helper.activity_description(version)).to include("Salary")
+          expect(helper.activity_description(version)).to include("April 2026")
+        end
+      end
+
+      it "describes override destruction using reified record" do
+        with_versioning do
+          override = create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+          override.destroy!
+          version = PaperTrail::Version.where(item_type: "IncomeSourceOverride", item_id: override.id, event: "destroy").last
+          expect(helper.activity_description(version)).to include("removed")
+          expect(helper.activity_description(version)).to include("Salary")
+          expect(helper.activity_description(version)).to include("April 2026")
+        end
+      end
+    end
   end
 
   describe "#activity_actor_name" do

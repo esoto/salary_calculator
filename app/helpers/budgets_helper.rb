@@ -69,6 +69,8 @@ module BudgetsHelper
       budget_activity_description(version)
     when "BudgetItem"
       budget_item_activity_description(version)
+    when "IncomeSourceOverride"
+      income_source_override_activity_description(version)
     else
       "Unknown activity"
     end
@@ -151,6 +153,54 @@ module BudgetsHelper
     else
       "modified \"#{item_name}\""
     end
+  end
+
+  def income_source_override_activity_description(version)
+    month, year, source_name = override_version_attrs(version)
+
+    if month && year
+      month_label = "#{Date::MONTHNAMES[month]} #{year}"
+      label = source_name || "an income source"
+      case version.event
+      when "create"  then "adjusted \"#{label}\" for #{month_label}"
+      when "update"  then "changed the \"#{label}\" adjustment for #{month_label}"
+      when "destroy" then "removed the \"#{label}\" adjustment for #{month_label}"
+      else "modified the \"#{label}\" adjustment for #{month_label}"
+      end
+    else
+      "made an income adjustment"
+    end
+  end
+
+  def override_version_attrs(version)
+    # For destroy the item is gone — reconstruct from the serialized pre-destroy object.
+    # For create/update we prefer the live record (which also gives us association access).
+    if version.event == "destroy"
+      obj = parse_version_object(version)
+      source = IncomeSource.find_by(id: obj["income_source_id"]) if obj["income_source_id"]
+      [ obj["month"], obj["year"], source&.name ]
+    else
+      override = version.item
+      if override
+        [ override.month, override.year, override.income_source&.name ]
+      else
+        obj = parse_version_object(version)
+        source = IncomeSource.find_by(id: obj["income_source_id"]) if obj["income_source_id"]
+        [ obj["month"], obj["year"], source&.name ]
+      end
+    end
+  end
+
+  def parse_version_object(version)
+    return {} unless version.object.present?
+
+    YAML.safe_load(
+      version.object,
+      permitted_classes: [ BigDecimal, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, Time ],
+      aliases: true
+    )
+  rescue StandardError
+    {}
   end
 
   def extract_item_amount(version)
