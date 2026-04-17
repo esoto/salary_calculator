@@ -12,6 +12,17 @@ export default class extends Controller {
     "July", "August", "September", "October", "November", "December"
   ]
 
+  connect() {
+    this._handleClose = () => {
+      if (this._triggerEl) this._triggerEl.focus()
+    }
+    this.element.addEventListener("close", this._handleClose)
+  }
+
+  disconnect() {
+    this.element.removeEventListener("close", this._handleClose)
+  }
+
   populate({ sourceId, sourceName, currentAmount, currency, singleId, ongoingId, triggerEl }) {
     const budget = this._budgetContext()
     const monthLabel = `${this.constructor.monthNames[budget.month]} ${budget.year}`
@@ -38,22 +49,30 @@ export default class extends Controller {
 
   close() {
     this.element.close()
-    if (this._triggerEl) this._triggerEl.focus()
   }
 
   _addRemoveLink(label, budgetId, overrideId) {
     const form = document.createElement("form")
     form.action = `/budgets/${budgetId}/income_source_overrides/${overrideId}`
     form.method = "post"
-    const csrf = document.querySelector("meta[name=csrf-token]")?.content
-    form.innerHTML = `
-      <input type="hidden" name="_method" value="delete" />
-      <input type="hidden" name="authenticity_token" value="${csrf || ""}" />
-      <button type="submit" class="text-error-500 hover:text-error-300 text-sm"
-              data-turbo-confirm="Revert to default amount?">
-        ${label}
-      </button>
-    `
+
+    const methodInput = document.createElement("input")
+    methodInput.type = "hidden"
+    methodInput.name = "_method"
+    methodInput.value = "delete"
+
+    const csrfInput = document.createElement("input")
+    csrfInput.type = "hidden"
+    csrfInput.name = "authenticity_token"
+    csrfInput.value = document.querySelector("meta[name=csrf-token]")?.content || ""
+
+    const button = document.createElement("button")
+    button.type = "submit"
+    button.className = "text-error-500 hover:text-error-300 text-sm"
+    button.dataset.turboConfirm = "Revert to default amount?"
+    button.textContent = label
+
+    form.append(methodInput, csrfInput, button)
     this.removeLinksTarget.appendChild(form)
   }
 
