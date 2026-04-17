@@ -99,4 +99,45 @@ RSpec.describe "IncomeSourceOverrides", type: :request do
       end
     end
   end
+
+  describe "DELETE /budgets/:budget_id/income_source_overrides/:id" do
+    let!(:override) do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+    end
+
+    context "as the owner" do
+      before { sign_in(owner) }
+
+      it "destroys the override" do
+        expect {
+          delete budget_income_source_override_path(budget, override)
+        }.to change(IncomeSourceOverride, :count).by(-1)
+      end
+
+      it "rejects when override's source is not on this budget (IDOR)" do
+        rogue_source = create(:income_source, user: outsider, income_type: "fixed")
+        rogue_override = create(:income_source_override, income_source: rogue_source)
+
+        delete budget_income_source_override_path(budget, rogue_override)
+
+        expect(response).to redirect_to(budget_path(budget))
+        expect(flash[:alert]).to match(/not on this budget/i)
+        expect { rogue_override.reload }.not_to raise_error
+      end
+    end
+
+    context "as a household member" do
+      before do
+        budget.update!(shared_with_household: true)
+        sign_in(member)
+      end
+
+      it "cannot destroy another user's override" do
+        expect {
+          delete budget_income_source_override_path(budget, override)
+        }.not_to change(IncomeSourceOverride, :count)
+        expect(flash[:alert]).to match(/cannot modify/i)
+      end
+    end
+  end
 end

@@ -2,8 +2,9 @@
 
 class IncomeSourceOverridesController < ApplicationController
   before_action :set_budget
-  before_action :set_income_source, only: :create
-  before_action :authorize!,        only: :create
+  before_action :set_income_source,        only: :create
+  before_action :set_override_and_source,  only: :destroy
+  before_action :authorize!,                only: [ :create, :destroy ]
 
   def create
     @override = @income_source.income_source_overrides.find_or_initialize_by(
@@ -20,6 +21,14 @@ class IncomeSourceOverridesController < ApplicationController
       end
     else
       redirect_to budget_path(@budget), alert: @override.errors.full_messages.to_sentence
+    end
+  end
+
+  def destroy
+    @override.destroy
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to budget_path(@budget), notice: "Income override removed." }
     end
   end
 
@@ -40,6 +49,19 @@ class IncomeSourceOverridesController < ApplicationController
     # SEC-1 IDOR guard: verify source is actually on this budget
     unless @budget.all_income_sources.any? { |s| s.id == @income_source.id }
       redirect_to(budget_path(@budget), alert: "Income source not on this budget.")
+    end
+  end
+
+  def set_override_and_source
+    return if performed?
+
+    @override = IncomeSourceOverride.find_by(id: params[:id])
+    return redirect_to(budget_path(@budget), alert: "Override not found.") unless @override
+
+    @income_source = @override.income_source
+    # SEC-1 IDOR guard: verify override's parent source is actually on this budget
+    unless @budget.all_income_sources.any? { |s| s.id == @income_source.id }
+      redirect_to(budget_path(@budget), alert: "Override not on this budget.")
     end
   end
 
