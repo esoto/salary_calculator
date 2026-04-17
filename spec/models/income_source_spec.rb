@@ -127,6 +127,18 @@ RSpec.describe IncomeSource, type: :model do
       nil_source = create(:income_source, income_type: "fixed", amount: nil)
       expect(nil_source.amount_for_month(2026, 4)).to eq(0)
     end
+
+    it "honors single_month override with amount: 0 (zero-out)" do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 0, scope: "single_month")
+      expect(source.amount_for_month(2026, 4)).to eq(0)
+      expect(source.amount_for_month(2026, 5)).to eq(1000)
+    end
+
+    it "honors from_this_month override with amount: 0 (zero-out going forward)" do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 0, scope: "from_this_month")
+      expect(source.amount_for_month(2026, 3)).to eq(1000)
+      expect(source.amount_for_month(2026, 4)).to eq(0)
+    end
   end
 
   describe "authorization" do
