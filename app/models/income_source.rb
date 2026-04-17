@@ -2,6 +2,8 @@ class IncomeSource < ApplicationRecord
   belongs_to :user
   belongs_to :linked_user, class_name: "User", optional: true
 
+  has_many :income_source_overrides, dependent: :destroy
+
   enum :currency, { crc: "CRC", usd: "USD" }, validate: true
   enum :income_type, { hourly: "hourly", fixed: "fixed" }, validate: true
 
@@ -10,6 +12,7 @@ class IncomeSource < ApplicationRecord
 
   scope :active, -> { where(active: true) }
   scope :with_salary_data, -> { includes(linked_user: :salary_entries) }
+  scope :with_override_data, -> { includes(:income_source_overrides) }
 
   def amount_for_month(year, month)
     if fixed?
