@@ -29,29 +29,7 @@
   </div>
 
   <!-- Summary Bar -->
-  <div class="bg-navy-800 rounded-lg border border-navy-600 p-4 mb-6">
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-      <div>
-        <span class="text-warm-gray">Exchange Rate:</span>
-        <span class="font-medium text-cream">₡<%= number_with_delimiter(@budget.exchange_rate.to_i) %>/$1</span>
-      </div>
-      <div>
-        <span class="text-warm-gray">Total Income:</span>
-        <span class="font-medium text-success-500"><%= format_usd(@budget.total_income_usd) %></span>
-      </div>
-      <div>
-        <span class="text-warm-gray">Total Expenses:</span>
-        <span class="font-medium text-cream"><%= format_usd(@budget.total_expenses_usd) %></span>
-      </div>
-      <div>
-        <span class="text-warm-gray">Remaining:</span>
-        <% remaining = @budget.total_income_usd - @budget.total_expenses_usd %>
-        <span class="font-medium <%= remaining >= 0 ? 'text-success-500' : 'text-error-500' %>">
-          <%= format_usd(remaining) %>
-        </span>
-      </div>
-    </div>
-  </div>
+  <%= render "summary_bar", budget: @budget %>
 
   <!-- Category Columns -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -66,47 +44,7 @@
       <h3 class="text-lg font-semibold text-cream font-display mb-3">Income Sources</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <% @income_sources.each do |source| %>
-          <%= turbo_frame_tag dom_id(source, :budget_card) do %>
-            <div class="border <%= source.owned_by?(@budget.user) ? 'border-navy-600' : 'border-purple-500/30 bg-purple-900/20' %> rounded-lg p-3 bg-navy-900"
-                 data-testid="income-source-<%= source.id %>">
-              <div class="flex justify-between items-center">
-                <span class="font-medium text-cream"><%= source.name %></span>
-                <div class="flex flex-col items-end">
-                  <span class="text-success-500 font-medium">
-                    <% amount = source.amount_for_month(@budget.year, @budget.month) %>
-                    <%= source.usd? ? format_usd(amount) : format_crc(amount) %>
-                  </span>
-                  <% if income_source_adjusted_for?(source, @budget) %>
-                    <span class="text-xs text-gold-400 italic"
-                          title="Base: <%= format_source_base(source) %> • Effective: <%= format_source_effective(source, @budget) %>">
-                      (adjusted)
-                    </span>
-                  <% end %>
-                </div>
-              </div>
-              <% if source.linked_user %>
-                <p class="text-sm text-warm-gray">From <%= source.linked_user.name %>'s salary</p>
-              <% elsif !source.owned_by?(@budget.user) %>
-                <p class="text-sm text-purple-400"><%= source.user.name %>'s income</p>
-              <% else %>
-                <p class="text-sm text-warm-gray">Fixed income</p>
-              <% end %>
-              <% if source.fixed? && source.editable_by?(current_user) %>
-                <button type="button"
-                        class="text-gold-500 hover:text-gold-300 text-sm mt-2"
-                        data-controller="override-modal-trigger"
-                        data-action="click->override-modal-trigger#open"
-                        data-override-modal-trigger-source-id-value="<%= source.id %>"
-                        data-override-modal-trigger-source-name-value="<%= source.name %>"
-                        data-override-modal-trigger-current-amount-value="<%= source.amount_for_month(@budget.year, @budget.month) %>"
-                        data-override-modal-trigger-currency-value="<%= source.currency %>"
-                        data-override-modal-trigger-single-id-value="<%= existing_override_id(source, @budget, :single_month) %>"
-                        data-override-modal-trigger-ongoing-id-value="<%= existing_override_id(source, @budget, :from_this_month) %>">
-                  Edit
-                </button>
-              <% end %>
-            </div>
-          <% end %>
+          <%= render "income_source_card", source: source, budget: @budget %>
         <% end %>
       </div>
       <div class="mt-3 pt-3 border-t border-navy-600">

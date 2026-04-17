@@ -69,6 +69,16 @@ RSpec.describe "IncomeSourceOverrides", type: :request do
         expect(response).to redirect_to(budget_path(budget))
         expect(flash[:alert]).to be_present
       end
+
+      it "responds with Turbo Stream actions that replace the card and summary bar" do
+        post budget_income_source_overrides_path(budget),
+             params: { income_source_override: { income_source_id: source.id, amount: 1500, scope: "single_month" } },
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+        expect(response.body).to include(%(turbo-stream action="replace" target="budget_card_income_source_#{source.id}"))
+        expect(response.body).to include(%(turbo-stream action="replace" target="budget-summary-bar"))
+      end
     end
 
     context "as a household member viewing a shared budget" do
@@ -123,6 +133,15 @@ RSpec.describe "IncomeSourceOverrides", type: :request do
         expect(response).to redirect_to(budget_path(budget))
         expect(flash[:alert]).to match(/not on this budget/i)
         expect { rogue_override.reload }.not_to raise_error
+      end
+
+      it "responds with Turbo Stream actions that replace the card and summary bar" do
+        delete budget_income_source_override_path(budget, override),
+               headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+        expect(response.body).to include(%(turbo-stream action="replace" target="budget_card_income_source_#{source.id}"))
+        expect(response.body).to include(%(turbo-stream action="replace" target="budget-summary-bar"))
       end
     end
 
