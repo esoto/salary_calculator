@@ -131,33 +131,52 @@ RSpec.describe IncomeSource, type: :model do
     end
 
     describe "#editable_by?" do
-      context "without linked_user" do
+      context "when source is fixed (no linked_user) and owner has a shared budget" do
+        let(:fixed_source) { create(:income_source, user: owner, income_type: "fixed") }
+
         before do
           create(:monthly_budget, user: owner, shared_with_household: true)
         end
 
-        it "returns true for owner" do
-          expect(income_source.editable_by?(owner)).to be true
+        it "owner can edit" do
+          expect(fixed_source.editable_by?(owner)).to be true
         end
 
-        it "returns true for household member when accessible" do
-          expect(income_source.editable_by?(household_member)).to be true
+        it "household member cannot edit (pre-existing bug fix)" do
+          expect(fixed_source.editable_by?(household_member)).to be false
+        end
+
+        it "household member can still access (read) the source" do
+          expect(fixed_source.accessible_by?(household_member)).to be true
+        end
+
+        it "returns false for stranger" do
+          expect(fixed_source.editable_by?(stranger)).to be false
         end
       end
 
-      context "with linked_user" do
-        let(:linked_income) { create(:income_source, user: owner, linked_user: household_member) }
+      context "when source is hourly with a linked_user" do
+        let(:linked_income) do
+          create(:income_source, user: owner, income_type: "hourly",
+                 linked_user: household_member, amount: nil)
+        end
 
         before do
           create(:monthly_budget, user: owner, shared_with_household: true)
         end
 
-        it "returns true for owner (owner always has edit control)" do
+        it "owner can edit (owner always has edit control)" do
           expect(linked_income.editable_by?(owner)).to be true
         end
 
-        it "returns true for linked user" do
+        it "linked user can edit" do
           expect(linked_income.editable_by?(household_member)).to be true
+        end
+
+        it "unrelated household member cannot edit" do
+          other = create(:user)
+          create(:household_membership, user: other, household: household)
+          expect(linked_income.editable_by?(other)).to be false
         end
 
         it "returns false for stranger" do

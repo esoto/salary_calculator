@@ -145,16 +145,19 @@ RSpec.describe "IncomeSources", type: :request do
         expect(response.body).to include("Household Income Sources")
       end
 
-      it "can update partner's income source" do
+      it "cannot update partner's income source (read-only for household viewers)" do
         patch income_source_path(partner_source), params: { income_source: { amount: 9999 } }
         expect(response).to redirect_to(income_sources_path)
-        expect(partner_source.reload.amount).to eq(9999)
+        expect(flash[:alert]).to eq("You cannot edit this income source.")
+        expect(partner_source.reload.amount).not_to eq(9999)
       end
 
-      it "can delete partner's income source" do
+      it "cannot delete partner's income source (read-only for household viewers)" do
         expect {
           delete income_source_path(partner_source)
-        }.to change(IncomeSource, :count).by(-1)
+        }.not_to change(IncomeSource, :count)
+        expect(response).to redirect_to(income_sources_path)
+        expect(flash[:alert]).to eq("You cannot edit this income source.")
       end
     end
 
