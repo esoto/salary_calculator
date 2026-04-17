@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_07_051316) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_17_211438) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_07_051316) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["invite_code"], name: "index_households_on_invite_code", unique: true
+  end
+
+  create_table "income_source_overrides", force: :cascade do |t|
+    t.decimal "amount", precision: 12, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.bigint "income_source_id", null: false
+    t.integer "month", null: false
+    t.string "scope", null: false
+    t.datetime "updated_at", null: false
+    t.integer "year", null: false
+    t.index ["income_source_id", "year", "month", "scope"], name: "idx_income_overrides_unique", unique: true
+    t.check_constraint "amount >= 0::numeric", name: "chk_ioo_amount_nonneg"
+    t.check_constraint "month >= 1 AND month <= 12", name: "chk_ioo_month_range"
+    t.check_constraint "year >= 2020 AND year <= 2100", name: "chk_ioo_year_range"
   end
 
   create_table "income_sources", force: :cascade do |t|
@@ -141,6 +155,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_07_051316) do
   add_foreign_key "budget_shares", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
   add_foreign_key "household_memberships", "users"
+  add_foreign_key "income_source_overrides", "income_sources", on_delete: :cascade
   add_foreign_key "income_sources", "users"
   add_foreign_key "income_sources", "users", column: "linked_user_id"
   add_foreign_key "monthly_budgets", "users"
