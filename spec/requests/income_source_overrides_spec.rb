@@ -159,4 +159,40 @@ RSpec.describe "IncomeSourceOverrides", type: :request do
       end
     end
   end
+
+  describe "flow: from_this_month applies to target month onward" do
+    before { sign_in(owner) }
+
+    it "affects current and future budgets but not past ones" do
+      past_budget   = create(:monthly_budget, user: owner, year: 2026, month: 3)
+      current_budget = create(:monthly_budget, user: owner, year: 2026, month: 4)
+      future_budget = create(:monthly_budget, user: owner, year: 2026, month: 5)
+
+      # Create from_this_month override via current April budget
+      post budget_income_source_overrides_path(current_budget),
+           params: { income_source_override: { income_source_id: source.id, amount: 1200, scope: "from_this_month" } }
+
+      expect(source.reload.amount_for_month(2026, 3)).to eq(1000)  # past unchanged
+      expect(source.amount_for_month(2026, 4)).to eq(1200)          # current overridden
+      expect(source.amount_for_month(2026, 5)).to eq(1200)          # future overridden
+    end
+  end
+
+  describe "flow: destroying override reverts amount" do
+    before { sign_in(owner) }
+
+    it "reverts the source's effective amount to base after override destroyed" do
+      post budget_income_source_overrides_path(budget),
+           params: { income_source_override: { income_source_id: source.id, amount: 1500, scope: "single_month" } }
+
+      expect(source.reload.amount_for_month(2026, 4)).to eq(1500)
+
+      override = IncomeSourceOverride.last
+      delete budget_income_source_override_path(budget, override)
+
+      # Reload the association
+      source.income_source_overrides.reload
+      expect(source.amount_for_month(2026, 4)).to eq(1000)
+    end
+  end
 end

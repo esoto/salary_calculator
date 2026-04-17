@@ -49,4 +49,29 @@ RSpec.describe "Budget income overrides", type: :system do
       expect(page).not_to have_button("Edit")
     end
   end
+
+  context "household viewer permissions" do
+    let(:owner) { create(:user) }
+    let(:viewer) { create(:user) }
+    let(:household) { create(:household) }
+    let(:shared_budget) { create(:monthly_budget, user: owner, shared_with_household: true, year: 2026, month: 4) }
+    let!(:owner_source) { create(:income_source, user: owner, income_type: "fixed", amount: 1000, name: "Owner's Rent") }
+
+    before do
+      create(:household_membership, user: owner, household: household)
+      create(:household_membership, user: viewer, household: household)
+      create(:income_source_override, income_source: owner_source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+      sign_in(viewer)
+    end
+
+    it "shows the (adjusted) label but no Edit button for the owner's overridden source" do
+      visit budget_path(shared_budget)
+
+      within("[data-testid='income-source-#{owner_source.id}']") do
+        expect(page).to have_text("(adjusted)")
+        expect(page).to have_text("$1,500")
+        expect(page).not_to have_button("Edit")
+      end
+    end
+  end
 end
