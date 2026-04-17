@@ -164,9 +164,7 @@ RSpec.describe "IncomeSourceOverrides", type: :request do
     before { sign_in(owner) }
 
     it "affects current and future budgets but not past ones" do
-      past_budget   = create(:monthly_budget, user: owner, year: 2026, month: 3)
       current_budget = create(:monthly_budget, user: owner, year: 2026, month: 4)
-      future_budget = create(:monthly_budget, user: owner, year: 2026, month: 5)
 
       # Create from_this_month override via current April budget
       post budget_income_source_overrides_path(current_budget),
