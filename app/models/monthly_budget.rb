@@ -132,7 +132,10 @@ class MonthlyBudget < ApplicationRecord
       .order(created_at: :desc)
       .limit(limit)
 
-    override_ids = IncomeSourceOverride.where(income_source_id: all_income_sources.map(&:id)).pluck(:id)
+    override_ids = IncomeSourceOverride
+      .where(income_source_id: all_income_sources.map(&:id))
+      .where(year: year, month: month)
+      .pluck(:id)
     override_versions = PaperTrail::Version
       .where(item_type: "IncomeSourceOverride")
       .where(item_id: override_ids)

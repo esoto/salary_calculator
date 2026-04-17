@@ -317,6 +317,16 @@ RSpec.describe MonthlyBudget, type: :model do
         expect(override_ids).to be_empty
       end
     end
+
+    it "does not include override versions targeting a different month" do
+      with_versioning do
+        # Same source, but an override for a different month than this budget
+        create(:income_source_override, income_source: source, year: 2026, month: 8, amount: 2000, scope: "single_month")
+
+        activity = budget.recent_activity(limit: 10)
+        expect(activity.select { |v| v.item_type == "IncomeSourceOverride" }).to be_empty
+      end
+    end
   end
 
   describe "#all_income_sources override N+1" do
