@@ -28,6 +28,16 @@ RSpec.describe "Budget income overrides", type: :system do
     end
   end
 
+  it "renders the override dialog markup on the page" do
+    visit budget_path(budget)
+    expect(page).to have_css("dialog#override-modal", visible: :all)
+    within("dialog#override-modal", visible: :all) do
+      expect(page).to have_css("input[type='radio'][value='single_month']", visible: :all)
+      expect(page).to have_css("input[type='radio'][value='from_this_month']", visible: :all)
+      expect(page).to have_selector("legend", text: "Apply this change to", visible: :all)
+    end
+  end
+
   it "does not show an Edit button for hourly income sources" do
     # Create a linked-user for the hourly source so it renders
     other = create(:user)
