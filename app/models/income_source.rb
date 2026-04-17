@@ -16,7 +16,7 @@ class IncomeSource < ApplicationRecord
 
   def amount_for_month(year, month)
     if fixed?
-      amount || 0
+      override_amount_for(year, month) || amount || 0
     elsif linked_user.present?
       # Use previous month's salary entry since current month's salary is unknown
       prev_year, prev_month = month == 1 ? [ year - 1, 12 ] : [ year, month - 1 ]
@@ -49,5 +49,19 @@ class IncomeSource < ApplicationRecord
     return true if owned_by?(check_user)
     return true if linked_user_id.present? && linked_user_id == check_user.id
     false
+  end
+
+  private
+
+  def override_amount_for(year, month)
+    single = income_source_overrides
+      .detect { |o| o.single_month? && o.year == year && o.month == month }
+    return single.amount if single
+
+    ongoing = income_source_overrides
+      .select { |o| o.from_this_month? }
+      .select { |o| (o.year < year) || (o.year == year && o.month <= month) }
+      .max_by { |o| [ o.year, o.month ] }
+    ongoing&.amount
   end
 end

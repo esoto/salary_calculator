@@ -88,6 +88,47 @@ RSpec.describe IncomeSource, type: :model do
     end
   end
 
+  describe "#amount_for_month with overrides" do
+    let(:source) { create(:income_source, income_type: "fixed", amount: 1000) }
+
+    it "returns base amount when no overrides" do
+      expect(source.amount_for_month(2026, 4)).to eq(1000)
+    end
+
+    it "single_month override wins for the exact month" do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+      expect(source.amount_for_month(2026, 4)).to eq(1500)
+      expect(source.amount_for_month(2026, 5)).to eq(1000)
+    end
+
+    it "from_this_month override applies to target and future months" do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1200, scope: "from_this_month")
+      expect(source.amount_for_month(2026, 3)).to eq(1000)
+      expect(source.amount_for_month(2026, 4)).to eq(1200)
+      expect(source.amount_for_month(2026, 12)).to eq(1200)
+      expect(source.amount_for_month(2027, 1)).to eq(1200)
+    end
+
+    it "later from_this_month supersedes earlier" do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1200, scope: "from_this_month")
+      create(:income_source_override, income_source: source, year: 2026, month: 7, amount: 1500, scope: "from_this_month")
+      expect(source.amount_for_month(2026, 6)).to eq(1200)
+      expect(source.amount_for_month(2026, 7)).to eq(1500)
+    end
+
+    it "single_month beats from_this_month for the same exact month" do
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1200, scope: "from_this_month")
+      create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 2000, scope: "single_month")
+      expect(source.amount_for_month(2026, 4)).to eq(2000)
+      expect(source.amount_for_month(2026, 5)).to eq(1200)
+    end
+
+    it "returns 0 when fixed with nil amount and no overrides" do
+      nil_source = create(:income_source, income_type: "fixed", amount: nil)
+      expect(nil_source.amount_for_month(2026, 4)).to eq(0)
+    end
+  end
+
   describe "authorization" do
     let(:owner) { create(:user) }
     let(:household_member) { create(:user) }
