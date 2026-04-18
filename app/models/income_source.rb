@@ -43,12 +43,8 @@ class IncomeSource < ApplicationRecord
   end
 
   def editable_by?(check_user)
-    # Owner always has edit control
     return true if owned_by?(check_user)
-
-    # Linked income sources can be edited by the linked user
-    return linked_user_id == check_user.id if linked_user_id.present?
-
-    accessible_by?(check_user)
+    return true if linked_user_id.present? && linked_user_id == check_user.id
+    false
   end
 end
