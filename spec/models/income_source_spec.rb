@@ -4,6 +4,24 @@ RSpec.describe IncomeSource, type: :model do
   describe "associations" do
     it { should belong_to(:user) }
     it { should belong_to(:linked_user).class_name("User").optional }
+    it { is_expected.to have_many(:income_source_overrides).dependent(:destroy) }
+  end
+
+  describe ".with_override_data" do
+    it "eager-loads income_source_overrides to avoid N+1" do
+      3.times { create(:income_source_override, income_source: create(:income_source)) }
+
+      queries = []
+      callback = ->(_, _, _, _, payload) { queries << payload[:sql] if payload[:sql] =~ /\bincome_source_overrides\b/i }
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        IncomeSource.with_override_data.each { |s| s.income_source_overrides.to_a }
+      end
+
+      # With 3 sources and eager loading: one "includes" query for overrides.
+      # Without eager loading: 3 (one per source). Assert exactly 1.
+      expect(queries.size).to eq(1)
+    end
   end
 
   describe "validations" do
