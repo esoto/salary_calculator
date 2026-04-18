@@ -135,6 +135,18 @@ RSpec.describe "IncomeSourceOverrides", type: :request do
         expect { rogue_override.reload }.not_to raise_error
       end
 
+      it "rejects when override's year/month doesn't match the budget's month" do
+        # Same source, but an override for a different month
+        other_month_override = create(:income_source_override,
+                                      income_source: source, year: 2026, month: 8, amount: 1800, scope: "single_month")
+
+        delete budget_income_source_override_path(budget, other_month_override)
+
+        expect(response).to redirect_to(budget_path(budget))
+        expect(flash[:alert]).to match(/different month/i)
+        expect { other_month_override.reload }.not_to raise_error
+      end
+
       it "responds with Turbo Stream actions that replace the card and summary bar" do
         delete budget_income_source_override_path(budget, override),
                headers: { "Accept" => "text/vnd.turbo-stream.html" }

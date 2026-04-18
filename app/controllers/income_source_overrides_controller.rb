@@ -61,7 +61,12 @@ class IncomeSourceOverridesController < ApplicationController
     @income_source = @override.income_source
     # SEC-1 IDOR guard: verify override's parent source is actually on this budget
     unless @budget.all_income_sources.any? { |s| s.id == @income_source.id }
-      redirect_to(budget_path(@budget), alert: "Override not on this budget.")
+      return redirect_to(budget_path(@budget), alert: "Override not on this budget.")
+    end
+
+    # SEC-4: override must target THIS budget's year/month — crafted URLs can't reach other months
+    unless @override.year == @budget.year && @override.month == @budget.month
+      redirect_to(budget_path(@budget), alert: "Override is for a different month.")
     end
   end
 
