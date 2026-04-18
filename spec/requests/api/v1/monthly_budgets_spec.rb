@@ -48,5 +48,22 @@ RSpec.describe "Api::V1::MonthlyBudgets", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    it "returns 401 without a token" do
+      travel_to Date.new(2026, 4, 17) do
+        get "/api/v1/monthly_budgets/current"
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    it "returns 403 when the token lacks the budget:read scope" do
+      no_scope = ApiToken.create!(user: user, name: "limited", scopes: "")
+      travel_to Date.new(2026, 4, 17) do
+        get "/api/v1/monthly_budgets/current",
+          headers: { "Authorization" => "Bearer #{no_scope.token}" }
+        expect(response).to have_http_status(:forbidden)
+        expect(response.parsed_body["required"]).to eq("budget:read")
+      end
+    end
   end
 end
