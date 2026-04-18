@@ -1,8 +1,8 @@
 class Current < ActiveSupport::CurrentAttributes
   attribute :session
-  attribute :user_override
+  attribute :api_user
 
   def user
-    user_override || session&.user
+    api_user || session&.user
   end
 end

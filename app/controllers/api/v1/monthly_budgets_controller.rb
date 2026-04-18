@@ -23,7 +23,7 @@ module Api
             year: budget.year,
             month: budget.month,
             exchange_rate: budget.exchange_rate.to_s,
-            shared_with_household: budget.shared_with_household.present?,
+            shared_with_household: budget.shared_with_household?,
             updated_at: budget.updated_at.iso8601
           },
           budget_items: budget.budget_items.ordered.map { |item| serialize_item(item) }
