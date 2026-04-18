@@ -281,6 +281,54 @@ RSpec.describe MonthlyBudget, type: :model do
     end
   end
 
+  describe "#recent_activity includes override versions" do
+    let(:user) { create(:user) }
+    let(:budget) { create(:monthly_budget, user: user, year: 2026, month: 4) }
+    let(:source) { create(:income_source, user: user, income_type: "fixed", amount: 1000) }
+
+    it "surfaces IncomeSourceOverride versions for sources on this budget" do
+      with_versioning do
+        create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+        activity = budget.recent_activity(limit: 10)
+        expect(activity.map(&:item_type)).to include("IncomeSourceOverride")
+      end
+    end
+
+    it "orders all activity types chronologically" do
+      with_versioning do
+        create(:budget_item, monthly_budget: budget, amount: 100)
+        travel 1.minute
+        create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+
+        activity = budget.recent_activity(limit: 10)
+        # Most recent first — override should appear before the budget_item version
+        expect(activity.first.item_type).to eq("IncomeSourceOverride")
+      end
+    end
+
+    it "does not include override versions for sources on OTHER budgets" do
+      with_versioning do
+        other_user = create(:user)
+        other_source = create(:income_source, user: other_user, income_type: "fixed", amount: 500)
+        create(:income_source_override, income_source: other_source, year: 2026, month: 4, amount: 800, scope: "single_month")
+
+        activity = budget.recent_activity(limit: 10)
+        override_ids = activity.select { |v| v.item_type == "IncomeSourceOverride" }.map(&:item_id)
+        expect(override_ids).to be_empty
+      end
+    end
+
+    it "does not include override versions targeting a different month" do
+      with_versioning do
+        # Same source, but an override for a different month than this budget
+        create(:income_source_override, income_source: source, year: 2026, month: 8, amount: 2000, scope: "single_month")
+
+        activity = budget.recent_activity(limit: 10)
+        expect(activity.select { |v| v.item_type == "IncomeSourceOverride" }).to be_empty
+      end
+    end
+  end
+
   describe "#all_income_sources override N+1" do
     let(:household) { create(:household) }
     let(:owner)    { create(:user) }
