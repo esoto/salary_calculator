@@ -67,6 +67,17 @@ RSpec.describe "OAuth Authorize", type: :request do
       expect(params_hash["code"]).to be_present
     end
 
+    it "issues an authorization code when POST omits scopes (form submission from consent page)" do
+      # The consent form only submits redirect_uri + state — scopes live in the session.
+      get "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read" }
+
+      expect {
+        post "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state }
+      }.to change(OauthAuthorizationCode, :count).by(1)
+
+      expect(response).to have_http_status(:redirect)
+    end
+
     it "rejects an invalid redirect_uri" do
       post "/oauth/authorize", params: { redirect_uri: "https://evil.test/cb", state: state, scopes: "budget:read" }
       expect(response).to have_http_status(:bad_request)
