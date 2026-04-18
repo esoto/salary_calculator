@@ -38,5 +38,11 @@ Rails.application.routes.draw do
   end
   resource :household, only: [ :show ], controller: "household"
 
+  namespace :api do
+    namespace :v1 do
+      get "monthly_budgets/current", to: "monthly_budgets#current"
+    end
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end
