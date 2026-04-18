@@ -46,3 +46,13 @@
 
 # Ignore test coverage reports
 /coverage
+
+# Tooling artifacts and screenshots (never commit)
+/.playwright-mcp
+/screenshots
+/*.png
+/per-*.png
+
+# Transient docs — long-form lives in Obsidian, not the repo
+/docs/plans
+/docs/reviews
