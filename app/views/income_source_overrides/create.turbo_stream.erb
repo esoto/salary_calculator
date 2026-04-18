@@ -1,0 +1,7 @@
+<%= turbo_stream.replace dom_id(@income_source, :budget_card),
+      partial: "budgets/income_source_card",
+      locals: { source: @income_source, budget: @budget } %>
+
+<%= turbo_stream.replace "budget-summary-bar",
+      partial: "budgets/summary_bar",
+      locals: { budget: @budget } %>
