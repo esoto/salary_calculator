@@ -1,4 +1,5 @@
-<div class="max-w-7xl mx-auto px-4 py-8">
+<div class="max-w-7xl mx-auto px-4 py-8"
+     data-budget-context='<%= { id: @budget.id, year: @budget.year, month: @budget.month }.to_json %>'>
   <!-- Header -->
   <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
     <div>
@@ -205,5 +206,59 @@
         <% end %>
       </div>
     </div>
+  <% end %>
+
+  <% if @income_sources.any?(&:fixed?) && @income_sources.any? { |s| s.editable_by?(current_user) } %>
+    <dialog id="override-modal"
+            class="rounded-lg shadow-xl p-0"
+            aria-labelledby="override-modal-title"
+            data-controller="dialog override-modal">
+      <div class="p-6 w-96 bg-navy-800">
+        <div class="flex justify-between items-center mb-4">
+          <h2 id="override-modal-title" class="text-xl font-bold text-cream" data-override-modal-target="title">
+            Adjust Income
+          </h2>
+          <button type="button" data-action="click->dialog#close" class="text-muted-light hover:text-warm-gray">✕</button>
+        </div>
+
+        <div data-override-modal-target="currentAmount" class="text-sm text-warm-gray mb-4"></div>
+
+        <%= form_with url: "#", method: :post, local: false,
+                      data: { override_modal_target: "form" } do |f| %>
+          <input type="hidden" name="income_source_override[income_source_id]" data-override-modal-target="sourceIdInput" />
+
+          <div class="mb-4">
+            <label for="override-amount" class="block text-sm text-warm-gray mb-1">Amount</label>
+            <%= f.number_field :amount, step: 0.01, id: "override-amount",
+                               data: { override_modal_target: "amountInput" },
+                               class: "w-full rounded bg-navy-900 text-cream p-2",
+                               name: "income_source_override[amount]" %>
+          </div>
+
+          <fieldset class="mb-4">
+            <legend class="text-sm text-warm-gray mb-2">Apply this change to</legend>
+            <label class="block text-cream">
+              <input type="radio" name="income_source_override[scope]" value="single_month" checked
+                     data-override-modal-target="scopeSingle" />
+              <span data-override-modal-target="scopeSingleLabel">Just this month</span>
+            </label>
+            <label class="block text-cream">
+              <input type="radio" name="income_source_override[scope]" value="from_this_month"
+                     data-override-modal-target="scopeOngoing" />
+              <span data-override-modal-target="scopeOngoingLabel">Starting this month onward</span>
+            </label>
+          </fieldset>
+
+          <div class="flex gap-2">
+            <button type="submit" class="bg-gold-btn text-navy-900 font-semibold px-4 py-2 rounded-lg">Save</button>
+            <button type="button" data-action="click->dialog#close" class="text-muted-light px-4 py-2">Cancel</button>
+          </div>
+        <% end %>
+
+        <div class="mt-4 pt-4 border-t border-navy-600 space-y-2" data-override-modal-target="removeLinks">
+          <!-- populated by JS when overrides exist -->
+        </div>
+      </div>
+    </dialog>
   <% end %>
 </div>
