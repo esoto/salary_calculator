@@ -4,7 +4,6 @@ require 'rails_helper'
 
 RSpec.describe "Passwords", type: :request do
   include ActiveJob::TestHelper
-  include ActiveSupport::Testing::TimeHelpers
 
   let(:user) { create(:user, email_address: 'user@example.com', password: 'password123', password_confirmation: 'password123') }
 

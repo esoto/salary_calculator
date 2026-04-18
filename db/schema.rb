@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_040525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.string "scopes", default: "", null: false
+    t.string "token_digest", null: false
+    t.string "token_hash", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["token_digest"], name: "index_api_tokens_on_token_digest", unique: true
+    t.index ["token_hash"], name: "index_api_tokens_on_token_hash", unique: true
+    t.index ["user_id", "active"], name: "index_api_tokens_on_user_id_and_active"
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
 
   create_table "budget_items", force: :cascade do |t|
     t.decimal "amount", precision: 12, scale: 2, null: false
@@ -71,7 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
     t.index ["income_source_id", "year", "month", "scope"], name: "idx_income_overrides_unique", unique: true
     t.check_constraint "amount >= 0::numeric", name: "chk_ioo_amount_nonneg"
     t.check_constraint "month >= 1 AND month <= 12", name: "chk_ioo_month_range"
-    t.check_constraint "scope::text = ANY (ARRAY['single_month'::character varying, 'from_this_month'::character varying]::text[])", name: "chk_ioo_scope_valid"
+    t.check_constraint "scope::text = ANY (ARRAY['single_month'::character varying::text, 'from_this_month'::character varying::text])", name: "chk_ioo_scope_valid"
     t.check_constraint "year >= 2020 AND year <= 2100", name: "chk_ioo_year_range"
   end
 
@@ -99,6 +116,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
     t.integer "year", null: false
     t.index ["user_id", "year", "month"], name: "index_monthly_budgets_on_user_id_and_year_and_month", unique: true
     t.index ["user_id"], name: "index_monthly_budgets_on_user_id"
+  end
+
+  create_table "oauth_authorization_codes", force: :cascade do |t|
+    t.string "code_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "redirect_uri", limit: 2048, null: false
+    t.string "scopes", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.bigint "user_id", null: false
+    t.index ["code_digest"], name: "index_oauth_authorization_codes_on_code_digest", unique: true
+    t.index ["expires_at"], name: "index_oauth_authorization_codes_on_expires_at"
+    t.index ["user_id"], name: "index_oauth_authorization_codes_on_user_id"
   end
 
   create_table "salary_entries", force: :cascade do |t|
@@ -152,6 +183,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "budget_items", "monthly_budgets"
   add_foreign_key "budget_shares", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
@@ -160,6 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
   add_foreign_key "income_sources", "users"
   add_foreign_key "income_sources", "users", column: "linked_user_id"
   add_foreign_key "monthly_budgets", "users"
+  add_foreign_key "oauth_authorization_codes", "users"
   add_foreign_key "salary_entries", "users"
   add_foreign_key "sessions", "users"
 end

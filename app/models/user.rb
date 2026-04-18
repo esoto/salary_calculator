@@ -12,6 +12,7 @@ class User < ApplicationRecord
   has_many :salary_entries, dependent: :destroy
   has_many :monthly_budgets, dependent: :destroy
   has_many :income_sources, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
   has_one :household_membership, dependent: :destroy
   has_one :household, through: :household_membership
 
