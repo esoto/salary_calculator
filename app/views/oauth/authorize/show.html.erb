@@ -12,8 +12,6 @@
         <% case scope %>
         <% when "budget:read" %>
           <li>Read your current monthly budget (plan + items)</li>
-        <% else %>
-          <li><%= scope %></li>
         <% end %>
       <% end %>
     </ul>
@@ -22,7 +20,6 @@
   <%= form_with url: oauth_authorize_path, method: :post, local: true, class: "flex gap-3" do |f| %>
     <%= hidden_field_tag :redirect_uri, @redirect_uri %>
     <%= hidden_field_tag :state, @state %>
-    <%= hidden_field_tag :scopes, @requested_scopes.join(" ") %>
     <%= submit_tag "Authorize", class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" %>
     <%= link_to "Cancel", dashboard_path, class: "bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300" %>
   <% end %>

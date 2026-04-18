@@ -9,6 +9,10 @@ class Rack::Attack
     end
   end
 
+  throttle("oauth/ip", limit: 30, period: 5.minutes) do |req|
+    req.ip if req.path.start_with?("/oauth/")
+  end
+
   self.throttled_responder = lambda do |request|
     [ 429, { "Content-Type" => "application/json" }, [ '{"error":"rate_limit_exceeded"}' ] ]
   end

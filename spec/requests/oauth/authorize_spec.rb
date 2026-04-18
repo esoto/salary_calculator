@@ -19,8 +19,21 @@ RSpec.describe "OAuth Authorize", type: :request do
       sign_in(user)
       get "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read" }
       expect(response).to have_http_status(:ok)
-      expect(response.body).to include("Expense Tracker")
-      expect(response.body).to include("budget:read")
+      expect(response.body).to include("Authorize Expense Tracker")
+      expect(response.body).to include("Read your current monthly budget")
+    end
+
+    it "rejects unsupported scopes" do
+      sign_in(user)
+      get "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read evil:write" }
+      expect(response).to have_http_status(:bad_request)
+      expect(response.body).to include("evil:write")
+    end
+
+    it "rejects missing scopes" do
+      sign_in(user)
+      get "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state }
+      expect(response).to have_http_status(:bad_request)
     end
 
     it "rejects redirect_uri not in the allowlist" do
@@ -40,6 +53,9 @@ RSpec.describe "OAuth Authorize", type: :request do
     before { sign_in(user) }
 
     it "issues an authorization code and redirects to redirect_uri with code + state" do
+      # First: GET to populate the session with consent state
+      get "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read" }
+
       expect {
         post "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read" }
       }.to change(OauthAuthorizationCode, :count).by(1)
