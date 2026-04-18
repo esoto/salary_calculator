@@ -16,11 +16,16 @@ export default class extends Controller {
     this._handleClose = () => {
       if (this._triggerEl) this._triggerEl.focus()
     }
+    this._handleSubmitEnd = (event) => {
+      if (event.detail?.success) this.element.close()
+    }
     this.element.addEventListener("close", this._handleClose)
+    this.element.addEventListener("turbo:submit-end", this._handleSubmitEnd)
   }
 
   disconnect() {
     this.element.removeEventListener("close", this._handleClose)
+    this.element.removeEventListener("turbo:submit-end", this._handleSubmitEnd)
   }
 
   populate({ sourceId, sourceName, currentAmount, currency, singleId, ongoingId, triggerEl }) {
