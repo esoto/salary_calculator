@@ -43,6 +43,17 @@ RSpec.describe OauthAuthorizationCode do
       expect(second).to be_nil
     end
 
+    it "rejects concurrent second redemption atomically" do
+      results = 2.times.map do
+        OauthAuthorizationCode.consume(
+          plaintext: issued.plaintext,
+          redirect_uri: "https://example.test/cb"
+        )
+      end
+      expect(results.compact.size).to eq(1)
+      expect(results.count(nil)).to eq(1)
+    end
+
     it "returns nil when expired" do
       issued.record.update!(expires_at: 1.second.ago)
       expect(

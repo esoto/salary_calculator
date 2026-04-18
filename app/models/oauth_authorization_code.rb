@@ -29,11 +29,12 @@ class OauthAuthorizationCode < ApplicationRecord
 
     record = find_by(code_digest: Digest::SHA256.hexdigest(plaintext))
     return nil if record.nil?
-    return nil if record.used_at.present?
     return nil if record.expires_at <= Time.current
     return nil if record.redirect_uri != redirect_uri
 
-    record.update_column(:used_at, Time.current)
-    record
+    affected = where(id: record.id, used_at: nil).update_all(used_at: Time.current)
+    return nil if affected.zero?
+
+    record.reload
   end
 end
