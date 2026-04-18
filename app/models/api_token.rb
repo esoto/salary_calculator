@@ -1,0 +1,77 @@
+require "digest"
+
+class ApiToken < ApplicationRecord
+  TOKEN_LENGTH = 32
+  CACHE_KEY_LENGTH = 16
+  CACHE_EXPIRY = 1.minute
+
+  attr_accessor :token
+
+  belongs_to :user
+
+  validates :name, presence: true, length: { maximum: 255 }
+  validates :token_digest, presence: true, uniqueness: true
+  validates :token_hash, presence: true, uniqueness: true
+  validates :active, inclusion: { in: [ true, false ] }
+  validate :expires_at_in_future, if: :expires_at?, on: :create
+
+  scope :active, -> { where(active: true) }
+  scope :valid, -> { active.where("expires_at IS NULL OR expires_at > ?", Time.current) }
+
+  before_validation :generate_token_if_blank, on: :create
+
+  def expired?
+    expires_at.present? && expires_at < Time.current
+  end
+
+  def valid_token?
+    active? && !expired?
+  end
+
+  def touch_last_used!
+    update_column(:last_used_at, Time.current)
+  end
+
+  def scope_list
+    scopes.to_s.split(/\s+/).reject(&:blank?)
+  end
+
+  def has_scope?(scope)
+    scope_list.include?(scope.to_s)
+  end
+
+  def self.authenticate(token_string)
+    return nil if token_string.blank?
+
+    cache_key = "api_token:#{Digest::SHA256.hexdigest(token_string)[0..CACHE_KEY_LENGTH]}"
+
+    Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
+      token_hash = Digest::SHA256.hexdigest(token_string)
+      api_token = valid.find_by(token_hash: token_hash)
+
+      if api_token && BCrypt::Password.new(api_token.token_digest) == token_string
+        api_token.touch_last_used!
+        api_token
+      end
+    end
+  end
+
+  def self.generate_secure_token
+    SecureRandom.urlsafe_base64(TOKEN_LENGTH)
+  end
+
+  private
+
+  def generate_token_if_blank
+    return if token_digest.present?
+
+    self.token = self.class.generate_secure_token
+    self.token_digest = BCrypt::Password.create(token)
+    self.token_hash = Digest::SHA256.hexdigest(token)
+  end
+
+  def expires_at_in_future
+    return unless expires_at.present?
+    errors.add(:expires_at, "must be in the future") if expires_at <= Time.current
+  end
+end
