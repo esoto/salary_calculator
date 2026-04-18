@@ -12,8 +12,15 @@ module Oauth
     end
 
     def create
-      # Task 11 fills this in
-      head :not_implemented
+      issued = OauthAuthorizationCode.issue(
+        user: Current.user,
+        redirect_uri: params[:redirect_uri],
+        scopes: requested_scope_list.join(" ")
+      )
+
+      redirect_params = { code: issued.plaintext, state: params[:state] }
+      redirect_to "#{params[:redirect_uri]}?#{redirect_params.to_query}",
+                  allow_other_host: true
     end
 
     private

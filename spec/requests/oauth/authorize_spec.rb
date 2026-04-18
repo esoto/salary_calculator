@@ -35,4 +35,37 @@ RSpec.describe "OAuth Authorize", type: :request do
       expect(response).to have_http_status(:bad_request)
     end
   end
+
+  describe "POST /oauth/authorize" do
+    before { sign_in(user) }
+
+    it "issues an authorization code and redirects to redirect_uri with code + state" do
+      expect {
+        post "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read" }
+      }.to change(OauthAuthorizationCode, :count).by(1)
+
+      expect(response).to have_http_status(:redirect)
+      location = URI.parse(response.headers["Location"])
+      params_hash = Rack::Utils.parse_nested_query(location.query)
+      expect(params_hash["state"]).to eq(state)
+      expect(params_hash["code"]).to be_present
+    end
+
+    it "rejects an invalid redirect_uri" do
+      post "/oauth/authorize", params: { redirect_uri: "https://evil.test/cb", state: state, scopes: "budget:read" }
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "requires authentication" do
+      delete_session_cookie_or_sign_out
+      post "/oauth/authorize", params: { redirect_uri: valid_redirect, state: state, scopes: "budget:read" }
+      expect(response).to redirect_to(new_session_path)
+    end
+  end
+
+  private
+
+  def delete_session_cookie_or_sign_out
+    cookies[:session_id] = nil
+  end
 end
