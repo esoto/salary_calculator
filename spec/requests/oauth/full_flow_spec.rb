@@ -40,4 +40,19 @@ RSpec.describe "OAuth full flow", type: :request do
     get "/api/v1/monthly_budgets/current", headers: { "Authorization" => "Bearer #{token}" }
     expect(response).to have_http_status(:unauthorized)
   end
+
+  it "uses session-bound scopes when minting the token" do
+    get "/oauth/authorize", params: { redirect_uri: redirect_uri, state: state, scopes: "budget:read" }
+    post "/oauth/authorize", params: { redirect_uri: redirect_uri, state: state, scopes: "budget:read" }
+    code = Rack::Utils.parse_nested_query(URI.parse(response.headers["Location"]).query)["code"]
+
+    post "/oauth/token",
+         params: { grant_type: "authorization_code", code: code, redirect_uri: redirect_uri },
+         as: :json
+    expect(response.parsed_body["scope"]).to eq("budget:read")
+
+    access_token = response.parsed_body["access_token"]
+    api_token = ApiToken.find_by(token_hash: Digest::SHA256.hexdigest(access_token))
+    expect(api_token.scopes).to eq("budget:read")
+  end
 end
