@@ -18,7 +18,7 @@
       </ul>
     </div>
 
-    <%= form_with url: oauth_authorize_path, method: :post, local: true, class: "flex gap-3" do |f| %>
+    <%= form_with url: oauth_authorize_path, method: :post, local: true, data: { turbo: false }, class: "flex gap-3" do |f| %>
       <%= hidden_field_tag :redirect_uri, @redirect_uri %>
       <%= hidden_field_tag :state, @state %>
       <%= submit_tag "Authorize", class: "bg-gold-btn text-navy-900 font-semibold px-6 py-2 rounded-lg cursor-pointer" %>
