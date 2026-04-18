@@ -27,15 +27,56 @@ RSpec.describe "Api::V1::MonthlyBudgets", type: :request do
           "id" => budget.id,
           "year" => 2026,
           "month" => 4,
-          "exchange_rate" => "503.0"
+          "exchange_rate" => "503.0",
+          "shared_with_household" => false
         )
+        expect(body["monthly_budget"]["updated_at"]).to be_present
+
         expect(body["budget_items"].size).to eq(2)
-        expect(body["budget_items"].first).to include(
+        first_item = body["budget_items"].first
+        expect(first_item).to include(
           "name" => "Rent",
           "category" => "fixed",
           "amount" => "800.0",
-          "currency" => "USD"
+          "currency" => "USD",
+          "position" => 1,
+          "paid" => false
         )
+        expect(first_item["updated_at"]).to be_present
+      end
+    end
+
+    it "returns an empty array when the budget has no items" do
+      travel_to Date.new(2026, 4, 17) do
+        MonthlyBudget.create!(user: user, year: 2026, month: 4, exchange_rate: 503)
+        get "/api/v1/monthly_budgets/current", headers: headers
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["budget_items"]).to eq([])
+      end
+    end
+
+    it "orders budget items by position, not creation order" do
+      travel_to Date.new(2026, 4, 17) do
+        budget = MonthlyBudget.create!(user: user, year: 2026, month: 4, exchange_rate: 503)
+        # Create in reverse position order
+        budget.budget_items.create!(name: "Second", category: "fixed", amount: 100, currency: "USD", position: 2)
+        budget.budget_items.create!(name: "First", category: "fixed", amount: 200, currency: "USD", position: 1)
+
+        get "/api/v1/monthly_budgets/current", headers: headers
+        names = response.parsed_body["budget_items"].map { |i| i["name"] }
+        expect(names).to eq([ "First", "Second" ])
+      end
+    end
+
+    it "serializes both USD and CRC currencies correctly" do
+      travel_to Date.new(2026, 4, 17) do
+        budget = MonthlyBudget.create!(user: user, year: 2026, month: 4, exchange_rate: 503)
+        budget.budget_items.create!(name: "Rent", category: "fixed", amount: 800, currency: "USD", position: 1)
+        budget.budget_items.create!(name: "Groceries", category: "guilt_free", amount: 50000, currency: "CRC", position: 2)
+
+        get "/api/v1/monthly_budgets/current", headers: headers
+        currencies = response.parsed_body["budget_items"].map { |i| i["currency"] }
+        expect(currencies).to contain_exactly("USD", "CRC")
       end
     end
 

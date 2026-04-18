@@ -48,6 +48,9 @@ gem "chartkick", "~> 5.0"
 # Email delivery via Resend
 gem "resend"
 
+# Rate limiting and throttling for API requests
+gem "rack-attack", "~> 6.7"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
