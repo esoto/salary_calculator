@@ -19,8 +19,8 @@ module Api
 
     def bearer_token
       header = request.headers["Authorization"].to_s
-      return nil unless header.start_with?("Bearer ")
-      header.split(" ", 2).last
+      match = header.match(/\ABearer\s+(.+)\z/i)
+      match && match[1].strip.presence
     end
 
     def require_scope!(scope)

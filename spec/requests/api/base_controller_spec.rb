@@ -19,7 +19,11 @@ RSpec.describe "Api::BaseController auth", type: :request do
     end
   end
 
-  after { Rails.application.reload_routes! }
+  around do |example|
+    example.run
+  ensure
+    Rails.application.reload_routes!
+  end
 
   let(:user) { create(:user) }
   let(:api_token) { ApiToken.create!(user: user, name: "test", scopes: "budget:read") }
@@ -40,5 +44,32 @@ RSpec.describe "Api::BaseController auth", type: :request do
     get "/api/auth_test", headers: { "Authorization" => "Bearer #{plaintext}" }
     expect(response).to have_http_status(:ok)
     expect(response.parsed_body).to eq({ "user_id" => user.id })
+  end
+
+  it "returns 401 for an expired token" do
+    api_token.update!(expires_at: 1.minute.ago)
+    get "/api/auth_test", headers: { "Authorization" => "Bearer #{plaintext}" }
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "returns 401 for an inactive token" do
+    api_token.update!(active: false)
+    get "/api/auth_test", headers: { "Authorization" => "Bearer #{plaintext}" }
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "returns 401 when the Authorization scheme is not Bearer" do
+    get "/api/auth_test", headers: { "Authorization" => "Basic #{plaintext}" }
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "returns 401 when the Authorization header lacks a scheme prefix" do
+    get "/api/auth_test", headers: { "Authorization" => plaintext }
+    expect(response).to have_http_status(:unauthorized)
+  end
+
+  it "accepts lowercase bearer scheme per RFC 6750" do
+    get "/api/auth_test", headers: { "Authorization" => "bearer #{plaintext}" }
+    expect(response).to have_http_status(:ok)
   end
 end
