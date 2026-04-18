@@ -10,9 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_024314) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.string "scopes", default: "", null: false
+    t.string "token_digest", null: false
+    t.string "token_hash", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["token_digest"], name: "index_api_tokens_on_token_digest", unique: true
+    t.index ["token_hash"], name: "index_api_tokens_on_token_hash", unique: true
+    t.index ["user_id", "active"], name: "index_api_tokens_on_user_id_and_active"
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
 
   create_table "budget_items", force: :cascade do |t|
     t.decimal "amount", precision: 12, scale: 2, null: false
@@ -152,6 +169,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_212011) do
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
 
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "budget_items", "monthly_budgets"
   add_foreign_key "budget_shares", "monthly_budgets"
   add_foreign_key "household_memberships", "households"
