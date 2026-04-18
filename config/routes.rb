@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       end
     end
     resources :budget_shares, only: [ :create, :destroy ]
+    resources :income_source_overrides, only: [ :create, :destroy ]
   end
 
   resources :income_sources, only: [ :index, :create, :update, :destroy ]
