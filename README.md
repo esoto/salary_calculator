@@ -84,6 +84,12 @@ Deployed on a Hetzner VPS via [Kamal](https://kamal-deploy.org/) with Docker Hub
 - **SSL**: Let's Encrypt via kamal-proxy (auto-renewal)
 - **Monitoring**: UptimeRobot
 
+### Prereqs
+
+- [1Password CLI](https://developer.1password.com/docs/cli/get-started/): `brew install --cask 1password-cli`
+- Biometric unlock enabled (1Password app → Settings → Developer → Integrate with 1Password CLI)
+- Access to the `Salary Calculator` item in the `Personal Brand` 1Password vault
+
 ### Deploy
 
 ```bash
@@ -97,7 +103,7 @@ kamal shell               # Bash on server
 ### Configuration
 
 - `config/deploy.yml` - Kamal deployment config
-- `.kamal/secrets` - Production secrets (gitignored)
+- `.kamal/secrets` - Uses `op read` references; secrets are fetched from 1Password at deploy time (no raw values in the repo)
 
 ## Documentation
 
