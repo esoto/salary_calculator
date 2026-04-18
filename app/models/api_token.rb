@@ -21,7 +21,7 @@ class ApiToken < ApplicationRecord
   before_validation :generate_token_if_blank, on: :create
 
   def expired?
-    expires_at.present? && expires_at < Time.current
+    expires_at.present? && expires_at <= Time.current
   end
 
   def valid_token?
@@ -43,17 +43,24 @@ class ApiToken < ApplicationRecord
   def self.authenticate(token_string)
     return nil if token_string.blank?
 
-    cache_key = "api_token:#{Digest::SHA256.hexdigest(token_string)[0..CACHE_KEY_LENGTH]}"
+    cache_key = "api_token:#{Digest::SHA256.hexdigest(token_string)[0, CACHE_KEY_LENGTH]}"
 
-    Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
+    cached_id = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
       token_hash = Digest::SHA256.hexdigest(token_string)
-      api_token = valid.find_by(token_hash: token_hash)
+      candidate = find_by(token_hash: token_hash)
 
-      if api_token && BCrypt::Password.new(api_token.token_digest) == token_string
-        api_token.touch_last_used!
-        api_token
+      if candidate && BCrypt::Password.new(candidate.token_digest) == token_string
+        candidate.id
       end
     end
+
+    return nil unless cached_id
+
+    api_token = valid.find_by(id: cached_id)
+    return nil unless api_token
+
+    api_token.touch_last_used!
+    api_token
   end
 
   def self.generate_secure_token

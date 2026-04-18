@@ -83,4 +83,35 @@ RSpec.describe ApiToken do
       expect(token.scope_list).to contain_exactly("budget:read")
     end
   end
+
+  describe "revocation with caching enabled" do
+    around do |example|
+      original_cache = Rails.cache
+      Rails.cache = ActiveSupport::Cache::MemoryStore.new
+      example.run
+    ensure
+      Rails.cache = original_cache
+    end
+
+    let!(:token_record) { ApiToken.create!(user: user, name: "test") }
+    let(:plaintext) { token_record.token }
+
+    it "stops authenticating immediately when deactivated, even within the cache window" do
+      expect(ApiToken.authenticate(plaintext)).to eq(token_record)
+      token_record.update!(active: false)
+      expect(ApiToken.authenticate(plaintext)).to be_nil
+    end
+
+    it "stops authenticating immediately when expired, even within the cache window" do
+      expect(ApiToken.authenticate(plaintext)).to eq(token_record)
+      token_record.update!(expires_at: 1.second.ago)
+      expect(ApiToken.authenticate(plaintext)).to be_nil
+    end
+
+    it "uses the cache to skip BCrypt on subsequent calls" do
+      expect(ApiToken.authenticate(plaintext)).to eq(token_record)
+      expect(BCrypt::Password).not_to receive(:new)
+      expect(ApiToken.authenticate(plaintext)).to eq(token_record)
+    end
+  end
 end
