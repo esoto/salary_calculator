@@ -38,6 +38,12 @@ Rails.application.routes.draw do
   end
   resource :household, only: [ :show ], controller: "household"
 
+  namespace :oauth do
+    get "authorize", to: "authorize#show"
+    post "authorize", to: "authorize#create"
+    post "token", to: "token#create"
+  end
+
   namespace :api do
     namespace :v1 do
       get "monthly_budgets/current", to: "monthly_budgets#current"
