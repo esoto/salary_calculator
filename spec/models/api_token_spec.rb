@@ -114,4 +114,77 @@ RSpec.describe ApiToken do
       expect(ApiToken.authenticate(plaintext)).to eq(token_record)
     end
   end
+
+  describe "#inspect" do
+    it "redacts the plaintext token" do
+      token = ApiToken.create!(user: user, name: "test")
+      expect(token.inspect).to include("[FILTERED]")
+      expect(token.inspect).not_to include(token.token)
+    end
+
+    it "shows nil token on reloaded record" do
+      token = ApiToken.create!(user: user, name: "test")
+      reloaded = ApiToken.find(token.id)
+      expect(reloaded.inspect).to include("token=nil")
+    end
+  end
+
+  describe "#valid_token?" do
+    it "is true for an active non-expired token" do
+      token = ApiToken.create!(user: user, name: "test")
+      expect(token).to be_valid_token
+    end
+
+    it "is false when inactive" do
+      token = ApiToken.create!(user: user, name: "test")
+      token.update!(active: false)
+      expect(token).not_to be_valid_token
+    end
+
+    it "is false when expired" do
+      token = ApiToken.create!(user: user, name: "test")
+      token.update!(expires_at: 1.minute.ago)
+      expect(token).not_to be_valid_token
+    end
+  end
+
+  describe "#has_scope?" do
+    it "returns true when the scope is present" do
+      token = ApiToken.create!(user: user, name: "test", scopes: "budget:read admin:write")
+      expect(token.has_scope?("budget:read")).to be true
+    end
+
+    it "returns false when the scope is absent" do
+      token = ApiToken.create!(user: user, name: "test", scopes: "budget:read")
+      expect(token.has_scope?("admin:write")).to be false
+    end
+
+    it "returns false when scopes is empty" do
+      token = ApiToken.create!(user: user, name: "test", scopes: "")
+      expect(token.has_scope?("budget:read")).to be false
+    end
+  end
+
+  describe ".generate_secure_token" do
+    it "returns a URL-safe base64 string" do
+      expect(ApiToken.generate_secure_token).to match(/\A[A-Za-z0-9_\-]+\z/)
+    end
+
+    it "returns a different value each call" do
+      expect(ApiToken.generate_secure_token).not_to eq(ApiToken.generate_secure_token)
+    end
+  end
+
+  describe "expires_at_in_future validation" do
+    it "rejects a new token with a past expires_at" do
+      token = ApiToken.new(user: user, name: "test", expires_at: 1.minute.ago)
+      expect(token).not_to be_valid
+      expect(token.errors[:expires_at]).to include("must be in the future")
+    end
+
+    it "allows an existing token to be set to past expires_at (for revocation)" do
+      token = ApiToken.create!(user: user, name: "test")
+      expect { token.update!(expires_at: 1.minute.ago) }.not_to raise_error
+    end
+  end
 end

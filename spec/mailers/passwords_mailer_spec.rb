@@ -3,8 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe PasswordsMailer, type: :mailer do
-  include ActiveSupport::Testing::TimeHelpers
-
   describe '#reset' do
     let(:user) { create(:user, email_address: 'user@example.com') }
     let(:token) { user.password_reset_token }

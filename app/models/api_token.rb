@@ -2,7 +2,6 @@ require "digest"
 
 class ApiToken < ApplicationRecord
   TOKEN_LENGTH = 32
-  CACHE_KEY_LENGTH = 16
   CACHE_EXPIRY = 1.minute
 
   attr_accessor :token
@@ -43,10 +42,10 @@ class ApiToken < ApplicationRecord
   def self.authenticate(token_string)
     return nil if token_string.blank?
 
-    cache_key = "api_token:#{Digest::SHA256.hexdigest(token_string)[0, CACHE_KEY_LENGTH]}"
+    token_hash = Digest::SHA256.hexdigest(token_string)
+    cache_key = "api_token:#{token_hash}"
 
     cached_id = Rails.cache.fetch(cache_key, expires_in: CACHE_EXPIRY) do
-      token_hash = Digest::SHA256.hexdigest(token_string)
       candidate = find_by(token_hash: token_hash)
 
       if candidate && BCrypt::Password.new(candidate.token_digest) == token_string
@@ -65,6 +64,11 @@ class ApiToken < ApplicationRecord
 
   def self.generate_secure_token
     SecureRandom.urlsafe_base64(TOKEN_LENGTH)
+  end
+
+  def inspect
+    redacted = token.present? ? "[FILTERED]" : nil
+    "#<#{self.class.name} id=#{id.inspect} user_id=#{user_id.inspect} name=#{name.inspect} token=#{redacted.inspect}>"
   end
 
   private

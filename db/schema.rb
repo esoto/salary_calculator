@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_18_025541) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_040525) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -88,7 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_025541) do
     t.index ["income_source_id", "year", "month", "scope"], name: "idx_income_overrides_unique", unique: true
     t.check_constraint "amount >= 0::numeric", name: "chk_ioo_amount_nonneg"
     t.check_constraint "month >= 1 AND month <= 12", name: "chk_ioo_month_range"
-    t.check_constraint "scope::text = ANY (ARRAY['single_month'::character varying, 'from_this_month'::character varying]::text[])", name: "chk_ioo_scope_valid"
+    t.check_constraint "scope::text = ANY (ARRAY['single_month'::character varying::text, 'from_this_month'::character varying::text])", name: "chk_ioo_scope_valid"
     t.check_constraint "year >= 2020 AND year <= 2100", name: "chk_ioo_year_range"
   end
 
@@ -122,7 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_025541) do
     t.string "code_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", null: false
-    t.string "redirect_uri", null: false
+    t.string "redirect_uri", limit: 2048, null: false
     t.string "scopes", default: "", null: false
     t.datetime "updated_at", null: false
     t.datetime "used_at"

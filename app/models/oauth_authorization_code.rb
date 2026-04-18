@@ -35,6 +35,7 @@ class OauthAuthorizationCode < ApplicationRecord
     affected = where(id: record.id, used_at: nil).update_all(used_at: Time.current)
     return nil if affected.zero?
 
-    record.reload
+    record.assign_attributes(used_at: Time.current)
+    record
   end
 end
