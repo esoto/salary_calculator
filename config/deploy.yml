@@ -31,6 +31,10 @@ env:
   clear:
     RAILS_ENV: production
     SOLID_QUEUE_IN_PUMA: true
+    # OAuth clients allowed to receive authorization codes. Comma-separated
+    # list of exact-match redirect_uri values that /oauth/authorize will
+    # honor. Adding a new consumer app requires adding its callback URL here.
+    OAUTH_REDIRECT_URI_ALLOWLIST: "https://expense-tracker.estebansoto.dev/external_source/callback"
 
 # Useful aliases
 aliases:
