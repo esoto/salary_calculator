@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_18_024314) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_18_025541) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -118,6 +118,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_024314) do
     t.index ["user_id"], name: "index_monthly_budgets_on_user_id"
   end
 
+  create_table "oauth_authorization_codes", force: :cascade do |t|
+    t.string "code_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", null: false
+    t.string "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.bigint "user_id", null: false
+    t.index ["code_digest"], name: "index_oauth_authorization_codes_on_code_digest", unique: true
+    t.index ["expires_at"], name: "index_oauth_authorization_codes_on_expires_at"
+    t.index ["user_id"], name: "index_oauth_authorization_codes_on_user_id"
+  end
+
   create_table "salary_entries", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.decimal "holiday_days_taken", precision: 4, scale: 2, default: "0.0", null: false
@@ -178,6 +192,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_18_024314) do
   add_foreign_key "income_sources", "users"
   add_foreign_key "income_sources", "users", column: "linked_user_id"
   add_foreign_key "monthly_budgets", "users"
+  add_foreign_key "oauth_authorization_codes", "users"
   add_foreign_key "salary_entries", "users"
   add_foreign_key "sessions", "users"
 end
