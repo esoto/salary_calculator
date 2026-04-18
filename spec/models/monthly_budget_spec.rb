@@ -281,6 +281,45 @@ RSpec.describe MonthlyBudget, type: :model do
     end
   end
 
+  describe "#all_income_sources override N+1" do
+    let(:household) { create(:household) }
+    let(:owner)    { create(:user) }
+    let(:member)   { create(:user) }
+    let(:budget)   { create(:monthly_budget, user: owner, shared_with_household: true, year: 2026, month: 4) }
+
+    before do
+      create(:household_membership, user: owner,  household: household)
+      create(:household_membership, user: member, household: household)
+      # Owner sources with overrides
+      3.times do |i|
+        src = create(:income_source, user: owner, income_type: "fixed", amount: 100 * (i + 1))
+        create(:income_source_override, income_source: src, year: 2026, month: 4, amount: 999, scope: "single_month")
+      end
+      # Household member sources with overrides
+      3.times do |i|
+        src = create(:income_source, user: member, income_type: "fixed", amount: 50 * (i + 1))
+        create(:income_source_override, income_source: src, year: 2026, month: 4, amount: 777, scope: "single_month")
+      end
+    end
+
+    it "does not issue per-source override queries when computing total_income_usd" do
+      queries = []
+      callback = ->(_, _, _, _, payload) { queries << payload[:sql] if payload[:sql] =~ /\bincome_source_overrides\b/i }
+
+      ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+        budget.total_income_usd
+      end
+
+      # Expect exactly 2 queries: one for owner branch, one for household branch
+      expect(queries.size).to eq(2)
+    end
+
+    it "total reflects overrides from both branches" do
+      # 3 owner sources * 999 + 3 member sources * 777 = 5328
+      expect(budget.total_income_usd).to eq(999 * 3 + 777 * 3)
+    end
+  end
+
   describe "ownership and access" do
     let(:owner) { create(:user) }
     let(:partner) { create(:user) }

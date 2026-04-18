@@ -42,11 +42,12 @@ class MonthlyBudget < ApplicationRecord
   end
 
   def all_income_sources
-    sources = user.income_sources.active.with_salary_data.to_a
+    sources = user.income_sources.active.with_salary_data.with_override_data.to_a
 
     # Include household members' income sources when budget is shared
     if shared_with_household? && user.household.present?
-      household_sources = IncomeSource.active.with_salary_data.includes(:user)
+      household_sources = IncomeSource.active.with_salary_data.with_override_data
+        .includes(:user)
         .joins(user: :household_membership)
         .where(household_memberships: { household_id: user.household_membership.household_id })
         .where.not(user_id: user.id)
