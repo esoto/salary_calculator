@@ -85,6 +85,27 @@ module BudgetsHelper
     time_ago_in_words(version.created_at) + " ago"
   end
 
+  def income_source_adjusted_for?(source, budget)
+    return false unless source.fixed?
+    source.amount_for_month(budget.year, budget.month) != (source.amount || 0)
+  end
+
+  def existing_override_id(source, budget, scope)
+    source.income_source_overrides
+      .detect { |o| o.year == budget.year && o.month == budget.month && o.scope == scope.to_s }
+      &.id
+  end
+
+  def format_source_base(source)
+    amt = source.amount || 0
+    source.usd? ? format_usd(amt) : format_crc(amt)
+  end
+
+  def format_source_effective(source, budget)
+    amt = source.amount_for_month(budget.year, budget.month)
+    source.usd? ? format_usd(amt) : format_crc(amt)
+  end
+
   private
 
   def budget_activity_description(version)
