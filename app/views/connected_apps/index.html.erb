@@ -1,0 +1,35 @@
+<div class="max-w-2xl mx-auto mt-8">
+  <h1 class="text-2xl font-bold mb-6">Connected Apps</h1>
+
+  <% if @tokens.any? %>
+    <table class="min-w-full bg-white shadow rounded">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left">Name</th>
+          <th class="px-4 py-2 text-left">Scopes</th>
+          <th class="px-4 py-2 text-left">Last used</th>
+          <th class="px-4 py-2"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @tokens.each do |token| %>
+          <tr class="border-t">
+            <td class="px-4 py-2"><%= token.name %></td>
+            <td class="px-4 py-2 text-sm text-gray-600"><%= token.scopes.presence || "—" %></td>
+            <td class="px-4 py-2 text-sm text-gray-600">
+              <%= token.last_used_at ? time_ago_in_words(token.last_used_at) + " ago" : "never" %>
+            </td>
+            <td class="px-4 py-2 text-right">
+              <%= button_to "Revoke", connected_app_path(token),
+                    method: :delete,
+                    form: { data: { turbo_confirm: "Revoke this token?" } },
+                    class: "text-red-600 hover:underline" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-gray-600">You have no connected apps.</p>
+  <% end %>
+</div>

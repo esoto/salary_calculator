@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resource :settings, only: [ :show, :update ]
+  resources :connected_apps, only: [ :index, :destroy ]
   resources :passwords, param: :token
   resources :registrations, only: [ :new, :create ]
 
