@@ -9,7 +9,9 @@ module Api
 
         return render(json: { error: "not_found" }, status: :not_found) if budget.nil?
 
-        render json: serialize(budget)
+        if stale?(last_modified: budget.updated_at, etag: budget.cache_key_with_version, public: false)
+          render json: serialize(budget)
+        end
       end
 
       private

@@ -65,5 +65,14 @@ RSpec.describe "Api::V1::MonthlyBudgets", type: :request do
         expect(response.parsed_body["required"]).to eq("budget:read")
       end
     end
+
+    it "returns 304 when If-Modified-Since matches budget.updated_at" do
+      travel_to Date.new(2026, 4, 17) do
+        budget = MonthlyBudget.create!(user: user, year: 2026, month: 4, exchange_rate: 503)
+        get "/api/v1/monthly_budgets/current",
+          headers: headers.merge("If-Modified-Since" => budget.updated_at.httpdate)
+        expect(response).to have_http_status(:not_modified)
+      end
+    end
   end
 end
