@@ -132,20 +132,56 @@ class MonthlyBudget < ApplicationRecord
       .order(created_at: :desc)
       .limit(limit)
 
-    override_ids = IncomeSourceOverride
-      .where(income_source_id: all_income_sources.map(&:id))
-      .where(year: year, month: month)
-      .pluck(:id)
-    override_versions = PaperTrail::Version
-      .where(item_type: "IncomeSourceOverride")
-      .where(item_id: override_ids)
-      .includes(:item)
-      .order(created_at: :desc)
-      .limit(limit)
+    source_ids = all_income_sources.map(&:id)
+    override_versions = override_versions_for(source_ids, limit: limit)
 
     (budget_versions + item_versions + override_versions)
       .sort_by(&:created_at)
       .reverse
       .first(limit)
+  end
+
+  private
+
+  # Collects PaperTrail versions for IncomeSourceOverrides tied to THIS budget's
+  # (year, month). Live overrides are found by FK lookup; destroyed overrides are
+  # gone from the table, so we also scan destroy versions and parse the pre-destroy
+  # object to filter by income_source_id + year + month.
+  def override_versions_for(source_ids, limit:)
+    live_ids = IncomeSourceOverride
+      .where(income_source_id: source_ids)
+      .where(year: year, month: month)
+      .pluck(:id)
+
+    destroyed_ids = PaperTrail::Version
+      .where(item_type: "IncomeSourceOverride", event: "destroy")
+      .order(created_at: :desc)
+      .limit(limit * 3) # bounded scan: enough headroom for a personal tool
+      .select { |v|
+        obj = parse_paper_trail_object(v) || {}
+        source_ids.include?(obj["income_source_id"]) &&
+          obj["year"] == year &&
+          obj["month"] == month
+      }
+      .map(&:item_id)
+
+    PaperTrail::Version
+      .where(item_type: "IncomeSourceOverride")
+      .where(item_id: live_ids + destroyed_ids)
+      .includes(:item)
+      .order(created_at: :desc)
+      .limit(limit)
+  end
+
+  def parse_paper_trail_object(version)
+    return nil if version.object.blank?
+
+    YAML.safe_load(
+      version.object,
+      permitted_classes: [ BigDecimal, ActiveSupport::TimeWithZone, ActiveSupport::TimeZone, Time ],
+      aliases: true
+    )
+  rescue StandardError
+    nil
   end
 end

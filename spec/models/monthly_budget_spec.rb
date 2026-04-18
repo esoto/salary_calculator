@@ -327,6 +327,28 @@ RSpec.describe MonthlyBudget, type: :model do
         expect(activity.select { |v| v.item_type == "IncomeSourceOverride" }).to be_empty
       end
     end
+
+    it "includes destroy versions for overrides that were deleted" do
+      with_versioning do
+        override = create(:income_source_override, income_source: source, year: 2026, month: 4, amount: 1500, scope: "single_month")
+        override.destroy
+
+        activity = budget.recent_activity(limit: 10)
+        destroy_versions = activity.select { |v| v.item_type == "IncomeSourceOverride" && v.event == "destroy" }
+        expect(destroy_versions.size).to eq(1)
+      end
+    end
+
+    it "does not include destroyed overrides that targeted a different month" do
+      with_versioning do
+        other_month_override = create(:income_source_override, income_source: source, year: 2026, month: 8, amount: 1800, scope: "single_month")
+        other_month_override.destroy
+
+        activity = budget.recent_activity(limit: 10)
+        destroy_versions = activity.select { |v| v.item_type == "IncomeSourceOverride" && v.event == "destroy" }
+        expect(destroy_versions).to be_empty
+      end
+    end
   end
 
   describe "#all_income_sources override N+1" do
