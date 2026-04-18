@@ -4,7 +4,7 @@ module Oauth
 
     SUPPORTED_SCOPES = %w[budget:read].freeze
 
-    before_action :validate_params!
+    before_action :validate_params!, only: :show
 
     def show
       @redirect_uri = params[:redirect_uri]
@@ -20,8 +20,14 @@ module Oauth
 
     def create
       consented = session.delete(:pending_oauth_consent)
-      unless consented && consented["redirect_uri"] == params[:redirect_uri] && consented["state"] == params[:state]
+      if params[:state].blank? || consented.nil? ||
+         consented["redirect_uri"] != params[:redirect_uri] ||
+         consented["state"] != params[:state]
         render plain: "consent state mismatch", status: :bad_request and return
+      end
+
+      unless allowlisted_redirect?(params[:redirect_uri])
+        render plain: "invalid redirect_uri", status: :bad_request and return
       end
 
       issued = OauthAuthorizationCode.issue(
