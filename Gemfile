@@ -78,4 +78,4 @@ group :development do
   gem "web-console"
 end
 
-gem "tailwindcss-rails", "~> 4.4"
+gem "tailwindcss-rails", "~> 4.6"
