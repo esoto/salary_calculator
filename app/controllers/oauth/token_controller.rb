@@ -32,7 +32,7 @@ module Oauth
         access_token: plaintext_token,
         token_type: "Bearer",
         scope: api_token.scopes,
-        expires_in: (api_token.expires_at - Time.current).round.to_i
+        expires_in: (api_token.expires_at - Time.current).round
       }
     end
 
