@@ -25,7 +25,12 @@ RSpec.describe "OAuth Token", type: :request do
       expect(body["token_type"]).to eq("Bearer")
       expect(body["scope"]).to eq("budget:read")
 
-      expect(ApiToken.authenticate(body["access_token"])&.user).to eq(user)
+      expect(body["expires_in"]).to be_a(Integer)
+      expect(body["expires_in"]).to be_within(1.day.to_i).of(10.years.to_i)
+
+      api_token = ApiToken.authenticate(body["access_token"])
+      expect(api_token&.user).to eq(user)
+      expect(api_token.expires_at).to be_within(1.minute).of(10.years.from_now)
     end
 
     it "rejects a reused code" do

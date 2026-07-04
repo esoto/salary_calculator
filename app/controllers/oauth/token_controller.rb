@@ -2,7 +2,10 @@ module Oauth
   class TokenController < ActionController::API
     include Oauth::RedirectUriAllowlist
 
-    TOKEN_TTL = 90.days
+    # Expense Tracker is a trusted first-party client and there is no
+    # refresh-token flow, so tokens are issued with a long-lived TTL instead
+    # of expiring silently every 90 days.
+    TOKEN_TTL = 10.years
 
     def create
       return bad_request!("unsupported_grant_type") unless params[:grant_type] == "authorization_code"
@@ -28,7 +31,8 @@ module Oauth
       render json: {
         access_token: plaintext_token,
         token_type: "Bearer",
-        scope: api_token.scopes
+        scope: api_token.scopes,
+        expires_in: (api_token.expires_at - Time.current).round
       }
     end
 
